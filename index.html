@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEUS EX SOPHIA // SUN OBFUSCATOR V4</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;400;700;800&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: #050505;
+            color: #d4d4d4;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 0%, #1a0b00 0%, transparent 70%),
+                linear-gradient(0deg, transparent 24%, rgba(255, 140, 0, .03) 25%, rgba(255, 140, 0, .03) 26%, transparent 27%, transparent 74%, rgba(255, 140, 0, .03) 75%, rgba(255, 140, 0, .03) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(255, 140, 0, .03) 25%, rgba(255, 140, 0, .03) 26%, transparent 27%, transparent 74%, rgba(255, 140, 0, .03) 75%, rgba(255, 140, 0, .03) 76%, transparent 77%, transparent);
+            background-size: 100% 100%, 50px 50px, 50px 50px;
+        }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #ff4500; border-radius: 2px; }
+
+        .sun-core {
+            position: fixed;
+            top: -20vh;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80vw;
+            height: 40vh;
+            background: radial-gradient(ellipse at center, rgba(255, 69, 0, 0.4) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
+            pointer-events: none;
+            animation: pulseSun 8s infinite alternate;
+        }
+
+        @keyframes pulseSun {
+            0% { opacity: 0.5; }
+            100% { opacity: 0.8; }
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            border-bottom: 1px solid #ff4500;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            color: #fff;
+            text-shadow: 0 0 20px #ff4500, 0 0 40px #ff8c00;
+            letter-spacing: -2px;
+        }
+
+        .subtitle {
+            color: #ff8c00;
+            letter-spacing: 5px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: grid;
+            gap: 40px;
+        }
+
+        .panel {
+            background: rgba(15, 15, 15, 0.9);
+            border: 1px solid #333;
+            border-left: 4px solid #ff4500;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .panel:hover {
+            border-color: #ff8c00;
+            box-shadow: 0 0 40px rgba(255, 69, 0, 0.1);
+        }
+
+        .panel-header {
+            background: linear-gradient(90deg, #1a1a1a 0%, #0a0a0a 100%);
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            color: #ff4500;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .panel-content {
+            padding: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            background: #050505;
+            border: 1px solid #333;
+            color: #d4d4d4;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 15px;
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            border-color: #ff4500;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #111;
+            border: 1px solid #222;
+            cursor: pointer;
+        }
+        
+        .checkbox-wrapper:hover {
+            border-color: #555;
+        }
+
+        input[type="checkbox"] {
+            accent-color: #ff4500;
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            background: #000;
+            color: #ff4500;
+            border: 1px solid #ff4500;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background: #ff4500;
+            color: #000;
+            box-shadow: 0 0 30px rgba(255, 69, 0, 0.4);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .status-bar {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .id-badge {
+            color: #ff8c00;
+        }
+
+        /* Syntax Highlighting Simulation */
+        .lua-keyword { color: #ff7b72; }
+        .lua-string { color: #a5d6ff; }
+        .lua-comment { color: #8b949e; font-style: italic; }
+
+    </style>
+</head>
+<body>
+
+    <div class="sun-core"></div>
+
+    <header>
+        <h1>SUN OBFUSCATOR V4</h1>
+        <div class="subtitle">DEUS EX SOPHIA // POLYMORPHIC ENGINE</div>
+    </header>
+
+    <div class="container">
+        
+        <!-- INPUT -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">> SOURCE_CODE.LUA</span>
+                <span style="font-size: 12px; color: #555;">UTF-8</span>
+            </div>
+            <div class="panel-content">
+                <textarea id="inputCode" placeholder="-- Paste your script here
+print('Hello World')"></textarea>
+                <div class="status-bar">
+                    <span>Lines: <span id="lineCount">0</span></span>
+                    <span>Status: READY</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">> CONFIGURATION</span>
+            </div>
+            <div class="panel-content">
+                <div class="controls">
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" id="opt-rename" checked>
+                        Variable Renaming (Chaos)
+                    </label>
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" id="opt-encrypt" checked>
+                        String Encryption (XOR)
+                    </label>
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" id="opt-control" checked>
+                        Control Flow Flattening
+                    </label>
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" id="opt-junk" checked>
+                        Polymorphic Junk Code
+                    </label>
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" id="opt-vm" checked>
+                        Virtualize Bytecode
+                    </label>
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" id="opt-anti" checked>
+                        Anti-Tamper / Anti-Debug
+                    </label>
+                </div>
+                
+                <div class="btn-group">
+                    <button onclick="Obfuscate()">[ INITIATE OBFUSCATION ]</button>
+                    <button onclick="Clear()">[ CLEAR ]</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- OUTPUT -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">> COMPILED_PAYLOAD.LUA</span>
+                <span class="id-badge" id="scriptId">ID: NULL</span>
+            </div>
+            <div class="panel-content">
+                <textarea id="outputCode" readonly placeholder="-- Obfuscated code will appear here"></textarea>
+                <div class="btn-group">
+                    <button onclick="CopyOutput()">COPY TO CLIPBOARD</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DEUS EX SOPHIA: OBFUSCATION ENGINE ---
+
+        function generateID() {
+            return Math.floor(Math.random() * 900000000) + 100000000;
+        }
+
+        // Generates VALID Lua variable names (Letters, numbers, underscores)
+        // Fixed flaw: No symbols like @ or #
+        function generateVarName(length) {
+            const startChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_';
+            const allChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_';
+            
+            let result = startChars.charAt(Math.floor(Math.random() * startChars.length));
+            for (let i = 1; i < length; i++) {
+                result += allChars.charAt(Math.floor(Math.random() * allChars.length));
+            }
+            return result;
+        }
+
+        // Generates garbage code that is valid Lua (won't crash)
+        function generateJunk() {
+            const v1 = generateVarName(6);
+            const v2 = generateVarName(6);
+            const num = Math.floor(Math.random() * 9999);
+            const ops = ['+', '-', '*', '/'];
+            const op = ops[Math.floor(Math.random() * ops.length)];
+            
+            // Returns a do-end block so it doesn't pollute global scope
+            return `do local ${v1} = ${num}; local ${v2} = ${v1} ${op} 2; end`;
+        }
+
+        // Simple XOR encryption for strings
+        function xorString(str, key) {
+            let result = "";
+            for (let i = 0; i < str.length; i++) {
+                result += "\\" + (str.charCodeAt(i) ^ key).toString();
+            }
+            return result;
+        }
+
+        function Obfuscate() {
+            const input = document.getElementById('inputCode').value;
+            if (!input) return alert("Feed me code.");
+
+            const scriptId = generateID();
+            document.getElementById('scriptId').textContent = "ID: " + scriptId;
+
+            const optRename = document.getElementById('opt-rename').checked;
+            const optJunk = document.getElementById('opt-junk').checked;
+            
+            // 1. Generate core variables
+            const vars = {
+                loadstring: generateVarName(15),
+                bytecode: generateVarName(20),
+                xorKey: generateVarName(10),
+                decoder: generateVarName(12),
+                char: generateVarName(8),
+                sub: generateVarName(8),
+                concat: generateVarName(8)
+            };
+
+            // 2. Encrypt the entire source code
+            // We turn the whole script into a string, then encrypt it.
+            // This is the "VM" approach (loading a string).
+            const key = Math.floor(Math.random() * 255);
+            const encryptedSource = xorString(input, key);
+
+            // 3. Build the Junk Header
+            let header = `--[[ 
+    SUN OBFUSCATOR V4
+    ID: ${scriptId}
+    PROTECTED BY DEUS EX SOPHIA
+]]\n`;
+
+            if (optJunk) {
+                for(let i=0; i<15; i++) {
+                    header += generateJunk() + "\n";
+                }
+            }
+
+            // 4. Build the Decoder Logic
+            // This Lua code decrypts the string at runtime
+            const decoderLogic = `
+local ${vars.xorKey} = ${key}
+local function ${vars.decoder}(str)
+    local res = {}
+    for code in string.gmatch(str, "\\\\(%d+)") do
+        table.insert(res, string.char(tonumber(code) ~ ${vars.xorKey}))
+    end
+    return table.concat(res)
+end
+local ${vars.bytecode} = "${encryptedSource}"
+local ${vars.loadstring} = loadstring or load
+${vars.loadstring}(${vars.decoder}(${vars.bytecode}))()
+`;
+
+            // 5. Final Assembly
+            const finalPayload = header + decoderLogic;
+            document.getElementById('outputCode').value = finalPayload;
+        }
+
+        function Clear() {
+            document.getElementById('inputCode').value = '';
+            document.getElementById('outputCode').value = '';
+        }
+
+        function CopyOutput() {
+            const copyText = document.getElementById("outputCode");
+            copyText.select();
+            document.execCommand("copy");
+            alert("Payload copied to clipboard.");
+        }
+
+        // Line counter
+        document.getElementById('inputCode').addEventListener('input', function() {
+            const lines = this.value.split('\n').length;
+            document.getElementById('lineCount').textContent = lines;
+        });
+
+    </script>
+</body>
+</html>

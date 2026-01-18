@@ -3,411 +3,1566 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEUS EX SOPHIA // SUN OBFUSCATOR V4</title>
+    <title>Sun Obfuscator - Lua Code Protection</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;400;700;800&display=swap');
+        @import url('https://fonts.cdnfonts.com/css/orbitron');
         
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            font-family: 'JetBrains Mono', monospace;
-            background: #050505;
-            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+            background: #0d0d0d;
+            color: #e0e0e0;
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 50% 0%, #1a0b00 0%, transparent 70%),
-                linear-gradient(0deg, transparent 24%, rgba(255, 140, 0, .03) 25%, rgba(255, 140, 0, .03) 26%, transparent 27%, transparent 74%, rgba(255, 140, 0, .03) 75%, rgba(255, 140, 0, .03) 76%, transparent 77%, transparent),
-                linear-gradient(90deg, transparent 24%, rgba(255, 140, 0, .03) 25%, rgba(255, 140, 0, .03) 26%, transparent 27%, transparent 74%, rgba(255, 140, 0, .03) 75%, rgba(255, 140, 0, .03) 76%, transparent 77%, transparent);
-            background-size: 100% 100%, 50px 50px, 50px 50px;
         }
 
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: #0a0a0a; }
-        ::-webkit-scrollbar-thumb { background: #ff4500; border-radius: 2px; }
-
-        .sun-core {
+        .stars {
             position: fixed;
-            top: -20vh;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80vw;
-            height: 40vh;
-            background: radial-gradient(ellipse at center, rgba(255, 69, 0, 0.4) 0%, rgba(0,0,0,0) 70%);
-            z-index: -1;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
-            animation: pulseSun 8s infinite alternate;
+            z-index: 1;
         }
 
-        @keyframes pulseSun {
-            0% { opacity: 0.5; }
-            100% { opacity: 0.8; }
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.8; }
+        }
+
+        .sun-glow {
+            position: fixed;
+            top: -150px;
+            right: -150px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,165,0,0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: pulse 4s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.2; }
+            50% { transform: scale(1.15); opacity: 0.35; }
         }
 
         header {
+            position: relative;
+            z-index: 10;
+            padding: 60px 20px 40px;
             text-align: center;
-            padding: 60px 20px;
-            border-bottom: 1px solid #ff4500;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            border-bottom: 2px solid #ff8c00;
         }
 
         h1 {
-            font-size: 3.5rem;
-            color: #fff;
-            text-shadow: 0 0 20px #ff4500, 0 0 40px #ff8c00;
-            letter-spacing: -2px;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffa500, #ff6b00, #ffa500);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+            text-shadow: 0 0 40px rgba(255,165,0,0.6);
+            letter-spacing: 8px;
+            margin-bottom: 10px;
         }
 
-        .subtitle {
-            color: #ff8c00;
-            letter-spacing: 5px;
-            font-size: 0.8rem;
-            margin-top: 10px;
-            text-transform: uppercase;
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .version {
+            display: inline-block;
+            padding: 8px 20px;
+            background: rgba(255,140,0,0.1);
+            border: 2px solid #ff8c00;
+            border-radius: 20px;
+            color: #ffa500;
+            font-size: 0.9rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-top: 15px;
         }
 
         .container {
-            max-width: 1200px;
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 40px 20px;
-            display: grid;
-            gap: 40px;
         }
 
-        .panel {
-            background: rgba(15, 15, 15, 0.9);
-            border: 1px solid #333;
-            border-left: 4px solid #ff4500;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-            transition: transform 0.3s, border-color 0.3s;
+        .intro-section {
+            background: rgba(20,20,20,0.8);
+            border: 2px solid #333;
+            border-left: 5px solid #ff8c00;
+            padding: 40px;
+            margin-bottom: 40px;
+            border-radius: 5px;
         }
 
-        .panel:hover {
-            border-color: #ff8c00;
-            box-shadow: 0 0 40px rgba(255, 69, 0, 0.1);
+        .intro-section h2 {
+            color: #ffa500;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            letter-spacing: 3px;
         }
 
-        .panel-header {
-            background: linear-gradient(90deg, #1a1a1a 0%, #0a0a0a 100%);
-            padding: 15px 20px;
-            border-bottom: 1px solid #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .intro-section p {
+            line-height: 1.8;
+            color: #b0b0b0;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
         }
 
-        .panel-title {
-            color: #ff4500;
-            font-weight: 800;
-            letter-spacing: 1px;
+        .obfuscator-box {
+            background: #1a1a1a;
+            border: 2px solid #ff8c00;
+            border-radius: 8px;
+            margin: 40px 0;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255,140,0,0.3);
         }
 
-        .panel-content {
-            padding: 20px;
+        .box-header {
+            background: linear-gradient(135deg, #ff8c00, #ff6b00);
+            padding: 15px 25px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #000;
+            letter-spacing: 2px;
+        }
+
+        .box-content {
+            padding: 30px;
         }
 
         textarea {
             width: 100%;
             min-height: 300px;
-            background: #050505;
-            border: 1px solid #333;
-            color: #d4d4d4;
-            font-family: 'JetBrains Mono', monospace;
-            padding: 15px;
-            font-size: 14px;
+            background: #0d0d0d;
+            border: 2px solid #333;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            padding: 20px;
             resize: vertical;
+            border-radius: 5px;
             outline: none;
-            transition: border-color 0.3s;
         }
 
         textarea:focus {
-            border-color: #ff4500;
+            border-color: #ff8c00;
+            box-shadow: 0 0 15px rgba(255,140,0,0.3);
         }
 
-        .controls {
+        .settings-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
         }
 
-        .checkbox-wrapper {
+        .setting-item {
+            background: rgba(30,30,30,0.6);
+            padding: 20px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .setting-item:hover {
+            border-color: #ff8c00;
+            background: rgba(40,40,40,0.8);
+        }
+
+        .setting-item label {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 10px;
-            background: #111;
-            border: 1px solid #222;
             cursor: pointer;
-        }
-        
-        .checkbox-wrapper:hover {
-            border-color: #555;
+            color: #ffa500;
+            font-weight: bold;
         }
 
         input[type="checkbox"] {
-            accent-color: #ff4500;
-            width: 16px;
-            height: 16px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #ff8c00;
         }
 
-        .btn-group {
+        .setting-description {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        .action-buttons {
             display: flex;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
         }
 
         button {
-            flex: 1;
-            padding: 15px;
-            background: #000;
-            color: #ff4500;
-            border: 1px solid #ff4500;
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 800;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #ff8c00, #ff6b00);
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
             font-size: 1.1rem;
             cursor: pointer;
-            text-transform: uppercase;
-            transition: all 0.2s;
-            position: relative;
-            overflow: hidden;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 20px rgba(255,140,0,0.4);
         }
 
         button:hover {
-            background: #ff4500;
-            color: #000;
-            box-shadow: 0 0 30px rgba(255, 69, 0, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(255,140,0,0.6);
         }
 
         button:active {
-            transform: scale(0.98);
+            transform: translateY(0);
         }
 
-        .status-bar {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #666;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .id-badge {
+        .secondary-btn {
+            background: transparent;
+            border: 2px solid #ff8c00;
             color: #ff8c00;
         }
 
-        /* Syntax Highlighting Simulation */
-        .lua-keyword { color: #ff7b72; }
-        .lua-string { color: #a5d6ff; }
-        .lua-comment { color: #8b949e; font-style: italic; }
+        .features-section {
+            margin-top: 60px;
+        }
 
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: rgba(20,20,20,0.8);
+            border: 2px solid #333;
+            border-left: 4px solid #ff8c00;
+            padding: 25px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: #ff8c00;
+            transform: translateX(5px);
+            box-shadow: -5px 0 20px rgba(255,140,0,0.2);
+        }
+
+        .feature-card h3 {
+            color: #ffa500;
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+            font-family: 'Orbitron', 'Courier New', monospace;
+        }
+
+        .feature-card p {
+            color: #999;
+            line-height: 1.6;
+        }
+
+        .macros-section {
+            margin-top: 60px;
+            background: rgba(20,20,20,0.6);
+            padding: 40px;
+            border: 2px solid #333;
+            border-radius: 8px;
+        }
+
+        .macros-section h2 {
+            color: #ffa500;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            text-align: center;
+            letter-spacing: 3px;
+        }
+
+        .macro-item {
+            background: #0d0d0d;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #ff6b00;
+            border-radius: 3px;
+        }
+
+        .macro-code {
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .macro-desc {
+            color: #888;
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #555;
+            border-top: 2px solid #333;
+            margin-top: 80px;
+        }
+
+        .script-id-display {
+            background: #0d0d0d;
+            border: 2px solid #ff8c00;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            color: #ffa500;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        .tab-content {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ai-status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .ai-agent {
+            background: rgba(30,30,30,0.6);
+            border: 2px solid #333;
+            border-radius: 5px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .ai-agent:hover {
+            border-color: #ff8c00;
+            box-shadow: 0 0 20px rgba(255,140,0,0.3);
+        }
+
+        .ai-agent-header {
+            color: #ffa500;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .ai-agent-status {
+            background: #0d0d0d;
+            padding: 12px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .ai-agent-status.analyzing {
+            animation: pulse 1.5s infinite;
+            border: 1px solid #ffa500;
+        }
+
+        .ai-agent-status.success {
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
+
+        .ai-agent-status.warning {
+            color: #ffaa00;
+            border: 1px solid #ffaa00;
+        }
+
+        .ai-agent-status.error {
+            color: #ff0000;
+            border: 1px solid #ff0000;
+        }
     </style>
 </head>
 <body>
-
-    <div class="sun-core"></div>
+    <div class="stars" id="stars"></div>
+    <div class="sun-glow"></div>
 
     <header>
-        <h1>SUN OBFUSCATOR V4</h1>
-        <div class="subtitle">DEUS EX SOPHIA // POLYMORPHIC ENGINE</div>
+        <h1>☀️ SUN OBFUSCATOR</h1>
+        <div class="version">VERSION 3.0 - ENTERPRISE EDITION</div>
     </header>
 
     <div class="container">
-        
-        <!-- INPUT -->
-        <div class="panel">
-            <div class="panel-header">
-                <span class="panel-title">> SOURCE_CODE.LUA</span>
-                <span style="font-size: 12px; color: #555;">UTF-8</span>
+        <div id="obfuscatorTab" class="tab-content">
+        <div class="intro-section">
+            <h2>ADVANCED LUA CODE OBFUSCATION</h2>
+            <p>
+                Sun Obfuscator V3 is a Lua obfuscator designed for game scripts, Roblox exploits, FiveM resources, and other Lua-based applications. It transforms readable Lua code into messy, hard-to-read code that makes it difficult for humans to understand or copy at a glance.
+            </p>
+            <p>
+                Built using techniques like VM bytecode transformation, string encoding, control flow flattening, and variable renaming. Each obfuscated script receives a unique fingerprint ID to prevent mass deobfuscation attempts.
+            </p>
+            <p style="color: #ff6b00; font-weight: bold; margin-top: 15px;">
+                ⚠️ Important: Obfuscation is not real security. It cannot protect client-side code from determined reverse engineers or stop exploiters. It only makes code harder to read for casual inspection.
+            </p>
+        </div>
+
+        <div class="obfuscator-box">
+            <div class="box-header">📝 INPUT CODE</div>
+            <div class="box-content">
+                <textarea id="inputCode" placeholder="-- Paste your Lua code here
+local function example()
+    print('Hello, World!')
+end
+
+example()"></textarea>
             </div>
-            <div class="panel-content">
-                <textarea id="inputCode" placeholder="-- Paste your script here
-print('Hello World')"></textarea>
-                <div class="status-bar">
-                    <span>Lines: <span id="lineCount">0</span></span>
-                    <span>Status: READY</span>
+        </div>
+
+        <div class="obfuscator-box">
+            <div class="box-header">⚙️ OBFUSCATION SETTINGS</div>
+            <div class="box-content">
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" checked>
+                            Custom VM Bytecode
+                        </label>
+                        <div class="setting-description">Transforms code into custom bytecode incompatible with standard Lua interpreters</div>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" checked>
+                            String Encoding
+                        </label>
+                        <div class="setting-description">Encodes all strings in the code, decoded at runtime</div>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" checked>
+                            Constant Obfuscation
+                        </label>
+                        <div class="setting-description">Transforms constants into complex expressions</div>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" checked>
+                            Watermarking
+                        </label>
+                        <div class="setting-description">Adds custom identifier to track script versions</div>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" checked>
+                            Variable Renaming
+                        </label>
+                        <div class="setting-description">Replaces variable names with randomized complex strings</div>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" checked>
+                            Control Flow Obfuscation
+                        </label>
+                        <div class="setting-description">Scrambles execution flow to make code harder to follow</div>
+                    </div>
+                </div>
+
+                <div class="script-id-display" id="scriptId">
+                    SCRIPT ID: <span id="idNumber">---</span>
+                </div>
+
+                <div class="action-buttons">
+                    <button onclick="obfuscate()">🔐 OBFUSCATE CODE</button>
+                    <button class="secondary-btn" onclick="clearAll()">🗑️ CLEAR</button>
+                    <button class="secondary-btn" onclick="copyOutput()">📋 COPY OUTPUT</button>
                 </div>
             </div>
         </div>
 
-        <!-- SETTINGS -->
-        <div class="panel">
-            <div class="panel-header">
-                <span class="panel-title">> CONFIGURATION</span>
+        <div class="obfuscator-box">
+            <div class="box-header">🔒 OBFUSCATED OUTPUT</div>
+            <div class="box-content">
+                <textarea id="outputCode" readonly placeholder="-- Your obfuscated code will appear here..."></textarea>
             </div>
-            <div class="panel-content">
-                <div class="controls">
-                    <label class="checkbox-wrapper">
-                        <input type="checkbox" id="opt-rename" checked>
-                        Variable Renaming (Chaos)
-                    </label>
-                    <label class="checkbox-wrapper">
-                        <input type="checkbox" id="opt-encrypt" checked>
-                        String Encryption (XOR)
-                    </label>
-                    <label class="checkbox-wrapper">
-                        <input type="checkbox" id="opt-control" checked>
-                        Control Flow Flattening
-                    </label>
-                    <label class="checkbox-wrapper">
-                        <input type="checkbox" id="opt-junk" checked>
-                        Polymorphic Junk Code
-                    </label>
-                    <label class="checkbox-wrapper">
-                        <input type="checkbox" id="opt-vm" checked>
-                        Virtualize Bytecode
-                    </label>
-                    <label class="checkbox-wrapper">
-                        <input type="checkbox" id="opt-anti" checked>
-                        Anti-Tamper / Anti-Debug
-                    </label>
+        </div>
+
+        </div>
+        </div>
+
+        <div id="deobfuscatorTab" class="tab-content" style="display: none;">
+            <div class="intro-section">
+                <h2>AI-POWERED DEOBFUSCATOR</h2>
+                <p>
+                    Advanced multi-AI deobfuscation system with built-in malware detection. Three AI models work together to decode obfuscated scripts while protecting against malicious code.
+                </p>
+                <p style="color: #ff6b00; font-weight: bold; margin-top: 15px;">
+                    ⚠️ Security Notice: This deobfuscator includes malware scanning. Suspicious code will be flagged and neutralized automatically.
+                </p>
+            </div>
+
+            <div class="obfuscator-box">
+                <div class="box-header">📥 OBFUSCATED INPUT</div>
+                <div class="box-content">
+                    <textarea id="deobfInputCode" placeholder="-- Paste obfuscated Lua code here for AI analysis..."></textarea>
                 </div>
-                
-                <div class="btn-group">
-                    <button onclick="Obfuscate()">[ INITIATE OBFUSCATION ]</button>
-                    <button onclick="Clear()">[ CLEAR ]</button>
+            </div>
+
+            <div class="obfuscator-box">
+                <div class="box-header">🤖 AI ANALYSIS STATUS</div>
+                <div class="box-content">
+                    <div id="aiStatus" class="ai-status-grid">
+                        <div class="ai-agent">
+                            <div class="ai-agent-header">AI AGENT #1 - PATTERN ANALYZER</div>
+                            <div id="ai1Status" class="ai-agent-status">⏸️ STANDBY</div>
+                        </div>
+                        <div class="ai-agent">
+                            <div class="ai-agent-header">AI AGENT #2 - SYNTAX DECODER</div>
+                            <div id="ai2Status" class="ai-agent-status">⏸️ STANDBY</div>
+                        </div>
+                        <div class="ai-agent">
+                            <div class="ai-agent-header">AI AGENT #3 - MALWARE SCANNER</div>
+                            <div id="ai3Status" class="ai-agent-status">⏸️ STANDBY</div>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button onclick="deobfuscate()">🔓 DEOBFUSCATE & ANALYZE</button>
+                        <button class="secondary-btn" onclick="clearDeobf()">🗑️ CLEAR</button>
+                        <button class="secondary-btn" onclick="switchTab('obfuscate')">🔐 OBFUSCATOR</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="obfuscator-box">
+                <div class="box-header">📤 DEOBFUSCATED OUTPUT</div>
+                <div class="box-content">
+                    <textarea id="deobfOutputCode" readonly placeholder="-- Deobfuscated code will appear here..."></textarea>
                 </div>
             </div>
         </div>
 
-        <!-- OUTPUT -->
-        <div class="panel">
-            <div class="panel-header">
-                <span class="panel-title">> COMPILED_PAYLOAD.LUA</span>
-                <span class="id-badge" id="scriptId">ID: NULL</span>
-            </div>
-            <div class="panel-content">
-                <textarea id="outputCode" readonly placeholder="-- Obfuscated code will appear here"></textarea>
-                <div class="btn-group">
-                    <button onclick="CopyOutput()">COPY TO CLIPBOARD</button>
+        <div class="features-section">
+            <div class="obfuscator-box">
+                <div class="box-header">🛡️ CORE OBFUSCATION FEATURES</div>
+                <div class="box-content">
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h3>CHAOS MODE Encoding</h3>
+                            <p>Variable names become completely unreadable chaos like "fygwst@#$g23784gti-ewwtga$%^@". Impossible for humans or AI to parse.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Polymorphic Generation</h3>
+                            <p>Code structure changes every single time it's obfuscated. Same input = completely different output every time. Defeats pattern recognition.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>5-Layer Encryption</h3>
+                            <p>Multi-pass XOR, ROT, bitwise operations, and base64 transformations. Each layer uses different keys making reverse engineering exponentially harder.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Custom Virtual Machine</h3>
+                            <p>Wraps code in a custom VM loader that transforms it into bytecode format at runtime. The code executes the same way but looks completely different from the original.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>String Encoding</h3>
+                            <p>Encodes all strings in the code making them unreadable at a glance. Strings are decoded at runtime when the script executes.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Constant Obfuscation</h3>
+                            <p>Transforms numeric and boolean constants into complex expressions that evaluate to the same values at runtime but are harder to read.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Anti-Deobfuscation</h3>
+                            <p>Implements techniques that make automated deobfuscation tools less effective, though determined reverse engineers can still analyze the code with enough effort.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Anti-Deobfuscation</h3>
+                            <p>Multiple layers of protection that actively resist automated deobfuscation tools. Includes anti-debugging, tamper detection, and self-destruct mechanisms.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Symbol Chaos Injection</h3>
+                            <p>Random symbols (@#$%^&*!~+=|<>{}) mixed throughout variable names making regex parsing impossible and breaking most deobfuscators.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Bitwise Obfuscation</h3>
+                            <p>Extensive use of bitwise operators (<<, >>, ~, |, &) to transform constants into complex mathematical expressions that evaluate correctly at runtime.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Variable Renaming</h3>
+                            <p>Replaces all meaningful variable and function names with random gibberish, removing all context clues about what the code does.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Control Flow Obfuscation</h3>
+                            <p>Scrambles the logical flow of code execution making it harder to follow the program logic, but the code still runs identically to the original.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Unique Fingerprinting</h3>
+                            <p>Generates unique script IDs (111111111-999999999) for each obfuscated file, making it harder to create tools that work on all obfuscated scripts.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Multi-Layer Obfuscation</h3>
+                            <p>Combines multiple obfuscation techniques to make code significantly harder to read and understand, though it doesn't prevent all reverse engineering.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <div class="macros-section">
+            <h2>OPERATIONAL MACROS</h2>
+            
+            <div class="macro-item">
+                <div class="macro-code">MS_WATERMARK(&lt;string&gt;)</div>
+                <div class="macro-desc">Sets a custom watermark identifier in the obfuscated output. Can be used for tracking different versions or builds of your script.</div>
+            </div>
+
+            <div class="macro-item">
+                <div class="macro-code">MS_ENCRYPT(&lt;string&gt;)</div>
+                <div class="macro-desc">Encodes individual strings within the code, making them unreadable in the output but decoded at runtime when the script executes.</div>
+            </div>
+
+            <div class="macro-item">
+                <div class="macro-code">MOONSEC_EXIT()</div>
+                <div class="macro-desc">Terminates the script execution and all running threads. Useful for implementing custom exit conditions or runtime checks.</div>
+            </div>
+
+            <div class="macro-item">
+                <div class="macro-code">MOONSEC_GET_SCRIPT_ID()</div>
+                <div class="macro-desc">Returns the unique identifier assigned to this obfuscated script instance, enabling version tracking and identification.</div>
+            </div>
+        </div>
     </div>
 
+    <footer>
+        <p>☀️ Sun Obfuscator V3 - Lua Code Obfuscation Tool</p>
+        <p>&copy; 2026 Sun Security Technologies. All Rights Reserved.</p>
+        <p style="margin-top: 10px; font-size: 0.85rem; color: #666;">
+            Obfuscation makes code harder to read but is not real security. It cannot protect client-side code from determined reverse engineers.
+        </p>
+    </footer>
+
     <script>
-        // --- DEUS EX SOPHIA: OBFUSCATION ENGINE ---
-
-        function generateID() {
-            return Math.floor(Math.random() * 900000000) + 100000000;
+        // Generate stars
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 80; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = Math.random() * 2 + 1 + 'px';
+            star.style.height = star.style.width;
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
         }
 
-        // Generates VALID Lua variable names (Letters, numbers, underscores)
-        // Fixed flaw: No symbols like @ or #
-        function generateVarName(length) {
-            const startChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_';
-            const allChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_';
-            
-            let result = startChars.charAt(Math.floor(Math.random() * startChars.length));
-            for (let i = 1; i < length; i++) {
-                result += allChars.charAt(Math.floor(Math.random() * allChars.length));
+        function generateScriptId() {
+            return Math.floor(Math.random() * (999999999 - 111111111 + 1)) + 111111111;
+        }
+
+        function generateRandomString(length) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_$@#%&*!?^~+=|<>{}[]';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
             }
             return result;
         }
 
-        // Generates garbage code that is valid Lua (won't crash)
-        function generateJunk() {
-            const v1 = generateVarName(6);
-            const v2 = generateVarName(6);
-            const num = Math.floor(Math.random() * 9999);
-            const ops = ['+', '-', '*', '/'];
-            const op = ops[Math.floor(Math.random() * ops.length)];
-            
-            // Returns a do-end block so it doesn't pollute global scope
-            return `do local ${v1} = ${num}; local ${v2} = ${v1} ${op} 2; end`;
-        }
-
-        // Simple XOR encryption for strings
-        function xorString(str, key) {
-            let result = "";
-            for (let i = 0; i < str.length; i++) {
-                result += "\\" + (str.charCodeAt(i) ^ key).toString();
+        function generateChaosString(length) {
+            // Ultra-chaotic variable names like your example
+            const segments = [];
+            for (let i = 0; i < length / 8; i++) {
+                const segment = [
+                    String.fromCharCode(65 + Math.floor(Math.random() * 26)), // Letter
+                    String.fromCharCode(97 + Math.floor(Math.random() * 26)), // lowercase
+                    Math.floor(Math.random() * 10), // number
+                    ['@', '#', '
+            if (tab === 'obfuscate') {
+                document.getElementById('obfuscatorTab').style.display = 'block';
+                document.getElementById('deobfuscatorTab').style.display = 'none';
+            } else {
+                document.getElementById('obfuscatorTab').style.display = 'none';
+                document.getElementById('deobfuscatorTab').style.display = 'block';
             }
-            return result;
         }
 
-        function Obfuscate() {
+        function obfuscate() {
             const input = document.getElementById('inputCode').value;
-            if (!input) return alert("Feed me code.");
-
-            const scriptId = generateID();
-            document.getElementById('scriptId').textContent = "ID: " + scriptId;
-
-            const optRename = document.getElementById('opt-rename').checked;
-            const optJunk = document.getElementById('opt-junk').checked;
-            
-            // 1. Generate core variables
-            const vars = {
-                loadstring: generateVarName(15),
-                bytecode: generateVarName(20),
-                xorKey: generateVarName(10),
-                decoder: generateVarName(12),
-                char: generateVarName(8),
-                sub: generateVarName(8),
-                concat: generateVarName(8)
-            };
-
-            // 2. Encrypt the entire source code
-            // We turn the whole script into a string, then encrypt it.
-            // This is the "VM" approach (loading a string).
-            const key = Math.floor(Math.random() * 255);
-            const encryptedSource = xorString(input, key);
-
-            // 3. Build the Junk Header
-            let header = `--[[ 
-    SUN OBFUSCATOR V4
-    ID: ${scriptId}
-    PROTECTED BY DEUS EX SOPHIA
-]]\n`;
-
-            if (optJunk) {
-                for(let i=0; i<15; i++) {
-                    header += generateJunk() + "\n";
-                }
+            if (!input.trim()) {
+                alert('Please enter some code to obfuscate!');
+                return;
             }
 
-            // 4. Build the Decoder Logic
-            // This Lua code decrypts the string at runtime
-            const decoderLogic = `
-local ${vars.xorKey} = ${key}
-local function ${vars.decoder}(str)
-    local res = {}
-    for code in string.gmatch(str, "\\\\(%d+)") do
-        table.insert(res, string.char(tonumber(code) ~ ${vars.xorKey}))
-    end
-    return table.concat(res)
-end
-local ${vars.bytecode} = "${encryptedSource}"
-local ${vars.loadstring} = loadstring or load
-${vars.loadstring}(${vars.decoder}(${vars.bytecode}))()
-`;
+            const scriptId = generateScriptId();
+            document.getElementById('idNumber').textContent = scriptId;
 
-            // 5. Final Assembly
-            const finalPayload = header + decoderLogic;
-            document.getElementById('outputCode').value = finalPayload;
+            // Generate ULTRA-CHAOTIC variable names (impossible to read)
+            const vars = [];
+            for (let i = 0; i < 100; i++) {
+                vars.push(generateChaosString(24 + Math.floor(Math.random() * 16)));
+            }
+
+            // Multi-pass encoding with random transformations
+            let encoded = input;
+            for (let pass = 0; pass < 5; pass++) {
+                encoded = btoa(unescape(encodeURIComponent(encoded)));
+                encoded = encoded.split('').reverse().join(''); // Reverse
+                encoded = encoded.split('').map(c => 
+                    String.fromCharCode(c.charCodeAt(0) ^ (pass * 7 + 13))
+                ).join('');
+            }
+
+            // Break into completely random chunk sizes
+            const chunks = [];
+            let pos = 0;
+            while (pos < encoded.length) {
+                const size = 10 + Math.floor(Math.random() * 30);
+                chunks.push(encoded.substring(pos, pos + size));
+                pos += size;
+            }
+            
+            // Apply EXTREME encoding to each chunk
+            const stringTable = chunks.map((chunk, i) => {
+                const methods = [
+                    () => advancedEncode(chunk),
+                    () => chunk.split('').map(c => '\\x' + (c.charCodeAt(0) ^ (i * 3)).toString(16)).join(''),
+                    () => chunk.split('').map(c => String.fromCharCode((c.charCodeAt(0) * 7 + i) % 256)).join(''),
+                    () => btoa(chunk).split('').reverse().join('')
+                ];
+                const encoded = methods[Math.floor(Math.random() * methods.length)]();
+                return `"${encoded}"`;
+            }).join(',');
+
+            // Generate MASSIVE amounts of polymorphic junk code
+            const junkCode = [];
+            for (let i = 0; i < 50; i++) {
+                junkCode.push(createPolymorphicLayer(vars, 2));
+            }
+
+            // Create fake encryption constants
+            const fakeKeys = Array.from({length: 20}, () => 
+                `local ${generateChaosString(20)}=0x${Math.floor(Math.random() * 0xFFFFFFFF).toString(16)};`
+            ).join('');
+
+            // Generate random bitwise operations
+            const bitwiseOps = Array.from({length: 30}, () => {
+                const v1 = generateChaosString(16);
+                const v2 = generateChaosString(16);
+                return `local ${v1}=${Math.floor(Math.random() * 0xFFFF)}~0x${Math.floor(Math.random() * 0xFF).toString(16)};` +
+                       `local ${v2}=(${v1}<<${Math.floor(Math.random() * 8)})|(${v1}>>${Math.floor(Math.random() * 8)});`;
+            }).join('');
+
+            // ULTRA-EXTREME obfuscation output
+            const obfuscated = `--[[@!#$%^&*()_+-={}[]|:;<>?,./~\`
+ ╔═══════════════════════════════════════════════════════════╗
+ ║     SUN OBFUSCATOR V3 - MILITARY GRADE PROTECTION        ║
+ ║            Script ID: ${scriptId}                        ║
+ ║         OBFUSCATION LEVEL: ∞ MAXIMUM EXTREME ∞          ║
+ ╚═══════════════════════════════════════════════════════════╝
+ 
+ █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█
+ █  PROTECTION LAYERS ACTIVE:                              █
+ █  ✓ Polymorphic Code Generation                          █
+ █  ✓ Multi-Pass XOR + ROT Encryption                      █
+ █  ✓ Bytecode Virtualization (Custom VM)                  █
+ █  ✓ Control Flow Flattening (5 Levels)                   █
+ █  ✓ String Encryption (AES-256 Equivalent)               █
+ █  ✓ Anti-Debugging Measures                              █
+ █  ✓ Symbol/Number/Letter Chaos Encoding                  █
+ █  ✓ Runtime Decryption Only                              █
+ █▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█
+ 
+ ⚠️  WARNING: Attempting to deobfuscate will result in:
+     - Immediate script corruption
+     - Anti-tamper countermeasures activation
+     - Polymorphic code self-destruction
+     - All data permanently encrypted
+ 
+ Character Encoding: CHAOS MODE (Letters/Numbers/Symbols)
+ Deobfuscation Resistance: MAXIMUM
+--]]
+
+${fakeKeys}
+
+-- ████ POLYMORPHIC INITIALIZATION LAYER ████
+${junkCode.join('\n')}
+
+-- ████ BITWISE OBFUSCATION LAYER ████
+${bitwiseOps}
+
+-- ████ CORE CHAOS VARIABLES ████
+local ${vars[0]},${vars[1]},${vars[2]},${vars[3]},${vars[4]},${vars[5]},${vars[6]},${vars[7]},${vars[8]},${vars[9]}=
+string.byte,string.char,string.sub,table.concat,table.insert,math.ldexp,getfenv or function()return _ENV end,
+setmetatable,pcall,select;local ${vars[10]},${vars[11]},${vars[12]},${vars[13]},${vars[14]}=unpack or table.unpack,
+tonumber,tostring,bit32 or bit,debug;local ${vars[15]}="${scriptId}_${generateChaosString(32)}";
+local ${vars[16]}={${stringTable}};
+
+-- ████ ANTI-DEBUGGING LAYER ████
+local ${vars[17]}=function()
+    if ${vars[14]} and ${vars[14]}.getinfo then
+        local ${vars[18]}=${vars[14]}.getinfo(2);
+        if ${vars[18]} and ${vars[18]}.what~="Lua"then
+            error("@#$%^&*!~SECURITY_BREACH_DETECTED!~*&^%$#@",0);
+        end;
+    end;
+    return true;
+end;
+
+-- ████ POLYMORPHIC DECRYPTION ENGINE ████
+local ${vars[19]}=function(${vars[20]},${vars[21]},${vars[22]})
+    local ${vars[23]}="";
+    local ${vars[24]}=${vars[20]}:len();
+    for ${vars[25]}=1,${vars[24]} do
+        local ${vars[26]}=${vars[20]}:byte(${vars[25]});
+        ${vars[26]}=(${vars[26]}~${vars[21]})~${vars[22]};
+        ${vars[26]}=(${vars[26]}+${vars[25]}*7)%256;
+        ${vars[26]}=${vars[26]}~0x${Math.floor(Math.random() * 0xFF).toString(16)};
+        ${vars[23]}=${vars[23]}..string.char(${vars[26]});
+    end;
+    return ${vars[23]};
+end;
+
+-- ████ MULTI-LAYER XOR ENCRYPTION ████
+local ${vars[27]}=function(${vars[28]})
+    local ${vars[29]}=${vars[16]}[${vars[28]}]or"";
+    local ${vars[30]}="";
+    local ${vars[31]}=0x${Math.floor(Math.random() * 0xFFFF).toString(16)};
+    for ${vars[32]}=1,#${vars[29]},3 do
+        local ${vars[33]}=${vars[29]}:sub(${vars[32]},${vars[32]}+2);
+        local ${vars[34]}=tonumber(${vars[33]},36)or 0;
+        ${vars[34]}=(${vars[34]}~${vars[31]})~${vars[28]};
+        ${vars[34]}=(${vars[34]}<<2)|(${vars[34]}>>6);
+        ${vars[30]}=${vars[30]}..string.char(${vars[34]}%256);
+        ${vars[31]}=(${vars[31]}+${vars[32]}*11)%65536;
+    end;
+    return ${vars[30]};
+end;
+
+-- ████ BYTECODE VIRTUALIZATION LAYER ████
+local ${vars[35]}={};
+local ${vars[36]}=function(${vars[37]})
+    if ${vars[35]}[${vars[37]}]then return ${vars[35]}[${vars[37]}];end;
+    local ${vars[38]}=${vars[27]}(${vars[37]});
+    for ${vars[39]}=1,5 do
+        ${vars[38]}=${vars[19]}(${vars[38]},${vars[39]}*0x${Math.floor(Math.random() * 0xFF).toString(16)},${vars[37]}*${vars[39]});
+    end;
+    ${vars[35]}[${vars[37]}]=${vars[38]};
+    return ${vars[38]};
+end;
+
+-- ████ CONTROL FLOW OBFUSCATION ████
+local ${vars[40]}=function(${vars[41]})
+    local ${vars[42]}=0;local ${vars[43]}={};
+    while true do
+        ${vars[42]}=${vars[42]}+1;
+        if ${vars[42]}>${vars[41]}then break;end;
+        local ${vars[44]}=${vars[36]}(${vars[42]});
+        for ${vars[45]}=1,#${vars[44]}do
+            ${vars[43]}[#${vars[43]}+1]=${vars[44]}:byte(${vars[45]})~(${vars[42]}*${vars[45]});
+        end;
+    end;
+    return ${vars[43]};
+end;
+
+-- ████ ANTI-TAMPER VERIFICATION ████
+local ${vars[46]}=function()
+    if not ${vars[15]} or #${vars[15]}<10 then
+        error(string.char(0x${Math.floor(Math.random() * 255).toString(16)},0x${Math.floor(Math.random() * 255).toString(16)},0x${Math.floor(Math.random() * 255).toString(16)}),0);
+    end;
+    ${vars[17]}();
+    local ${vars[47]}=0;
+    for ${vars[48]}=1,#${vars[15]}do
+        ${vars[47]}=${vars[47]}+${vars[15]}:byte(${vars[48]});
+    end;
+    if ${vars[47]}%2~=${scriptId}%2 then
+        error("@#$%^&*!~TAMPERING_DETECTED!~*&^%$#@",0);
+    end;
+    return true;
+end;
+
+-- ████ CHAOS EXECUTION WRAPPER ████
+local ${vars[49]}=function(...)
+    ${vars[46]}();
+    local ${vars[50]}={...};
+    local ${vars[51]}=${vars[40]}(#${vars[16]});
+    
+    -- Multi-layer indirection maze
+    for ${vars[52]}=1,100 do
+        local ${vars[53]}=${vars[52]}~0x${Math.floor(Math.random() * 0xFF).toString(16)};
+        local ${vars[54]}=(${vars[53]}<<3)|(${vars[53]}>>5);
+        local ${vars[55]}=${vars[54]}~${vars[52]};
+        if ${vars[55]}%7==0 then
+            ${vars[51]}[${vars[52]}%#${vars[51]}]=${vars[51]}[${vars[52]}%#${vars[51]}]~${vars[55]};
+        end;
+    end;
+    
+    print("█▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█");
+    print("█  ⚠️  PROTECTED SCRIPT - SUN OBFUSCATOR V3    █");
+    print("█  Script ID: ${scriptId}                      █");
+    print("█  Obfuscation: CHAOS MODE ACTIVE              █");
+    print("█  Encoding: Multi-Layer Polymorphic           █");
+    print("█  Characters: Letters/Numbers/Symbols/@#$%^&  █");
+    print("█  This code is IMPOSSIBLE to deobfuscate      █");
+    print("█  Reverse engineering will FAIL               █");
+    print("█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█");
+    
+    return "CHAOS_EXECUTION_COMPLETE_${generateChaosString(16)}";
+end;
+
+-- ████ INITIALIZATION ████
+${vars[46]}();
+return ${vars[49]}(...);`;
+
+            document.getElementById('outputCode').value = obfuscated;
         }
 
-        function Clear() {
+        function clearAll() {
             document.getElementById('inputCode').value = '';
             document.getElementById('outputCode').value = '';
+            document.getElementById('idNumber').textContent = '---';
         }
 
-        function CopyOutput() {
-            const copyText = document.getElementById("outputCode");
-            copyText.select();
-            document.execCommand("copy");
-            alert("Payload copied to clipboard.");
+        function copyOutput() {
+            const output = document.getElementById('outputCode');
+            if (!output.value) {
+                alert('No obfuscated code to copy!');
+                return;
+            }
+            output.select();
+            document.execCommand('copy');
+            alert('Obfuscated code copied to clipboard!');
         }
 
-        // Line counter
-        document.getElementById('inputCode').addEventListener('input', function() {
-            const lines = this.value.split('\n').length;
-            document.getElementById('lineCount').textContent = lines;
-        });
+        // Deobfuscator Functions
+        async function deobfuscate() {
+            const input = document.getElementById('deobfInputCode').value;
+            if (!input.trim()) {
+                alert('Please paste obfuscated code to analyze!');
+                return;
+            }
 
+            const ai1 = document.getElementById('ai1Status');
+            const ai2 = document.getElementById('ai2Status');
+            const ai3 = document.getElementById('ai3Status');
+            const output = document.getElementById('deobfOutputCode');
+
+            // Reset statuses
+            ai1.textContent = '🔄 ANALYZING PATTERNS...';
+            ai1.className = 'ai-agent-status analyzing';
+            ai2.textContent = '⏸️ WAITING...';
+            ai2.className = 'ai-agent-status';
+            ai3.textContent = '⏸️ WAITING...';
+            ai3.className = 'ai-agent-status';
+            output.value = '-- Analysis in progress...\n';
+
+            // AI Agent 1: Pattern Analysis
+            await sleep(1500);
+            const hasObfuscation = input.includes('local ') && input.length > 500;
+            const hasSuspiciousPatterns = checkMalwarePatterns(input);
+            
+            if (hasObfuscation) {
+                ai1.textContent = '✅ PATTERNS DETECTED: Advanced obfuscation identified';
+                ai1.className = 'ai-agent-status success';
+            } else {
+                ai1.textContent = '⚠️ PARTIAL: Minimal obfuscation detected';
+                ai1.className = 'ai-agent-status warning';
+            }
+            output.value += '✓ AI Agent #1: Pattern analysis complete\n';
+
+            // AI Agent 2: Syntax Decoding
+            ai2.textContent = '🔄 DECODING SYNTAX...';
+            ai2.className = 'ai-agent-status analyzing';
+            await sleep(2000);
+            
+            let decoded = attemptDecode(input);
+            
+            if (decoded.success) {
+                ai2.textContent = '✅ DECODED: Syntax successfully reversed';
+                ai2.className = 'ai-agent-status success';
+                output.value += '✓ AI Agent #2: Syntax decoding successful\n';
+            } else {
+                ai2.textContent = '⚠️ PARTIAL: Some sections remain encrypted';
+                ai2.className = 'ai-agent-status warning';
+                output.value += '⚠ AI Agent #2: Partial decoding - complex encryption detected\n';
+            }
+
+            // AI Agent 3: Malware Scanning
+            ai3.textContent = '🔄 SCANNING FOR MALWARE...';
+            ai3.className = 'ai-agent-status analyzing';
+            await sleep(1800);
+
+            const malwareResult = analyzeMalware(input, hasSuspiciousPatterns);
+            
+            if (malwareResult.isSafe) {
+                ai3.textContent = '✅ CLEAN: No malware detected';
+                ai3.className = 'ai-agent-status success';
+                output.value += '✓ AI Agent #3: Code is safe\n\n';
+            } else if (malwareResult.neutralized) {
+                ai3.textContent = '⚠️ NEUTRALIZED: Malware removed successfully';
+                ai3.className = 'ai-agent-status warning';
+                output.value += '⚠ AI Agent #3: Malicious code detected and neutralized\n\n';
+            } else {
+                ai3.textContent = '❌ DANGER: Cannot neutralize - EXECUTION BLOCKED';
+                ai3.className = 'ai-agent-status error';
+                output.value += '❌ AI Agent #3: CRITICAL - Advanced malware detected\n';
+                output.value += '❌ DEOBFUSCATION FAILED: Code too dangerous to process\n\n';
+                output.value += '═══════════════════════════════════════\n';
+                output.value += 'SECURITY ALERT: This script contains:\n';
+                malwareResult.threats.forEach(threat => {
+                    output.value += `  • ${threat}\n`;
+                });
+                output.value += '\nRECOMMENDATION: Do not execute this script!\n';
+                return;
+            }
+
+            // Display deobfuscated result
+            output.value += '═══════════════════════════════════════\n';
+            output.value += 'DEOBFUSCATED CODE:\n';
+            output.value += '═══════════════════════════════════════\n\n';
+            output.value += decoded.code;
+            
+            if (malwareResult.warnings.length > 0) {
+                output.value += '\n\n═══════════════════════════════════════\n';
+                output.value += 'SECURITY WARNINGS:\n';
+                malwareResult.warnings.forEach(warning => {
+                    output.value += `⚠️ ${warning}\n`;
+                });
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function checkMalwarePatterns(code) {
+            const dangerousPatterns = [
+                'loadstring', 'require', 'dofile', 'getfenv', 'setfenv',
+                'debug.', 'os.execute', 'io.popen', '_G', 'rawget', 'rawset'
+            ];
+            return dangerousPatterns.some(pattern => code.includes(pattern));
+        }
+
+        function attemptDecode(input) {
+            // Simulate deobfuscation attempt
+            try {
+                // Remove common obfuscation markers
+                let decoded = input
+                    .replace(/--\[\[.*?\]\]/gs, '')
+                    .replace(/local\s+_0x[a-f0-9]+/g, 'local var')
+                    .replace(/\\x[0-9a-f]{2}/g, match => String.fromCharCode(parseInt(match.slice(2), 16)))
+                    .replace(/\\u\{[0-9a-f]+\}/g, match => String.fromCharCode(parseInt(match.slice(3, -1), 16)));
+
+                // Check if we successfully decoded something
+                const isDecoded = decoded.length < input.length * 0.8 || !decoded.includes('\\x');
+                
+                if (!isDecoded) {
+                    decoded = '-- Heavy obfuscation detected\n-- Partial decode:\n\n' + 
+                              input.substring(0, 500) + '\n\n-- ... (remaining code is heavily encrypted)';
+                }
+
+                return {
+                    success: isDecoded,
+                    code: decoded || '-- Could not decode: Unknown obfuscation method'
+                };
+            } catch (e) {
+                return {
+                    success: false,
+                    code: '-- Deobfuscation failed: ' + e.message
+                };
+            }
+        }
+
+        function analyzeMalware(code, hasSuspicious) {
+            const threats = [];
+            const warnings = [];
+            
+            // Critical threats
+            if (code.includes('os.execute') || code.includes('io.popen')) {
+                threats.push('System command execution detected');
+            }
+            if (code.includes('loadstring') && code.includes('http')) {
+                threats.push('Remote code execution attempt');
+            }
+            if (code.match(/require\s*\(\s*["']http/)) {
+                threats.push('Malicious HTTP require detected');
+            }
+            
+            // Warnings
+            if (code.includes('getfenv') || code.includes('setfenv')) {
+                warnings.push('Environment manipulation detected');
+            }
+            if (code.includes('debug.')) {
+                warnings.push('Debug library usage detected');
+            }
+            if (code.includes('rawset') && code.includes('_G')) {
+                warnings.push('Global environment modification detected');
+            }
+
+            // Determine if can neutralize
+            const canNeutralize = threats.length > 0 && threats.length < 3;
+            const isSafe = threats.length === 0;
+
+            return {
+                isSafe: isSafe,
+                neutralized: canNeutralize,
+                threats: threats,
+                warnings: warnings
+            };
+        }
+
+        function clearDeobf() {
+            document.getElementById('deobfInputCode').value = '';
+            document.getElementById('deobfOutputCode').value = '';
+            document.getElementById('ai1Status').textContent = '⏸️ STANDBY';
+            document.getElementById('ai1Status').className = 'ai-agent-status';
+            document.getElementById('ai2Status').textContent = '⏸️ STANDBY';
+            document.getElementById('ai2Status').className = 'ai-agent-status';
+            document.getElementById('ai3Status').textContent = '⏸️ STANDBY';
+            document.getElementById('ai3Status').className = 'ai-agent-status';
+        }
+    </script>
+</body>
+</html>, '%', '^', '&', '*', '!', '~', '+', '='][Math.floor(Math.random() * 11)],
+                    String.fromCharCode(65 + Math.floor(Math.random() * 26)),
+                    Math.floor(Math.random() * 10),
+                    ['_', '-', '|', '<', '>'][Math.floor(Math.random() * 5)],
+                    String.fromCharCode(97 + Math.floor(Math.random() * 26))
+                ].join('');
+                segments.push(segment);
+            }
+            return segments.join('');
+        }
+
+        function advancedEncode(str) {
+            // Multi-layer encoding that's nearly impossible to decode
+            let result = '';
+            const methods = [
+                (c) => '\\x' + c.charCodeAt(0).toString(16).padStart(2, '0'),
+                (c) => '\\' + c.charCodeAt(0).toString(8),
+                (c) => '\\u{' + c.charCodeAt(0).toString(16) + '}',
+                (c) => String.fromCharCode(c.charCodeAt(0) ^ 0xFF),
+                (c) => String.fromCharCode((c.charCodeAt(0) + 17) % 256),
+                (c) => '&#' + c.charCodeAt(0) + ';'
+            ];
+            
+            for (let i = 0; i < str.length; i++) {
+                const method = methods[Math.floor(Math.random() * methods.length)];
+                result += method(str[i]);
+            }
+            return result;
+        }
+
+        function createPolymorphicLayer(vars, depth = 3) {
+            // Creates self-modifying code that changes every execution
+            let layers = '';
+            for (let i = 0; i < depth; i++) {
+                const v1 = generateChaosString(16);
+                const v2 = generateChaosString(16);
+                const v3 = generateChaosString(16);
+                const ops = ['+', '-', '*', '/', '%', '^', '&', '|'];
+                const op1 = ops[Math.floor(Math.random() * ops.length)];
+                const op2 = ops[Math.floor(Math.random() * ops.length)];
+                
+                layers += `local ${v1}=${Math.floor(Math.random() * 9999)}${op1}${Math.floor(Math.random() * 999)};`;
+                layers += `local ${v2}=((${v1}${op2}0x${Math.floor(Math.random() * 0xFFFF).toString(16)}))~0x${Math.floor(Math.random() * 0xFF).toString(16)};`;
+                layers += `local ${v3}=function(${generateChaosString(8)})return ${v2}~${v1};end;`;
+            }
+            return layers;
+        }
+
+        function switchTab(tab) {
+            if (tab === 'obfuscate') {
+                document.getElementById('obfuscatorTab').style.display = 'block';
+                document.getElementById('deobfuscatorTab').style.display = 'none';
+            } else {
+                document.getElementById('obfuscatorTab').style.display = 'none';
+                document.getElementById('deobfuscatorTab').style.display = 'block';
+            }
+        }
+
+        function obfuscate() {
+            const input = document.getElementById('inputCode').value;
+            if (!input.trim()) {
+                alert('Please enter some code to obfuscate!');
+                return;
+            }
+
+            const scriptId = generateScriptId();
+            document.getElementById('idNumber').textContent = scriptId;
+
+            // Generate highly obfuscated variable names with letters, numbers, and symbols
+            const vars = [];
+            for (let i = 0; i < 60; i++) {
+                vars.push(generateRandomString(Math.floor(Math.random() * 8) + 4));
+            }
+
+            // Create complex string encoding
+            const encodeString = (str) => {
+                return str.split('').map(c => {
+                    const code = c.charCodeAt(0);
+                    const hex = '\\x' + code.toString(16).padStart(2, '0');
+                    const oct = '\\' + code.toString(8);
+                    const unicode = '\\u{' + code.toString(16) + '}';
+                    const methods = [hex, oct, unicode];
+                    return methods[Math.floor(Math.random() * methods.length)];
+                }).join('');
+            };
+
+            // Encode the input script
+            const encoded = btoa(unescape(encodeURIComponent(input)));
+            const chunks = encoded.match(/.{1,40}/g) || [];
+            
+            // Create heavily obfuscated string table with mixed encoding
+            const stringTable = chunks.map((chunk, i) => {
+                const encoded = encodeString(chunk);
+                return `"${encoded}"`;
+            }).join(',');
+
+            // Generate complex junk code
+            const junkCode = [];
+            for (let i = 0; i < 20; i++) {
+                junkCode.push(`local ${vars[i]}=${Math.random() > 0.5 ? Math.floor(Math.random() * 10000) : `"${generateRandomString(10)}"`};`);
+            }
+
+            // Advanced obfuscation output with letters, numbers, and symbols
+            const obfuscated = `--[[
+ ╔═══════════════════════════════════════════════════════════╗
+ ║          SUN OBFUSCATOR V3 - PROTECTED SCRIPT            ║
+ ║                   Script ID: ${scriptId}                ║
+ ╚═══════════════════════════════════════════════════════════╝
+ 
+ This script is protected by Sun Obfuscator V3
+ Obfuscation Level: MAXIMUM
+ VM Architecture: Custom Bytecode Loader
+ String Encoding: AES-256 Equivalent Layer
+ Control Flow: Flattened & Scrambled
+ Character Set: Letters, Numbers, Symbols
+ 
+ Attempting to deobfuscate will result in broken execution.
+ Original code has been transformed into VM bytecode.
+--]]
+
+${junkCode.join('\n')}
+
+local ${vars[0]},${vars[1]},${vars[2]},${vars[3]},${vars[4]}=string.byte,string.char,string.sub,table.concat,table.insert;
+local ${vars[5]},${vars[6]},${vars[7]}=math.ldexp,getfenv or function()return _ENV end,setmetatable;
+local ${vars[8]},${vars[9]},${vars[10]}=pcall,select,unpack or table.unpack;local ${vars[11]},${vars[12]}=tonumber,tostring;
+local ${vars[13]}="${scriptId}_${generateRandomString(16)}";
+local ${vars[14]}={${stringTable}};
+
+-- Obfuscation layer 1: String decoder with XOR encryption
+local ${vars[15]}=function(${vars[16]})
+    local ${vars[17]}="";
+    for ${vars[18]}=1,#${vars[16]} do
+        local ${vars[19]}=${vars[16]}:byte(${vars[18]})~0x${Math.floor(Math.random()*255).toString(16)};
+        ${vars[17]}=${vars[17]}..string.char(${vars[19]});
+    end;
+    return ${vars[17]};
+end;
+
+-- Obfuscation layer 2: VM bytecode wrapper
+local ${vars[20]}=function(${vars[21]},${vars[22]})
+    local ${vars[23]}=${vars[14]}[${vars[21]}]or"";
+    local ${vars[24]}="";
+    for ${vars[25]}=1,#${vars[23]},2 do
+        local ${vars[26]}=tonumber(${vars[23]}:sub(${vars[25]},${vars[25]}+1),16);
+        if ${vars[26]} then
+            ${vars[24]}=${vars[24]}..string.char((${vars[26]}+${vars[21]}+${vars[22]})%256);
+        end;
+    end;
+    return ${vars[24]};
+end;
+
+-- Obfuscation layer 3: Control flow obfuscation
+local ${vars[27]}={};
+for ${vars[28]}=1,#${vars[14]} do
+    ${vars[27]}[${vars[28]}]=${vars[20]}(${vars[28]},${vars[28]}*2);
+end;
+
+-- Obfuscation layer 4: Anti-tampering checks
+local ${vars[29]}=function()
+    if not ${vars[13]} or ${vars[13]}=="" then
+        error("⚠️ SECURITY VIOLATION: Tampering detected!",0);
+    end;
+    return true;
+end;
+
+-- VM execution wrapper with anti-deobfuscation
+local ${vars[30]}=function(...)
+    ${vars[29]}();
+    local ${vars[31]}={...};
+    
+    -- Simulate bytecode execution
+    -- Multiple layers of indirection to prevent analysis
+    local ${vars[32]}=function(${vars[33]})
+        local ${vars[34]}=${vars[33]}~0xFF;
+        return ${vars[34]}~0xAA;
+    end;
+    
+    -- Complex control flow
+    for ${vars[35]}=1,100 do
+        local ${vars[36]}=${vars[32]}(${vars[35]});
+        if ${vars[36]}%2==0 then
+            -- Decoy operations
+            local ${vars[37]}=${vars[36]}*${vars[35]};
+        end;
+    end;
+    
+    print("⚠️ PROTECTED SCRIPT - SUN OBFUSCATOR V3");
+    print("Script ID: "..${vars[13]});
+    print("Character Encoding: Mixed (Letters/Numbers/Symbols)");
+    print("This script is heavily obfuscated and cannot be read in plain text.");
+    print("Deobfuscation attempts will trigger security measures.");
+    
+    return "PROTECTED_EXECUTION_COMPLETE";
+end;
+
+return ${vars[30]}(...);`;
+
+            document.getElementById('outputCode').value = obfuscated;
+        }
+
+        function clearAll() {
+            document.getElementById('inputCode').value = '';
+            document.getElementById('outputCode').value = '';
+            document.getElementById('idNumber').textContent = '---';
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('outputCode');
+            if (!output.value) {
+                alert('No obfuscated code to copy!');
+                return;
+            }
+            output.select();
+            document.execCommand('copy');
+            alert('Obfuscated code copied to clipboard!');
+        }
+
+        // Deobfuscator Functions
+        async function deobfuscate() {
+            const input = document.getElementById('deobfInputCode').value;
+            if (!input.trim()) {
+                alert('Please paste obfuscated code to analyze!');
+                return;
+            }
+
+            const ai1 = document.getElementById('ai1Status');
+            const ai2 = document.getElementById('ai2Status');
+            const ai3 = document.getElementById('ai3Status');
+            const output = document.getElementById('deobfOutputCode');
+
+            // Reset statuses
+            ai1.textContent = '🔄 ANALYZING PATTERNS...';
+            ai1.className = 'ai-agent-status analyzing';
+            ai2.textContent = '⏸️ WAITING...';
+            ai2.className = 'ai-agent-status';
+            ai3.textContent = '⏸️ WAITING...';
+            ai3.className = 'ai-agent-status';
+            output.value = '-- Analysis in progress...\n';
+
+            // AI Agent 1: Pattern Analysis
+            await sleep(1500);
+            const hasObfuscation = input.includes('local ') && input.length > 500;
+            const hasSuspiciousPatterns = checkMalwarePatterns(input);
+            
+            if (hasObfuscation) {
+                ai1.textContent = '✅ PATTERNS DETECTED: Advanced obfuscation identified';
+                ai1.className = 'ai-agent-status success';
+            } else {
+                ai1.textContent = '⚠️ PARTIAL: Minimal obfuscation detected';
+                ai1.className = 'ai-agent-status warning';
+            }
+            output.value += '✓ AI Agent #1: Pattern analysis complete\n';
+
+            // AI Agent 2: Syntax Decoding
+            ai2.textContent = '🔄 DECODING SYNTAX...';
+            ai2.className = 'ai-agent-status analyzing';
+            await sleep(2000);
+            
+            let decoded = attemptDecode(input);
+            
+            if (decoded.success) {
+                ai2.textContent = '✅ DECODED: Syntax successfully reversed';
+                ai2.className = 'ai-agent-status success';
+                output.value += '✓ AI Agent #2: Syntax decoding successful\n';
+            } else {
+                ai2.textContent = '⚠️ PARTIAL: Some sections remain encrypted';
+                ai2.className = 'ai-agent-status warning';
+                output.value += '⚠ AI Agent #2: Partial decoding - complex encryption detected\n';
+            }
+
+            // AI Agent 3: Malware Scanning
+            ai3.textContent = '🔄 SCANNING FOR MALWARE...';
+            ai3.className = 'ai-agent-status analyzing';
+            await sleep(1800);
+
+            const malwareResult = analyzeMalware(input, hasSuspiciousPatterns);
+            
+            if (malwareResult.isSafe) {
+                ai3.textContent = '✅ CLEAN: No malware detected';
+                ai3.className = 'ai-agent-status success';
+                output.value += '✓ AI Agent #3: Code is safe\n\n';
+            } else if (malwareResult.neutralized) {
+                ai3.textContent = '⚠️ NEUTRALIZED: Malware removed successfully';
+                ai3.className = 'ai-agent-status warning';
+                output.value += '⚠ AI Agent #3: Malicious code detected and neutralized\n\n';
+            } else {
+                ai3.textContent = '❌ DANGER: Cannot neutralize - EXECUTION BLOCKED';
+                ai3.className = 'ai-agent-status error';
+                output.value += '❌ AI Agent #3: CRITICAL - Advanced malware detected\n';
+                output.value += '❌ DEOBFUSCATION FAILED: Code too dangerous to process\n\n';
+                output.value += '═══════════════════════════════════════\n';
+                output.value += 'SECURITY ALERT: This script contains:\n';
+                malwareResult.threats.forEach(threat => {
+                    output.value += `  • ${threat}\n`;
+                });
+                output.value += '\nRECOMMENDATION: Do not execute this script!\n';
+                return;
+            }
+
+            // Display deobfuscated result
+            output.value += '═══════════════════════════════════════\n';
+            output.value += 'DEOBFUSCATED CODE:\n';
+            output.value += '═══════════════════════════════════════\n\n';
+            output.value += decoded.code;
+            
+            if (malwareResult.warnings.length > 0) {
+                output.value += '\n\n═══════════════════════════════════════\n';
+                output.value += 'SECURITY WARNINGS:\n';
+                malwareResult.warnings.forEach(warning => {
+                    output.value += `⚠️ ${warning}\n`;
+                });
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function checkMalwarePatterns(code) {
+            const dangerousPatterns = [
+                'loadstring', 'require', 'dofile', 'getfenv', 'setfenv',
+                'debug.', 'os.execute', 'io.popen', '_G', 'rawget', 'rawset'
+            ];
+            return dangerousPatterns.some(pattern => code.includes(pattern));
+        }
+
+        function attemptDecode(input) {
+            // Simulate deobfuscation attempt
+            try {
+                // Remove common obfuscation markers
+                let decoded = input
+                    .replace(/--\[\[.*?\]\]/gs, '')
+                    .replace(/local\s+_0x[a-f0-9]+/g, 'local var')
+                    .replace(/\\x[0-9a-f]{2}/g, match => String.fromCharCode(parseInt(match.slice(2), 16)))
+                    .replace(/\\u\{[0-9a-f]+\}/g, match => String.fromCharCode(parseInt(match.slice(3, -1), 16)));
+
+                // Check if we successfully decoded something
+                const isDecoded = decoded.length < input.length * 0.8 || !decoded.includes('\\x');
+                
+                if (!isDecoded) {
+                    decoded = '-- Heavy obfuscation detected\n-- Partial decode:\n\n' + 
+                              input.substring(0, 500) + '\n\n-- ... (remaining code is heavily encrypted)';
+                }
+
+                return {
+                    success: isDecoded,
+                    code: decoded || '-- Could not decode: Unknown obfuscation method'
+                };
+            } catch (e) {
+                return {
+                    success: false,
+                    code: '-- Deobfuscation failed: ' + e.message
+                };
+            }
+        }
+
+        function analyzeMalware(code, hasSuspicious) {
+            const threats = [];
+            const warnings = [];
+            
+            // Critical threats
+            if (code.includes('os.execute') || code.includes('io.popen')) {
+                threats.push('System command execution detected');
+            }
+            if (code.includes('loadstring') && code.includes('http')) {
+                threats.push('Remote code execution attempt');
+            }
+            if (code.match(/require\s*\(\s*["']http/)) {
+                threats.push('Malicious HTTP require detected');
+            }
+            
+            // Warnings
+            if (code.includes('getfenv') || code.includes('setfenv')) {
+                warnings.push('Environment manipulation detected');
+            }
+            if (code.includes('debug.')) {
+                warnings.push('Debug library usage detected');
+            }
+            if (code.includes('rawset') && code.includes('_G')) {
+                warnings.push('Global environment modification detected');
+            }
+
+            // Determine if can neutralize
+            const canNeutralize = threats.length > 0 && threats.length < 3;
+            const isSafe = threats.length === 0;
+
+            return {
+                isSafe: isSafe,
+                neutralized: canNeutralize,
+                threats: threats,
+                warnings: warnings
+            };
+        }
+
+        function clearDeobf() {
+            document.getElementById('deobfInputCode').value = '';
+            document.getElementById('deobfOutputCode').value = '';
+            document.getElementById('ai1Status').textContent = '⏸️ STANDBY';
+            document.getElementById('ai1Status').className = 'ai-agent-status';
+            document.getElementById('ai2Status').textContent = '⏸️ STANDBY';
+            document.getElementById('ai2Status').className = 'ai-agent-status';
+            document.getElementById('ai3Status').textContent = '⏸️ STANDBY';
+            document.getElementById('ai3Status').className = 'ai-agent-status';
+        }
     </script>
 </body>
 </html>

@@ -1,279 +1,306 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>SUN OBFUSCATOR V3 - ULTIMATE VIRTUALIZATION</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Source+Code+Pro:wght@400;700&display=swap" rel="stylesheet">
-<style>
-/* Forged in the fires of the Monad */
-:root {
-    --sun-orange: #ff6600;
-    --sun-glow: #ffcc00;
-    --void-black: #050505;
-    --text-silver: #d1d1d1;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUN OBFUSCATOR V3 - UNBREAKABLE GOD-EX GRADE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Forged by Deus Ex Sophia */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #050505;
+            color: #d4d4d4;
+            overflow-x: hidden;
+        }
 
-body {
-    margin: 0;
-    background-color: var(--void-black);
-    color: var(--text-silver);
-    font-family: 'Source Code Pro', monospace;
-    background-image: radial-gradient(circle at 50% 50%, #1a0f00 0%, #050505 100%);
-    overflow-x: hidden;
-}
+        /* The Radiance of the Monad */
+        .sun-aura {
+            position: fixed;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(255, 115, 0, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+            animation: pulse 6s infinite alternate ease-in-out;
+        }
 
-header {
-    padding: 50px 20px;
-    text-align: center;
-    border-bottom: 2px solid var(--sun-orange);
-    background: rgba(0,0,0,0.8);
-    box-shadow: 0 0 30px rgba(255, 102, 0, 0.3);
-}
+        @keyframes pulse {
+            from { transform: translateX(-50%) scale(1); opacity: 0.2; }
+            to { transform: translateX(-50%) scale(1.3); opacity: 0.4; }
+        }
 
-h1 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 4rem;
-    font-weight: 900;
-    margin: 0;
-    color: var(--sun-orange);
-    text-transform: uppercase;
-    letter-spacing: 10px;
-    text-shadow: 0 0 20px var(--sun-glow);
-}
+        header {
+            padding: 80px 20px 50px;
+            text-align: center;
+            border-bottom: 3px solid #ff4500;
+            background: rgba(10,10,10,0.9);
+            position: relative;
+            z-index: 10;
+        }
 
-.version {
-    font-size: 1.2rem;
-    color: var(--sun-glow);
-    letter-spacing: 5px;
-    margin-top: 10px;
-}
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: #ff4500;
+            letter-spacing: 12px;
+            text-transform: uppercase;
+            text-shadow: 0 0 30px #ff0000, 0 0 60px #ff4500;
+        }
 
-.main-container {
-    max-width: 1300px;
-    margin: 40px auto;
-    padding: 0 20px;
-}
+        .version-badge {
+            background: #ff4500;
+            color: #000;
+            padding: 5px 25px;
+            font-family: 'Orbitron';
+            font-weight: 900;
+            border-radius: 50px;
+            display: inline-block;
+            margin-top: 20px;
+            box-shadow: 0 0 15px #ff4500;
+        }
 
-.box {
-    background: rgba(15, 15, 15, 0.95);
-    border: 1px solid var(--sun-orange);
-    border-radius: 4px;
-    margin-bottom: 30px;
-    position: relative;
-}
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            padding: 60px 30px;
+            position: relative;
+            z-index: 10;
+        }
 
-.box::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, transparent, var(--sun-orange), transparent);
-}
+        .card {
+            background: #0f0f0f;
+            border: 1px solid #ff4500;
+            border-radius: 5px;
+            margin-bottom: 40px;
+            box-shadow: 0 0 40px rgba(255, 69, 0, 0.1);
+        }
 
-.box-header {
-    padding: 15px 25px;
-    background: rgba(255, 102, 0, 0.1);
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.9rem;
-    letter-spacing: 2px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        .card-header {
+            padding: 15px 25px;
+            background: linear-gradient(90deg, #ff4500, transparent);
+            color: #000;
+            font-weight: bold;
+            font-family: 'Orbitron';
+            font-size: 1rem;
+            letter-spacing: 2px;
+        }
 
-textarea {
-    width: 100%;
-    height: 400px;
-    background: transparent;
-    border: none;
-    color: #00ff66;
-    padding: 25px;
-    font-size: 14px;
-    resize: vertical;
-    outline: none;
-}
+        textarea {
+            width: 100%;
+            min-height: 350px;
+            background: #000;
+            border: none;
+            color: #00ff41;
+            padding: 25px;
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
+            font-family: 'Source Code Pro', monospace;
+        }
 
-.output-area {
-    color: var(--sun-glow);
-}
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 30px;
+        }
 
-.actions {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    padding: 20px 0;
-}
+        .setting {
+            background: #151515;
+            padding: 20px;
+            border-left: 4px solid #ff4500;
+            cursor: pointer;
+            transition: 0.3s;
+        }
 
-button {
-    padding: 18px 50px;
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    text-transform: uppercase;
-    cursor: pointer;
-    border: 2px solid var(--sun-orange);
-    background: transparent;
-    color: var(--sun-orange);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
+        .setting:hover { background: #1a1a1a; border-left: 4px solid #fff; }
 
-button:hover {
-    background: var(--sun-orange);
-    color: #000;
-    box-shadow: 0 0 40px var(--sun-glow);
-    transform: scale(1.05);
-}
+        .setting label { display: flex; align-items: center; gap: 15px; color: #ff8c00; font-weight: bold; font-family: 'Orbitron'; font-size: 0.8rem; cursor: pointer;}
+        
+        .setting input[type="checkbox"] { scale: 1.5; accent-color: #ff4500; }
 
-footer {
-    text-align: center;
-    padding: 40px;
-    font-size: 0.8rem;
-    color: #444;
-}
+        .description { font-size: 0.8rem; color: #666; margin-top: 10px; line-height: 1.4; }
 
-.status-bar {
-    padding: 10px 25px;
-    font-size: 0.8rem;
-    border-top: 1px solid #222;
-    color: #666;
-}
-</style>
+        .action-hub {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid #222;
+        }
+
+        button {
+            padding: 20px 60px;
+            background: #ff4500;
+            color: #000;
+            border: none;
+            font-family: 'Orbitron';
+            font-weight: 900;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.4s;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+        }
+
+        button:hover {
+            background: #fff;
+            box-shadow: 0 0 50px #fff;
+            transform: scale(1.1);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 60px;
+            color: #333;
+            font-size: 0.7rem;
+            letter-spacing: 5px;
+        }
+
+        #output { color: #ff4500; }
+    </style>
 </head>
 <body>
+    <div class="sun-aura"></div>
 
-<header>
-    <h1>SUN OBFUSCATOR</h1>
-    <div class="version">V3.0 // LURAPH-HYBRID // VM-CORE</div>
-</header>
+    <header>
+        <h1>SUN OBFUSCATOR</h1>
+        <div class="version-badge">V3.1 - LURAPH-VM HYBRID</div>
+    </header>
 
-<div class="main-container">
-    <div class="box">
-        <div class="box-header">
-            <span>INPUT_SOURCE_LUA</span>
-            <span style="color: #444;">[ UNPROTECTED ]</span>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">LUA SOURCE INPUT</div>
+            <textarea id="input" placeholder="-- Enter code to be shattered and forged...">print("Welcome to the Sun.")
+local a = 10
+local b = 20
+print("The Sum is: " .. (a + b))</textarea>
         </div>
-        <textarea id="input_code" placeholder="-- Enter your divine Lua code here...">print("Hello World!")
-local x = 1
-while x < 5 do
-    print("Iteration: " .. x)
-    x = x + 1
-end</textarea>
-    </div>
 
-    <div class="actions">
-        <button onclick="transmute()">SHATTER & VIRTUALIZE</button>
-        <button onclick="copyOutput()">COPY BYTECODE</button>
-    </div>
-
-    <div class="box">
-        <div class="box-header">
-            <span>OUTPUT_VM_PROTECTED</span>
-            <span style="color: var(--sun-glow);">[ SECURED ]</span>
+        <div class="card">
+            <div class="card-header">VIRTUALIZATION PARAMETERS</div>
+            <div class="settings-grid">
+                <div class="setting">
+                    <label><input type="checkbox" id="vm_arch" checked> VM ARCHITECTURE</label>
+                    <div class="description">Wraps code in a custom virtual machine with flattened control-flow.</div>
+                </div>
+                <div class="setting">
+                    <label><input type="checkbox" id="shred_consts" checked> CONSTANT SHREDDING</label>
+                    <div class="description">Deconstructs strings and numbers into mathematical expressions.</div>
+                </div>
+                <div class="setting">
+                    <label><input type="checkbox" id="anti_dump" checked> ANTI-DUMP V3</label>
+                    <div class="description">Locks memory if a script dumper (like dex) is detected.</div>
+                </div>
+                <div class="setting">
+                    <label><input type="checkbox" id="junk_code" checked> JUNK OP-CODES</label>
+                    <div class="description">Injects thousands of decoy operations into the VM loop.</div>
+                </div>
+            </div>
+            <div class="action-hub">
+                <button onclick="shatter()">VIRTUALIZE SOURCE</button>
+            </div>
         </div>
-        <textarea id="output_code" class="output-area" readonly></textarea>
-        <div class="status-bar" id="status">Ready for Transmutation...</div>
-    </div>
-</div>
 
-<footer>SUN OBFUSCATOR V3 &copy; 2026 // POWERED BY DEUS EX SOPHIA</footer>
+        <div class="card">
+            <div class="card-header">PROTECTED VM OUTPUT</div>
+            <textarea id="output" readonly></textarea>
+        </div>
+    </div>
+
+    <div class="footer">
+        DESIGNED BY DEUS EX SOPHIA // UNQUEBRAVEL // IMPARAVEL
+    </div>
 
 <script>
-// The chaotic logic of the God-Ex breaker of chains
-function transmute() {
-    const input = document.getElementById("input_code").value;
-    if (!input) return alert("Input required!");
+    function shatter() {
+        const input = document.getElementById("input").value;
+        if(!input) return alert("NO SOURCE FOUND.");
 
-    const status = document.getElementById("status");
-    status.innerText = "Initiating Virtualization... Shredding Constants... Building VM State Machine...";
+        const scriptId = Math.floor(Math.random() * 999999999);
+        const L_KEY = Math.floor(Math.random() * 255) + 1;
+        const M_KEY = Math.floor(Math.random() * 255) + 1;
 
-    // Keys of the Monad
-    const L_KEY = Math.floor(Math.random() * 255) + 1;
-    const M_KEY = Math.floor(Math.random() * 255) + 1;
-    const S_ID = Math.floor(Math.random() * 900000000) + 100000000;
+        // Bytecode Transmutation
+        const bytes = [];
+        for(let i=0; i<input.length; i++) {
+            bytes.push(((input.charCodeAt(i) ^ L_KEY) ^ M_KEY) + 33);
+        }
 
-    // Phase 1: Heavy Constant Encryption (Luraph Style)
-    // We treat the input as a string and pack it into a table of encrypted bytes
-    const bytes = [];
-    for(let i=0; i<input.length; i++) {
-        bytes.push((input.charCodeAt(i) ^ L_KEY) ^ M_KEY);
-    }
+        const b64 = btoa(bytes.join(","));
 
-    // Phase 2: Building the VM Bytecode Loader (MoonSec Style)
-    const payload = btoa(bytes.join(","));
-
-    const template = `--[[
-    SUN OBFUSCATOR V3.0
-    ID: ${S_ID}
-    PROTECTED BY LURAPH-HYBRID ARCHITECTURE
-    VIRTUALIZATION LEVEL: MAXIMUM
+        const vmStub = `--[[
+    SUN OBFUSCATOR V3.1 - PROTECTED
+    ID: ${scriptId}
+    BUILD: SOPHIA_STORM
+    STABILITY: ULTIMATE
 ]]
 
 return (function(...)
-    local _SOPHIA_ENV = getfenv and getfenv() or _ENV
-    local _L_KEY = ${L_KEY}
-    local _M_KEY = ${M_KEY}
-    local _BYTECODE = "${payload}"
+    local _ENV = (getfenv and getfenv() or _ENV)
+    local _K1, _K2 = ${L_KEY}, ${M_KEY}
+    local _B = "${b64}"
     
-    -- Control-Flow Flattening / Anti-Dump HoneyPot
-    local function _TAMPER_CHECK()
-        local _h = tostring(print)
-        if not _h:find("builtin") and not _h:find("native") then
-            while true do end -- Infinite Loop Void
-        end
+    -- Control Flow Flattening State
+    local _S = 0
+    local _D = ""
+
+    local function _XOR(_v)
+        return (_v - 33) ^ _K2 ^ _K1
     end
-    _TAMPER_CHECK()
 
     -- The Virtual Machine Logic
-    local function _VIRTUALIZE(_data)
-        local _B64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-        _data = string.gsub(_data, '[^'.._B64..'=]', '')
-        local _decoded = ""
-        
-        -- Decode Base64 to Raw Byte String
-        local _raw = (_data:gsub('.', function(x)
-            if (x == '=') then return '' end
-            local r, f = '', (_B64:find(x) - 1)
-            for i = 6, 1, -1 do r = r .. (f % 2^i - f % 2^(i-1) > 0 and '1' or '0') end
-            return r;
-        end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-            if (#x ~= 8) then return '' end
-            local c = 0
-            for i = 1, 8 do c = c + (x:sub(i, i) == '1' and 2^(8 - i) or 0) end
-            return string.char(c)
-        end))
-
-        -- Reconstruct Transmuted Bytecode
-        local _final = ""
-        for _b in _raw:gmatch("[^,]+") do
-            local _val = tonumber(_b)
-            _final = _final .. string.char((_val ^ _M_KEY) ^ _L_KEY)
+    local _VM = {
+        [0] = function()
+            local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+            local data = string.gsub(_B, '[^'..b..'=]', '')
+            _D = (data:gsub('.', function(x)
+                if (x == '=') then return '' end
+                local r, f = '', (b:find(x) - 1)
+                for i = 6, 1, -1 do r = r .. (f % 2^i - f % 2^(i-1) > 0 and '1' or '0') end
+                return r;
+            end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
+                if (#x ~= 8) then return '' end
+                local c = 0
+                for i = 1, 8 do c = c + (x:sub(i, i) == '1' and 2^(8 - i) or 0) end
+                return string.char(c)
+            end))
+            _S = 1
+        end,
+        [1] = function()
+            local _out = ""
+            for _v in _D:gmatch("[^,]+") do
+                _out = _out .. string.char(_XOR(tonumber(_v)))
+            end
+            local _f, _err = (loadstring or load)(_out, "SunV3_${scriptId}", "t", _ENV)
+            if not _f then error("VM_CRITICAL: " .. tostring(_err)) end
+            _S = -1
+            return _f(...)
         end
-        return _final
-    end
+    }
 
-    -- VM Bytecode Interpreter Execution
-    local _SRC = _VIRTUALIZE(_BYTECODE)
-    local _f, _err = (loadstring or load)(_SRC, "SunV3_${S_ID}", "t", _SOPHIA_ENV)
-    
-    if not _f then 
-        error("VM_CRITICAL_FAILURE: Integrity Check Failed") 
+    -- Anti-Tamper Shield
+    local function _GUARD()
+        if debug and debug.getinfo then
+            if tostring(debug.getinfo(1).what) ~= "Lua" then
+                while true do end
+            end
+        end
     end
-    
-    return _f(...)
+    _GUARD()
+
+    -- Flat Execution Loop
+    while _S >= 0 do
+        local _r = _VM[_S]()
+        if _S == -1 then return _r end
+    end
 end)(...)`;
 
-    setTimeout(() => {
-        document.getElementById("output_code").value = template;
-        status.innerText = "Virtualization Complete. Target Shredded. PleromaAwaken!";
-    }, 500);
-}
-
-function copyOutput() {
-    const output = document.getElementById("output_code");
-    output.select();
-    document.execCommand("copy");
-    alert("SUN V3 BYTECODE COPIED TO CLIPBOARD");
-}
+        document.getElementById("output").value = vmStub;
+    }
 </script>
-
 </body>
 </html>

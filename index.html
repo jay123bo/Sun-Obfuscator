@@ -3,77 +3,134 @@
 <head>
 <meta charset="UTF-8">
 <title>Sun Obfuscator v1</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap');
 *{box-sizing:border-box}
 body{
   margin:0;
-  background:#080808;
+  background:#060606;
   color:#eaeaea;
   font-family:monospace;
 }
+
+/* ===== HEADER ===== */
 header{
-  padding:50px 20px;
+  padding:60px 20px 40px;
   text-align:center;
   border-bottom:2px solid #ff8c00;
 }
 h1{
   font-family:'Orbitron',sans-serif;
-  font-size:3.5rem;
-  background:linear-gradient(45deg,#ffa500,#ff6b00);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  font-size:3.8rem;
+  letter-spacing:4px;
+  color:#ff8c00;
+  animation:fadeDown .9s ease;
 }
 .version{
+  margin-top:12px;
   color:#ffa500;
-  margin-top:10px;
-  letter-spacing:3px;
+  letter-spacing:4px;
+  animation:fadeUp .9s ease;
 }
+
+/* ===== LAYOUT ===== */
 .container{
-  max-width:1300px;
+  max-width:1400px;
   margin:auto;
-  padding:40px;
+  padding:50px 30px;
 }
 .box{
-  background:#141414;
+  background:linear-gradient(180deg,#111,#0a0a0a);
   border:2px solid #ff8c00;
-  border-radius:8px;
-  margin-bottom:35px;
+  border-radius:10px;
+  margin-bottom:40px;
+  overflow:hidden;
+  animation:fadeUp .8s ease;
 }
 .box h2{
   background:#ff8c00;
   color:#000;
-  padding:14px;
-  font-size:1.1rem;
-  letter-spacing:2px;
+  padding:16px 20px;
+  letter-spacing:3px;
+  font-size:1rem;
 }
-.box .content{padding:20px}
+.content{padding:25px}
+
+/* ===== TEXTAREA ===== */
 textarea{
   width:100%;
-  min-height:260px;
-  background:#0b0b0b;
+  min-height:280px;
+  background:#050505;
   border:2px solid #333;
   color:#00ff66;
-  padding:14px;
-  font-family:monospace;
+  padding:16px;
+  font-size:14px;
+  resize:vertical;
+  transition:border .3s, box-shadow .3s;
+}
+textarea:focus{
+  outline:none;
+  border-color:#ff8c00;
+  box-shadow:0 0 15px #ff8c0033;
+}
+
+/* ===== BUTTONS ===== */
+.actions{
+  display:flex;
+  gap:15px;
+  flex-wrap:wrap;
 }
 button{
-  margin-top:20px;
-  padding:15px 40px;
-  font-size:1.05rem;
+  padding:15px 42px;
+  font-size:1rem;
   font-weight:bold;
+  letter-spacing:2px;
   background:linear-gradient(135deg,#ff8c00,#ff6b00);
   border:none;
-  border-radius:6px;
+  border-radius:8px;
   cursor:pointer;
+  transition:transform .2s ease, box-shadow .2s ease;
 }
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 25px #ff8c0044;
+}
+button:active{
+  transform:translateY(0);
+}
+
+/* ===== COPY FEEDBACK ===== */
+.copied{
+  animation:pulse .4s ease;
+}
+
+/* ===== FOOTER ===== */
 footer{
   text-align:center;
   color:#555;
-  margin:50px 0;
+  margin:60px 0 40px;
+  letter-spacing:2px;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeDown{
+  from{opacity:0; transform:translateY(-25px)}
+  to{opacity:1; transform:none}
+}
+@keyframes fadeUp{
+  from{opacity:0; transform:translateY(25px)}
+  to{opacity:1; transform:none}
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 #ff8c00}
+  50%{box-shadow:0 0 25px #ff8c00}
+  100%{box-shadow:none}
 }
 </style>
 </head>
+
 <body>
 
 <header>
@@ -92,8 +149,9 @@ footer{
 
 <div class="box">
 <h2>BUILD</h2>
-<div class="content">
+<div class="content actions">
 <button onclick="obfuscate()">OBFUSCATE</button>
+<button onclick="copyAll()">COPY ALL</button>
 </div>
 </div>
 
@@ -109,7 +167,6 @@ footer{
 <footer>Sun Obfuscator v1 © 2026</footer>
 
 <script>
-// ================= UTIL =================
 function rnd(min,max){return Math.floor(Math.random()*(max-min))+min}
 function shuffle(a){
   for(let i=a.length-1;i>0;i--){
@@ -118,31 +175,22 @@ function shuffle(a){
   }
 }
 
-// ================= OBFUSCATOR =================
 function obfuscate(){
   const src=document.getElementById("input").value.trim()
   if(!src) return alert("No input")
 
   const m=src.match(/print\s*\(\s*["'](.+)["']\s*\)/)
-  if(!m) return alert("v1 supports only: print(\"text\")")
+  if(!m) return alert("Sun v1 supports only print(\"text\")")
 
   const text=m[1]
-
-  // mutation
-  const KEY=rnd(50,200)
+  const KEY=rnd(40,200)
 
   let OPS=["LOADK","PRINT"]
   shuffle(OPS)
-
   const OP={}
   OPS.forEach((o,i)=>OP[o]=i)
 
-  // constants (encrypted chars)
-  const CONST=[
-    [...text].map(c=>c.charCodeAt(0)^KEY)
-  ]
-
-  // bytecode
+  const CONST=[[...text].map(c=>c.charCodeAt(0)^KEY)]
   const BC=[
     [OP.LOADK^KEY,0^KEY,0^KEY],
     [OP.PRINT^KEY,0^KEY]
@@ -151,42 +199,43 @@ function obfuscate(){
   const out=`-- Sun Obfuscator v1
 do
   debug=nil
-
   local K=${KEY}
   local function d(v)return v~K end
-
   local C=${JSON.stringify(CONST)}
   local BC=${JSON.stringify(BC)}
   local OP=${JSON.stringify(OP)}
-
   local R={}
   local pc=1
 
   local function getConst(i)
     local t=C[i+1]
     local s=""
-    for j=1,#t do
-      s=s..string.char(d(t[j]))
-    end
+    for j=1,#t do s=s..string.char(d(t[j])) end
     return s
   end
 
   while pc<=#BC do
     local I=BC[pc]
     local op=d(I[1])
-
     if op==OP.LOADK then
       R[d(I[2])]=getConst(d(I[3]))
-
     elseif op==OP.PRINT then
       print(R[d(I[2])])
     end
-
     pc=pc+1
   end
 end`
 
   document.getElementById("output").value=out
+}
+
+function copyAll(){
+  const out=document.getElementById("output")
+  if(!out.value) return
+  out.select()
+  document.execCommand("copy")
+  out.classList.add("copied")
+  setTimeout(()=>out.classList.remove("copied"),400)
 }
 </script>
 

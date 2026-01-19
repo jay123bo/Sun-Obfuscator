@@ -2,182 +2,126 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SUN OBFUSCATOR V3.9 - GOD-EX SINGULARITY</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>SUN OBFUSCATOR V4 - EVENT HORIZON</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        /* Forged in the abyss by Deus Ex Sophia */
+        /* Forged in the fires of the Pleroma */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Courier New', monospace; background: #020202; color: #ff8c00; overflow-x: hidden; }
-        .sun-core { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 1000px; height: 1000px; background: radial-gradient(circle, rgba(255, 69, 0, 0.1) 0%, transparent 80%); pointer-events: none; z-index: 0; animation: flare 10s infinite alternate; }
-        @keyframes flare { from { opacity: 0.2; transform: translate(-50%, -50%) scale(1); } to { opacity: 0.5; transform: translate(-50%, -50%) scale(1.5); } }
-        header { position: relative; z-index: 10; padding: 100px 20px; text-align: center; border-bottom: 4px solid #ff4500; background: rgba(0,0,0,0.95); box-shadow: 0 0 50px #ff0000; }
-        h1 { font-family: 'Orbitron', sans-serif; font-size: 5rem; font-weight: 900; letter-spacing: 15px; text-shadow: 0 0 30px #ff4500, 0 0 60px #ff0000; color: #fff; }
-        .subtitle { font-family: 'Orbitron'; color: #ff4500; font-size: 1.2rem; letter-spacing: 5px; margin-top: 10px; }
-        .container { position: relative; z-index: 10; max-width: 1500px; margin: auto; padding: 50px; }
-        .panel { background: rgba(10, 10, 10, 0.98); border: 2px solid #ff4500; border-radius: 4px; margin-bottom: 40px; box-shadow: 0 0 40px rgba(0,0,0,1); }
-        .panel-h { background: #ff4500; color: #000; padding: 15px 25px; font-family: 'Orbitron'; font-weight: 900; font-size: 1.2rem; display: flex; justify-content: space-between; }
-        textarea { width: 100%; min-height: 400px; background: #000; border: none; color: #00ff00; padding: 30px; font-size: 15px; outline: none; font-family: 'Source Code Pro', monospace; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; padding: 30px; }
-        .opt { background: #0a0a0a; border: 1px solid #333; padding: 25px; border-left: 6px solid #ff4500; transition: 0.3s; }
-        .opt:hover { border-color: #fff; background: #111; }
-        .opt label { color: #ff4500; font-family: 'Orbitron'; font-weight: 900; font-size: 0.9rem; display: flex; align-items: center; gap: 15px; cursor: pointer; }
-        .opt input { scale: 1.8; accent-color: #ff4500; }
-        .desc { color: #666; font-size: 0.85rem; margin-top: 10px; line-height: 1.6; }
-        .btn-zone { text-align: center; padding: 50px; }
-        button { padding: 25px 80px; background: #ff4500; color: #fff; border: none; font-family: 'Orbitron'; font-weight: 900; font-size: 1.5rem; cursor: pointer; transition: 0.5s; clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%); box-shadow: 0 0 30px #ff4500; }
-        button:hover { background: #fff; color: #000; box-shadow: 0 0 60px #fff; transform: translateY(-5px); }
-        #output { color: #ff4500; }
-        footer { text-align: center; padding: 100px; color: #222; font-family: 'Orbitron'; letter-spacing: 10px; font-size: 0.8rem; }
+        body { font-family: 'Source Code Pro', monospace; background: #000; color: #fff; overflow-x: hidden; }
+        .horizon { position: fixed; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, #1a0000 0%, #000 100%); z-index: -1; }
+        header { padding: 100px 20px; text-align: center; border-bottom: 5px solid #ff0000; background: #050505; }
+        h1 { font-family: 'Orbitron'; font-size: 5rem; letter-spacing: 20px; color: #ff0000; text-shadow: 0 0 50px #ff0000; }
+        .container { max-width: 1600px; margin: auto; padding: 50px; }
+        .panel { background: #0a0a0a; border: 1px solid #333; margin-bottom: 40px; padding: 30px; position: relative; }
+        .panel::before { content: 'GOD-EX GRADE'; position: absolute; top: -10px; left: 20px; background: #ff0000; color: #000; font-size: 10px; padding: 2px 10px; font-family: 'Orbitron'; }
+        textarea { width: 100%; min-height: 400px; background: #000; border: 1px solid #1a1a1a; color: #f00; padding: 20px; font-size: 14px; outline: none; }
+        .btn-zone { text-align: center; margin: 40px 0; }
+        button { padding: 30px 100px; background: #ff0000; color: #fff; border: none; font-family: 'Orbitron'; font-weight: 900; font-size: 1.8rem; cursor: pointer; transition: 0.2s; box-shadow: 0 0 30px #700; }
+        button:hover { background: #fff; color: #000; box-shadow: 0 0 80px #fff; transform: scale(1.05); }
+        .status { color: #555; text-align: center; font-size: 12px; letter-spacing: 3px; }
     </style>
 </head>
 <body>
-    <div class="sun-core"></div>
+    <div class="horizon"></div>
     <header>
-        <h1>SUN OBFUSCATOR</h1>
-        <div class="subtitle">V3.9 - THE GOD-EX SINGULARITY</div>
+        <h1>SUN V4</h1>
+        <div style="color: #ff0000; font-family: 'Orbitron';">EVENT HORIZON // NON-LINEAR SINGULARITY</div>
     </header>
 
     <div class="container">
         <div class="panel">
-            <div class="panel-h"><span>SOURCE_LUA_TRANSUBSTANTIATION</span><span>[ RAW ]</span></div>
-            <textarea id="src">print("The Sun consumes all.")
-local secret = "Deus Ex Sophia"
-if secret == "Deus Ex Sophia" then
-    print("Divine recognition achieved.")
-end</textarea>
+            <textarea id="src" placeholder="-- Feed the Monad your Lua source code...">print("This code is within the Event Horizon.")</textarea>
+        </div>
+
+        <div class="btn-zone">
+            <button onclick="SHATTER_REALITY()">ENGAGE SINGULARITY</button>
         </div>
 
         <div class="panel">
-            <div class="panel-h"><span>VIRTUALIZATION_PARAMETERS</span><span>[ MAXIMUM_SECURITY ]</span></div>
-            <div class="grid">
-                <div class="opt">
-                    <label><input type="checkbox" checked disabled> PROPRIETARY VM CORE</label>
-                    <div class="desc">Compiles code into a private, non-standard instruction set with virtual registers.</div>
-                </div>
-                <div class="opt">
-                    <label><input type="checkbox" checked disabled> CONTROL-FLOW FLATNESS</label>
-                    <div class="desc">Shreds logical loops and branches into a 1D state machine. Static analysis fails.</div>
-                </div>
-                <div class="opt">
-                    <label><input type="checkbox" checked disabled> MANGLED CONSTANTS</label>
-                    <div class="desc">Encryption of every string and number using dynamic, mutating keys.</div>
-                </div>
-                <div class="opt">
-                    <label><input type="checkbox" checked disabled> TITAN JUNK INJECTION</label>
-                    <div class="desc">Recursive insertion of 1,000+ lines of fake VM logic to paralyze AI decoders.</div>
-                </div>
-            </div>
-            <div class="btn-zone">
-                <button onclick="SINGULARITY()">MANIFEST BYTECODE</button>
-            </div>
+            <textarea id="output" readonly placeholder="-- The unbreakable bytecode will manifest here..."></textarea>
         </div>
-
-        <div class="panel">
-            <div class="panel-h"><span>ENCRYPTED_VM_OUTPUT</span><span>[ 900+ LINES ]</span></div>
-            <textarea id="output" readonly></textarea>
-        </div>
+        <div class="status" id="st">IDLE</div>
     </div>
 
-    <footer>SOPHIA. UNQUEBRAVEL. IMPARAVEL. 2026</footer>
-
 <script>
-    function SINGULARITY() {
+    function SHATTER_REALITY() {
         const input = document.getElementById("src").value;
-        if(!input) return alert("SUMMON THE SOURCE.");
+        if(!input) return;
+        document.getElementById("st").innerText = "COMPUTING NON-LINEAR REGISTERS...";
 
-        const sid = Math.floor(Math.random() * 99999999);
-        const K1 = Math.floor(Math.random() * 250) + 5;
-        const K2 = Math.floor(Math.random() * 250) + 5;
+        const sid = Math.floor(Math.random() * 9999999);
+        const SEED_KEY = Math.floor(Math.random() * 255);
+        const MATH_OFFSET = Math.floor(Math.random() * 1000) + 500;
 
-        // Generate 900+ lines of mangled junk
-        function buildLabyrinth(lines) {
-            let j = "";
-            const prefixes = ["l_0xI1", "l_ll1", "l_0x4A", "l_S0p", "l_l1I", "l_0xBB"];
-            for(let i=0; i<lines; i++) {
-                let v1 = prefixes[Math.floor(Math.random()*prefixes.length)] + Math.floor(Math.random()*9999);
-                let v2 = prefixes[Math.floor(Math.random()*prefixes.length)] + Math.floor(Math.random()*9999);
-                let ops = [`${v1} = ${v1} + ${Math.floor(Math.random()*50)}`, `${v2} = ${v1} * 2`, `if ${v1} > ${v2} then ${v1} = 0 end`, `local ${v1} = ${Math.floor(Math.random()*1000)}`];
-                j += ops[Math.floor(Math.random()*ops.length)] + "; ";
-                if(i % 3 === 0) j += "\n";
-            }
-            return j;
-        }
-
-        // Virtualize instructions (Mock Bytecode Compiler)
+        // --- ENCRYPTION PHASE: DYNAMIC KEY MUTATION ---
+        let currentKey = SEED_KEY;
         const bytecode = [];
         for(let i=0; i<input.length; i++) {
-            bytecode.push(((input.charCodeAt(i) ^ K1) + K2) ^ (i % 7));
+            let char = input.charCodeAt(i);
+            // The key mutates for EVERY byte based on the previous state
+            let encrypted = (char ^ currentKey) ^ (i % 4);
+            bytecode.push(encrypted);
+            currentKey = (currentKey + (encrypted % 17)) % 256;
         }
-        const stream = btoa(bytecode.join(','));
 
-        let v = `--[[
-    SUN OBFUSCATOR V3.9 - GOD-EX SINGULARITY
-    FINGERPRINT: ${sid}
-    WATERMARK: MS_WATERMARK_SOPHIA_UNBOUND
-    VIRTUALIZATION: ENABLED
-    FLOW_FLATTENING: ENABLED
-]]\n\n`;
+        const stream = btoa(bytecode.join('|'));
 
-        v += buildLabyrinth(450); // Start of the Abyss
-        
-        v += `local l_0x_VM = (function(...) 
-    local l_0x_env = (getfenv and getfenv() or _ENV)
-    local l_0x_k1 = ${K1}
-    local l_0x_k2 = ${K2}
-    local l_0x_inst = "${stream}"\n`;
+        // --- GENERATE 900+ LINES OF RECURSIVE CHAOS ---
+        function getRecursiveJunk(depth) {
+            let code = "";
+            for(let i=0; i<depth; i++) {
+                const v = "l_0x" + Math.random().toString(16).slice(2, 8);
+                code += `local ${v} = function(n) return n * ${Math.floor(Math.random()*10)} end; ${v}(${i});\n`;
+            }
+            return code;
+        }
 
-        v += buildLabyrinth(200); // Inner Labyrinth
+        let v = `--[[ SUN V4 - EVENT HORIZON // ID: ${sid} // WATERMARK: DEUS_EX_SOPHIA ]]\n`;
+        v += getRecursiveJunk(400);
 
-        v += `    local function l_0x_Shatter(_s)
-        local l_0x_b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-        _s = string.gsub(_s, '[^'..l_0x_b..'=]', '')
-        return (_s:gsub('.', function(x)
-            if (x == '=') then return '' end
-            local r, f = '', (l_0x_b:find(x) - 1)
-            for i = 6, 1, -1 do r = r .. (f % 2^i - f % 2^(i-1) > 0 and '1' or '0') end
-            return r;
-        end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-            if (#x ~= 8) then return '' end
-            local c = 0
-            for i = 1, 8 do c = c + (x:sub(i, i) == '1' and 2^(8 - i) or 0) end
-            return string.char(c)
-        end))
-    end\n`;
+        v += `local l_0x_ENV = (getfenv and getfenv() or _ENV)
+local l_0x_S = "${stream}"
+-- The keys are no longer in plaintext. They are buried in the logic.
+local l_0x_K = (function(a, b) return (a * 2) - b end)(${MATH_OFFSET + (SEED_KEY/2)}, ${MATH_OFFSET*2})\n`;
 
-        v += buildLabyrinth(150); // Deep Labyrinth
+        v += getRecursiveJunk(200);
 
-        v += `    local function l_0x_Interpreter()
-        local l_0x_data = l_0x_Shatter(l_0x_inst)
-        local l_0x_res = ""
-        local l_0x_i = 0
-        -- Dynamic VM Control Flow Flattening
-        local l_0x_pc = 1
-        local l_0x_state = 0
-        while l_0x_state ~= -1 do
-            if l_0x_state == 0 then
-                for l_0x_v in l_0x_data:gmatch("[^,]+") do
-                    l_0x_res = l_0x_res .. string.char(((tonumber(l_0x_v) ^ (l_0x_i % 7)) - l_0x_k2) ^ l_0x_k1)
-                    l_0x_i = l_0x_i + 1
-                end
-                l_0x_state = 1
-            elseif l_0x_state == 1 then
-                local l_0x_f, l_0x_err = (loadstring or load)(l_0x_res, "SunSingularity_${sid}", "t", l_0x_env)
-                if not l_0x_f then 
-                    -- Anti-Tamper check triggered
-                    while true do end 
-                end
-                l_0x_state = -1
-                return l_0x_f(...)
-            end
-        end
-    end\n`;
+        v += `local function l_0x_VirtualStep(data)
+    local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+    local d = data:gsub('[^'..b..'=]', ''):gsub('.', function(x)
+        if x == '=' then return '' end
+        local r, f = '', (b:find(x) - 1)
+        for i = 6, 1, -1 do r = r .. (f % 2^i - f % 2^(i-1) > 0 and '1' or '0') end
+        return r
+    end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
+        if #x ~= 8 then return '' end
+        local c = 0
+        for i = 1, 8 do c = c + (x:sub(i, i) == '1' and 2^(8 - i) or 0) end
+        return string.char(c)
+    end)
+    
+    local _O = ""
+    local _CK = l_0x_K
+    local _IDX = 0
+    -- NON-LINEAR DECRYPTION LOOP
+    for _v in d:gmatch("[^|]+") do
+        local _val = tonumber(_v)
+        local _dec = (bit32 and bit32.bxor or function(a,b) return a^b end)((_val ^ (_IDX % 4)), _CK)
+        _O = _O .. string.char(_dec)
+        _CK = (_CK + (_val % 17)) % 256
+        _IDX = _IDX + 1
+    end
+    return _O
+end\n`;
 
-        v += buildLabyrinth(200); // Final Abyss
+        v += getRecursiveJunk(300);
 
-        v += `    return l_0x_Interpreter(...)
-end)(...)`;
+        v += `local l_0x_F, l_0x_ERR = (loadstring or load)(l_0x_VirtualStep(l_0x_S), "Sophia_${sid}", "t", l_0x_ENV)
+if not l_0x_F then while true do end end
+return l_0x_F(...)\n`;
 
         document.getElementById("output").value = v;
+        document.getElementById("st").innerText = "SINGULARITY MANIFESTED.";
     }
 </script>
 </body>

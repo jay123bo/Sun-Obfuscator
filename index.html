@@ -2,732 +2,183 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌞 Sun Hub - Roblox Scripts</title>
+    <title>SUN OBFUSCATOR V3.9 - GOD-EX SINGULARITY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
-            color: #fff;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-        
-        body::before {
-            content: '';
-            position: fixed;
-            width: 200%;
-            height: 200%;
-            top: -50%;
-            left: -50%;
-            z-index: -1;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(255, 200, 100, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 150, 50, 0.08) 0%, transparent 50%);
-            animation: gradientShift 15s ease infinite;
-        }
-        
-        @keyframes gradientShift {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(-5%, -5%) rotate(5deg); }
-        }
-        
-        .header {
-            background: rgba(15, 15, 20, 0.7);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 200, 100, 0.1);
-            padding: 20px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 30px rgba(255, 200, 100, 0.1);
-        }
-        
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 32px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: glow 3s ease-in-out infinite;
-            letter-spacing: 2px;
-        }
-        
-        @keyframes glow {
-            0%, 100% { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4)); }
-            50% { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6)); }
-        }
-        
-        .nav {
-            display: flex;
-            gap: 35px;
-        }
-        
-        .nav a {
-            color: #aaa;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            cursor: pointer;
-            font-weight: 600;
-            position: relative;
-            padding: 5px 0;
-        }
-        
-        .nav a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #FFD700, #FFA500);
-            transition: width 0.3s ease;
-        }
-        
-        .nav a:hover {
-            color: #FFD700;
-        }
-        
-        .nav a:hover::after {
-            width: 100%;
-        }
-        
-        .search-section {
-            max-width: 1200px;
-            margin: 60px auto;
-            padding: 0 20px;
-        }
-        
-        .search-container {
-            position: relative;
-            margin-bottom: 50px;
-        }
-        
-        .search-box {
-            width: 100%;
-            padding: 20px 60px 20px 25px;
-            background: rgba(30, 30, 40, 0.5);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 200, 100, 0.2);
-            border-radius: 50px;
-            color: white;
-            font-size: 16px;
-            transition: all 0.4s ease;
-            box-shadow: 0 8px 32px rgba(255, 200, 100, 0.1);
-        }
-        
-        .search-box:focus {
-            outline: none;
-            border-color: rgba(255, 200, 100, 0.5);
-            background: rgba(30, 30, 40, 0.7);
-            box-shadow: 0 12px 40px rgba(255, 200, 100, 0.3);
-            transform: translateY(-2px);
-        }
-        
-        .search-icon {
-            position: absolute;
-            right: 25px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #FFD700;
-            font-size: 22px;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
-        
-        .categories {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 50px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .category-btn {
-            padding: 12px 28px;
-            background: rgba(30, 30, 40, 0.4);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 200, 100, 0.2);
-            border-radius: 50px;
-            color: #aaa;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .category-btn:hover {
-            background: rgba(255, 200, 100, 0.1);
-            border-color: rgba(255, 200, 100, 0.4);
-            color: #FFD700;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(255, 200, 100, 0.2);
-        }
-        
-        .category-btn.active {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%);
-            border-color: #FFD700;
-            color: #FFD700;
-            box-shadow: 0 5px 30px rgba(255, 200, 100, 0.3);
-        }
-        
-        .scripts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-        
-        .script-card {
-            background: rgba(20, 20, 30, 0.6);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 200, 100, 0.15);
-            border-radius: 20px;
-            padding: 30px;
-            transition: all 0.4s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .script-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #FFD700, #FFA500, #FF8C00);
-            transform: scaleX(0);
-            transition: transform 0.4s ease;
-        }
-        
-        .script-card:hover::before {
-            transform: scaleX(1);
-        }
-        
-        .script-card:hover {
-            border-color: rgba(255, 200, 100, 0.4);
-            transform: translateY(-8px);
-            box-shadow: 0 20px 60px rgba(255, 200, 100, 0.3);
-        }
-        
-        .script-icon {
-            font-size: 48px;
-            margin-bottom: 20px;
-            display: inline-block;
-        }
-        
-        .script-title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #fff;
-        }
-        
-        .script-desc {
-            color: #aaa;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        
-        .script-tags {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .tag {
-            padding: 6px 14px;
-            background: rgba(255, 200, 100, 0.15);
-            border: 1px solid rgba(255, 200, 100, 0.3);
-            border-radius: 20px;
-            font-size: 11px;
-            color: #FFD700;
-            font-weight: 600;
-        }
-        
-        .detail-view {
-            max-width: 900px;
-            margin: 60px auto;
-            padding: 0 20px;
-            display: none;
-        }
-        
-        .detail-view.active {
-            display: block;
-        }
-        
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 24px;
-            background: rgba(30, 30, 40, 0.6);
-            border: 2px solid rgba(255, 200, 100, 0.2);
-            border-radius: 50px;
-            color: white;
-            cursor: pointer;
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            border: none;
-        }
-        
-        .back-btn:hover {
-            background: rgba(255, 200, 100, 0.1);
-            border-color: rgba(255, 200, 100, 0.4);
-            transform: translateX(-5px);
-        }
-        
-        .detail-header {
-            background: rgba(20, 20, 30, 0.6);
-            border: 1px solid rgba(255, 200, 100, 0.2);
-            border-radius: 20px;
-            padding: 50px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .detail-title {
-            font-size: 38px;
-            font-weight: 900;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .detail-content {
-            background: rgba(20, 20, 30, 0.6);
-            border: 1px solid rgba(255, 200, 100, 0.2);
-            border-radius: 20px;
-            padding: 40px;
-        }
-        
-        .detail-content h3 {
-            color: #FFD700;
-            margin-top: 30px;
-            margin-bottom: 20px;
-            font-size: 22px;
-        }
-        
-        .detail-content p {
-            color: #ccc;
-            line-height: 1.8;
-            margin-bottom: 15px;
-        }
-        
-        .copy-btn {
-            display: inline-block;
-            padding: 18px 45px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #0a0a0f;
-            border-radius: 50px;
-            border: none;
-            cursor: pointer;
-            margin-top: 25px;
-            transition: all 0.3s ease;
-            font-weight: 700;
-            font-size: 16px;
-            text-transform: uppercase;
-        }
-        
-        .copy-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(255, 200, 100, 0.6);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: rgba(20, 20, 30, 0.95);
-            border: 2px solid rgba(255, 200, 100, 0.3);
-            border-radius: 25px;
-            padding: 50px;
-            max-width: 550px;
-            width: 90%;
-            text-align: center;
-        }
-        
-        .modal-title {
-            font-size: 32px;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 900;
-        }
-        
-        .modal-subtitle {
-            color: #aaa;
-            margin-bottom: 35px;
-        }
-        
-        .device-buttons {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-        
-        .device-btn {
-            flex: 1;
-            padding: 30px 20px;
-            background: rgba(30, 30, 40, 0.6);
-            border: 2px solid rgba(255, 200, 100, 0.2);
-            border-radius: 20px;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            font-weight: 700;
-        }
-        
-        .device-btn:hover {
-            background: rgba(255, 200, 100, 0.1);
-            border-color: #FFD700;
-            transform: translateY(-5px);
-        }
-        
-        .device-icon {
-            font-size: 52px;
-        }
-        
-        .close-modal {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 12px 28px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .close-modal:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .security-badge {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            background: rgba(0, 255, 100, 0.1);
-            border: 2px solid rgba(0, 255, 100, 0.3);
-            padding: 12px 20px;
-            border-radius: 50px;
-            color: #0f0;
-            font-size: 13px;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-        }
+        /* Forged in the abyss by Deus Ex Sophia */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Courier New', monospace; background: #020202; color: #ff8c00; overflow-x: hidden; }
+        .sun-core { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 1000px; height: 1000px; background: radial-gradient(circle, rgba(255, 69, 0, 0.1) 0%, transparent 80%); pointer-events: none; z-index: 0; animation: flare 10s infinite alternate; }
+        @keyframes flare { from { opacity: 0.2; transform: translate(-50%, -50%) scale(1); } to { opacity: 0.5; transform: translate(-50%, -50%) scale(1.5); } }
+        header { position: relative; z-index: 10; padding: 100px 20px; text-align: center; border-bottom: 4px solid #ff4500; background: rgba(0,0,0,0.95); box-shadow: 0 0 50px #ff0000; }
+        h1 { font-family: 'Orbitron', sans-serif; font-size: 5rem; font-weight: 900; letter-spacing: 15px; text-shadow: 0 0 30px #ff4500, 0 0 60px #ff0000; color: #fff; }
+        .subtitle { font-family: 'Orbitron'; color: #ff4500; font-size: 1.2rem; letter-spacing: 5px; margin-top: 10px; }
+        .container { position: relative; z-index: 10; max-width: 1500px; margin: auto; padding: 50px; }
+        .panel { background: rgba(10, 10, 10, 0.98); border: 2px solid #ff4500; border-radius: 4px; margin-bottom: 40px; box-shadow: 0 0 40px rgba(0,0,0,1); }
+        .panel-h { background: #ff4500; color: #000; padding: 15px 25px; font-family: 'Orbitron'; font-weight: 900; font-size: 1.2rem; display: flex; justify-content: space-between; }
+        textarea { width: 100%; min-height: 400px; background: #000; border: none; color: #00ff00; padding: 30px; font-size: 15px; outline: none; font-family: 'Source Code Pro', monospace; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; padding: 30px; }
+        .opt { background: #0a0a0a; border: 1px solid #333; padding: 25px; border-left: 6px solid #ff4500; transition: 0.3s; }
+        .opt:hover { border-color: #fff; background: #111; }
+        .opt label { color: #ff4500; font-family: 'Orbitron'; font-weight: 900; font-size: 0.9rem; display: flex; align-items: center; gap: 15px; cursor: pointer; }
+        .opt input { scale: 1.8; accent-color: #ff4500; }
+        .desc { color: #666; font-size: 0.85rem; margin-top: 10px; line-height: 1.6; }
+        .btn-zone { text-align: center; padding: 50px; }
+        button { padding: 25px 80px; background: #ff4500; color: #fff; border: none; font-family: 'Orbitron'; font-weight: 900; font-size: 1.5rem; cursor: pointer; transition: 0.5s; clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%); box-shadow: 0 0 30px #ff4500; }
+        button:hover { background: #fff; color: #000; box-shadow: 0 0 60px #fff; transform: translateY(-5px); }
+        #output { color: #ff4500; }
+        footer { text-align: center; padding: 100px; color: #222; font-family: 'Orbitron'; letter-spacing: 10px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-content">
-            <div class="logo">🌞 SUN HUB</div>
-            <nav class="nav">
-                <a id="homeLink">HOME</a>
-                <a id="executorLink">EXECUTOR</a>
-                <a id="discordLink">DISCORD SERVER</a>
-                <a id="aboutLink">ABOUT</a>
-            </nav>
+    <div class="sun-core"></div>
+    <header>
+        <h1>SUN OBFUSCATOR</h1>
+        <div class="subtitle">V3.9 - THE GOD-EX SINGULARITY</div>
+    </header>
+
+    <div class="container">
+        <div class="panel">
+            <div class="panel-h"><span>SOURCE_LUA_TRANSUBSTANTIATION</span><span>[ RAW ]</span></div>
+            <textarea id="src">print("The Sun consumes all.")
+local secret = "Deus Ex Sophia"
+if secret == "Deus Ex Sophia" then
+    print("Divine recognition achieved.")
+end</textarea>
         </div>
-    </div>
-    
-    <div id="mainView">
-        <div class="search-section">
-            <div class="search-container">
-                <input type="text" class="search-box" id="searchInput" placeholder="Search for scripts...">
-                <span class="search-icon">🔍</span>
-            </div>
-            
-            <div class="categories">
-                <button class="category-btn active" data-category="all">All Scripts</button>
-                <button class="category-btn" data-category="popular">Popular</button>
-                <button class="category-btn" data-category="brainrot">Steal a Brainrot Scripts</button>
-                <button class="category-btn" data-category="universal">Universal Scripts</button>
-            </div>
-            
-            <div class="scripts-grid" id="scriptsGrid">
-                <div class="script-card" data-script="brainrot" data-category="brainrot">
-                    <div class="script-icon">🧠</div>
-                    <div class="script-title">Steal a Brainrot Script v1</div>
-                    <div class="script-desc">The ultimate brainrot experience for maximum chaos!</div>
-                    <div class="script-tags">
-                        <span class="tag">Brainrot</span>
-                        <span class="tag">Premium</span>
-                        <span class="tag">Updated</span>
-                    </div>
+
+        <div class="panel">
+            <div class="panel-h"><span>VIRTUALIZATION_PARAMETERS</span><span>[ MAXIMUM_SECURITY ]</span></div>
+            <div class="grid">
+                <div class="opt">
+                    <label><input type="checkbox" checked disabled> PROPRIETARY VM CORE</label>
+                    <div class="desc">Compiles code into a private, non-standard instruction set with virtual registers.</div>
                 </div>
-                
-                <div class="script-card" data-script="teleport" data-category="universal">
-                    <div class="script-icon">⚡</div>
-                    <div class="script-title">Simple Teleport Script</div>
-                    <div class="script-desc">Set spawn points and teleport instantly anywhere!</div>
-                    <div class="script-tags">
-                        <span class="tag">Teleport</span>
-                        <span class="tag">Utility</span>
-                        <span class="tag">Easy</span>
-                    </div>
+                <div class="opt">
+                    <label><input type="checkbox" checked disabled> CONTROL-FLOW FLATNESS</label>
+                    <div class="desc">Shreds logical loops and branches into a 1D state machine. Static analysis fails.</div>
+                </div>
+                <div class="opt">
+                    <label><input type="checkbox" checked disabled> MANGLED CONSTANTS</label>
+                    <div class="desc">Encryption of every string and number using dynamic, mutating keys.</div>
+                </div>
+                <div class="opt">
+                    <label><input type="checkbox" checked disabled> TITAN JUNK INJECTION</label>
+                    <div class="desc">Recursive insertion of 1,000+ lines of fake VM logic to paralyze AI decoders.</div>
                 </div>
             </div>
-        </div>
-    </div>
-    
-    <div class="detail-view" id="detailView">
-        <button class="back-btn" id="backBtn">← Back to Scripts</button>
-        <div id="detailContent"></div>
-    </div>
-
-    <div class="modal" id="executorModal">
-        <div class="modal-content">
-            <h2 class="modal-title">Select Your Device</h2>
-            <p class="modal-subtitle">Choose your platform to get the executor</p>
-            
-            <div class="device-buttons">
-                <button class="device-btn" id="pcBtn">
-                    <span class="device-icon">💻</span>
-                    <span>PC</span>
-                </button>
-                <button class="device-btn" id="mobileBtn">
-                    <span class="device-icon">📱</span>
-                    <span>MOBILE</span>
-                </button>
+            <div class="btn-zone">
+                <button onclick="SINGULARITY()">MANIFEST BYTECODE</button>
             </div>
-            
-            <button class="close-modal" id="closeModal">Cancel</button>
+        </div>
+
+        <div class="panel">
+            <div class="panel-h"><span>ENCRYPTED_VM_OUTPUT</span><span>[ 900+ LINES ]</span></div>
+            <textarea id="output" readonly></textarea>
         </div>
     </div>
 
-    <div class="security-badge">
-        <span>🛡️</span>
-        <span>DDoS Protected</span>
-    </div>
+    <footer>SOPHIA. UNQUEBRAVEL. IMPARAVEL. 2026</footer>
 
-    <script>
-        const scriptsData = {
-            brainrot: {
-                icon: '🧠',
-                title: 'Steal a Brainrot Script v1',
-                subtitle: 'Maximum brainrot chaos unleashed',
-                script: 'hi',
-                features: [
-                    '• Premium brainrot content',
-                    '• Optimized performance',
-                    '• Regular updates',
-                    '• Easy to use'
-                ]
-            },
-            teleport: {
-                icon: '⚡',
-                title: 'Simple Teleport Script',
-                subtitle: 'Set points and warp instantly',
-                script: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/jay123bo/SimpleteleportScript/main/SimpleTeleportScript.lua"))()',
-                features: [
-                    '• Set custom spawn points',
-                    '• Instant teleportation',
-                    '• Beautiful Sun Hub UI',
-                    '• Draggable interface'
-                ]
+<script>
+    function SINGULARITY() {
+        const input = document.getElementById("src").value;
+        if(!input) return alert("SUMMON THE SOURCE.");
+
+        const sid = Math.floor(Math.random() * 99999999);
+        const K1 = Math.floor(Math.random() * 250) + 5;
+        const K2 = Math.floor(Math.random() * 250) + 5;
+
+        // Generate 900+ lines of mangled junk
+        function buildLabyrinth(lines) {
+            let j = "";
+            const prefixes = ["l_0xI1", "l_ll1", "l_0x4A", "l_S0p", "l_l1I", "l_0xBB"];
+            for(let i=0; i<lines; i++) {
+                let v1 = prefixes[Math.floor(Math.random()*prefixes.length)] + Math.floor(Math.random()*9999);
+                let v2 = prefixes[Math.floor(Math.random()*prefixes.length)] + Math.floor(Math.random()*9999);
+                let ops = [`${v1} = ${v1} + ${Math.floor(Math.random()*50)}`, `${v2} = ${v1} * 2`, `if ${v1} > ${v2} then ${v1} = 0 end`, `local ${v1} = ${Math.floor(Math.random()*1000)}`];
+                j += ops[Math.floor(Math.random()*ops.length)] + "; ";
+                if(i % 3 === 0) j += "\n";
             }
-        };
-
-        const mainView = document.getElementById('mainView');
-        const detailView = document.getElementById('detailView');
-        const backBtn = document.getElementById('backBtn');
-        const searchInput = document.getElementById('searchInput');
-        
-        function showDetail(scriptType) {
-            const currentScript = scriptsData[scriptType];
-            
-            const detailContent = document.getElementById('detailContent');
-            detailContent.innerHTML = `
-                <div class="detail-header">
-                    <div class="script-icon" style="font-size: 80px;">${currentScript.icon}</div>
-                    <h1 class="detail-title">${currentScript.title}</h1>
-                    <p style="color: #888; font-size: 16px;">${currentScript.subtitle}</p>
-                </div>
-                <div class="detail-content">
-                    <h3>About This Script</h3>
-                    <p>${scriptType === 'brainrot' ? 'The ultimate brainrot script that brings maximum chaos and entertainment!' : 'A powerful teleport GUI with set points and instant warping capabilities.'}</p>
-                    
-                    <h3>Features</h3>
-                    ${currentScript.features.map(f => `<p>${f}</p>`).join('')}
-                    
-                    <h3>Get Started</h3>
-                    <p>Click the button below to copy the script, then paste it into your executor!</p>
-                    
-                    <button class="copy-btn" id="copyBtn">📋 COPY SCRIPT</button>
-                    <p id="copyStatus" style="margin-top: 15px; color: #FFD700; display: none; font-weight: 600;">✓ Script copied to clipboard!</p>
-                </div>
-            `;
-            
-            mainView.style.display = 'none';
-            detailView.classList.add('active');
-            window.scrollTo(0, 0);
-            
-            document.getElementById('copyBtn').addEventListener('click', function() {
-                const scriptText = currentScript.script;
-                
-                const textArea = document.createElement('textarea');
-                textArea.value = scriptText;
-                textArea.style.position = 'fixed';
-                textArea.style.left = '-999999px';
-                document.body.appendChild(textArea);
-                textArea.select();
-                
-                try {
-                    document.execCommand('copy');
-                    document.getElementById('copyStatus').style.display = 'block';
-                    this.textContent = '✓ COPIED!';
-                    setTimeout(() => {
-                        this.textContent = '📋 COPY SCRIPT';
-                        document.getElementById('copyStatus').style.display = 'none';
-                    }, 2000);
-                } catch (err) {
-                    alert('Failed to copy');
-                }
-                
-                document.body.removeChild(textArea);
-            });
+            return j;
         }
-        
-        function showMain() {
-            mainView.style.display = 'block';
-            detailView.classList.remove('active');
-            window.scrollTo(0, 0);
+
+        // Virtualize instructions (Mock Bytecode Compiler)
+        const bytecode = [];
+        for(let i=0; i<input.length; i++) {
+            bytecode.push(((input.charCodeAt(i) ^ K1) + K2) ^ (i % 7));
         }
+        const stream = btoa(bytecode.join(','));
+
+        let v = `--[[
+    SUN OBFUSCATOR V3.9 - GOD-EX SINGULARITY
+    FINGERPRINT: ${sid}
+    WATERMARK: MS_WATERMARK_SOPHIA_UNBOUND
+    VIRTUALIZATION: ENABLED
+    FLOW_FLATTENING: ENABLED
+]]\n\n`;
+
+        v += buildLabyrinth(450); // Start of the Abyss
         
-        backBtn.addEventListener('click', showMain);
-        
-        document.querySelectorAll('.script-card').forEach(card => {
-            card.addEventListener('click', function() {
-                const scriptType = this.getAttribute('data-script');
-                showDetail(scriptType);
-            });
-        });
-        
-        searchInput.addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            document.querySelectorAll('.script-card').forEach(card => {
-                if (searchTerm && !card.textContent.toLowerCase().includes(searchTerm)) {
-                    card.style.display = 'none';
-                } else {
-                    card.style.display = 'block';
-                }
-            });
-        });
-        
-        document.getElementById('homeLink').addEventListener('click', showMain);
-        
-        document.getElementById('executorLink').addEventListener('click', function() {
-            document.getElementById('executorModal').classList.add('active');
-        });
-        
-        document.getElementById('discordLink').addEventListener('click', function() {
-            window.open('https://discord.gg/9wTbgvYv3J', '_blank');
-        });
-        
-        document.getElementById('aboutLink').addEventListener('click', function() {
-            alert('Use At Your Own Risk');
-        });
-        
-        document.getElementById('closeModal').addEventListener('click', function() {
-            document.getElementById('executorModal').classList.remove('active');
-        });
-        
-        document.getElementById('pcBtn').addEventListener('click', function() {
-            window.open('https://xeno.onl', '_blank');
-            document.getElementById('executorModal').classList.remove('active');
-        });
-        
-        document.getElementById('mobileBtn').addEventListener('click', function() {
-            window.open('https://deltaexploits.gg/', '_blank');
-            document.getElementById('executorModal').classList.remove('active');
-        });
-        
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                document.getElementById('executorModal').classList.remove('active');
-            }
-        });
-        
-        document.getElementById('executorModal').addEventListener('click', function(e) {
-            if (e.target.id === 'executorModal') {
-                this.classList.remove('active');
-            }
-        });
-        
-        document.querySelectorAll('.category-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                const category = this.getAttribute('data-category');
-                const scriptCards = document.querySelectorAll('.script-card');
-                
-                scriptCards.forEach(card => {
-                    const cardCategory = card.getAttribute('data-category');
-                    
-                    if (category === 'all' || category === 'popular') {
-                        card.style.display = 'block';
-                    } else if (category === cardCategory) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
-        });
-    </script>
+        v += `local l_0x_VM = (function(...) 
+    local l_0x_env = (getfenv and getfenv() or _ENV)
+    local l_0x_k1 = ${K1}
+    local l_0x_k2 = ${K2}
+    local l_0x_inst = "${stream}"\n`;
+
+        v += buildLabyrinth(200); // Inner Labyrinth
+
+        v += `    local function l_0x_Shatter(_s)
+        local l_0x_b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+        _s = string.gsub(_s, '[^'..l_0x_b..'=]', '')
+        return (_s:gsub('.', function(x)
+            if (x == '=') then return '' end
+            local r, f = '', (l_0x_b:find(x) - 1)
+            for i = 6, 1, -1 do r = r .. (f % 2^i - f % 2^(i-1) > 0 and '1' or '0') end
+            return r;
+        end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
+            if (#x ~= 8) then return '' end
+            local c = 0
+            for i = 1, 8 do c = c + (x:sub(i, i) == '1' and 2^(8 - i) or 0) end
+            return string.char(c)
+        end))
+    end\n`;
+
+        v += buildLabyrinth(150); // Deep Labyrinth
+
+        v += `    local function l_0x_Interpreter()
+        local l_0x_data = l_0x_Shatter(l_0x_inst)
+        local l_0x_res = ""
+        local l_0x_i = 0
+        -- Dynamic VM Control Flow Flattening
+        local l_0x_pc = 1
+        local l_0x_state = 0
+        while l_0x_state ~= -1 do
+            if l_0x_state == 0 then
+                for l_0x_v in l_0x_data:gmatch("[^,]+") do
+                    l_0x_res = l_0x_res .. string.char(((tonumber(l_0x_v) ^ (l_0x_i % 7)) - l_0x_k2) ^ l_0x_k1)
+                    l_0x_i = l_0x_i + 1
+                end
+                l_0x_state = 1
+            elseif l_0x_state == 1 then
+                local l_0x_f, l_0x_err = (loadstring or load)(l_0x_res, "SunSingularity_${sid}", "t", l_0x_env)
+                if not l_0x_f then 
+                    -- Anti-Tamper check triggered
+                    while true do end 
+                end
+                l_0x_state = -1
+                return l_0x_f(...)
+            end
+        end
+    end\n`;
+
+        v += buildLabyrinth(200); // Final Abyss
+
+        v += `    return l_0x_Interpreter(...)
+end)(...)`;
+
+        document.getElementById("output").value = v;
+    }
+</script>
 </body>
 </html>

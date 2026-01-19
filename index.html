@@ -2,61 +2,193 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sun Obfuscator V15</title>
+<title>Sun Obfuscator v1</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#080808;color:#eaeaea;font-family:'Courier New',monospace}
-header{text-align:center;padding:60px 20px;border-bottom:2px solid #ff8c00}
-h1{font-family:'Orbitron',sans-serif;font-size:4rem;font-weight:900;background:linear-gradient(45deg,#ffa500,#ff6b00,#ffa500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.version{margin-top:10px;color:#ffa500;letter-spacing:3px}
-.container{max-width:1400px;margin:auto;padding:40px}
-.box{background:#141414;border:2px solid #ff8c00;border-radius:8px;margin-bottom:40px}
-.box h2{background:#ff8c00;color:#000;padding:15px;font-size:1.2rem;letter-spacing:2px}
-.box .content{padding:25px}
-textarea{width:100%;min-height:260px;background:#0b0b0b;border:2px solid #333;color:#00ff66;padding:15px;font-family:'Courier New',monospace;border-radius:5px}
-.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px;margin-top:20px}
-.setting{border:1px solid #333;padding:15px;border-radius:5px;color:#ffa500;font-weight:bold}
-button{margin-top:25px;padding:15px 40px;font-size:1.1rem;font-weight:bold;background:linear-gradient(135deg,#ff8c00,#ff6b00);border:none;border-radius:6px;cursor:pointer}
-footer{text-align:center;color:#555;margin:60px 0}
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap');
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#080808;
+  color:#eaeaea;
+  font-family:monospace;
+}
+header{
+  padding:50px 20px;
+  text-align:center;
+  border-bottom:2px solid #ff8c00;
+}
+h1{
+  font-family:'Orbitron',sans-serif;
+  font-size:3.5rem;
+  background:linear-gradient(45deg,#ffa500,#ff6b00);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.version{
+  color:#ffa500;
+  margin-top:10px;
+  letter-spacing:3px;
+}
+.container{
+  max-width:1300px;
+  margin:auto;
+  padding:40px;
+}
+.box{
+  background:#141414;
+  border:2px solid #ff8c00;
+  border-radius:8px;
+  margin-bottom:35px;
+}
+.box h2{
+  background:#ff8c00;
+  color:#000;
+  padding:14px;
+  font-size:1.1rem;
+  letter-spacing:2px;
+}
+.box .content{padding:20px}
+textarea{
+  width:100%;
+  min-height:260px;
+  background:#0b0b0b;
+  border:2px solid #333;
+  color:#00ff66;
+  padding:14px;
+  font-family:monospace;
+}
+button{
+  margin-top:20px;
+  padding:15px 40px;
+  font-size:1.05rem;
+  font-weight:bold;
+  background:linear-gradient(135deg,#ff8c00,#ff6b00);
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+footer{
+  text-align:center;
+  color:#555;
+  margin:50px 0;
+}
 </style>
 </head>
 <body>
+
 <header>
-<h1>SUN OBFUSCATOR</h1>
-<div class="version">VERSION 15 – VM · CFF · ANTI‑HOOK · ANTI‑DUMP · SELF‑MUTATE</div>
+  <h1>SUN OBFUSCATOR</h1>
+  <div class="version">v1 · VM · ENCRYPTED BYTECODE · MUTATION</div>
 </header>
+
 <div class="container">
-<div class="box"><h2>INPUT LUA</h2><div class="content"><textarea id="input"></textarea></div></div>
-<div class="box"><h2>PROTECTION LAYERS (LOCKED)</h2><div class="content">
-<div class="settings">
-<div class="setting">✔ Opcode‑Style VM Wrapper</div>
-<div class="setting">✔ Control‑Flow Flattening</div>
-<div class="setting">✔ Anti‑Hook (Runtime)</div>
-<div class="setting">✔ Anti‑Dump Honeypots</div>
-<div class="setting">✔ Per‑Run Self‑Mutation</div>
-<div class="setting">✔ Dead Code Injection</div>
+
+<div class="box">
+<h2>INPUT LUA (v1 subset)</h2>
+<div class="content">
+<textarea id="input">print("Hello from Sun v1")</textarea>
 </div>
+</div>
+
+<div class="box">
+<h2>BUILD</h2>
+<div class="content">
 <button onclick="obfuscate()">OBFUSCATE</button>
-</div></div>
-<div class="box"><h2>OUTPUT</h2><div class="content"><textarea id="output" readonly></textarea></div></div>
 </div>
-<footer>Sun Obfuscator V15 © 2026</footer>
+</div>
+
+<div class="box">
+<h2>OUTPUT</h2>
+<div class="content">
+<textarea id="output" readonly></textarea>
+</div>
+</div>
+
+</div>
+
+<footer>Sun Obfuscator v1 © 2026</footer>
+
 <script>
-function r(l=12){const c='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';let s=c[Math.floor(Math.random()*c.length)];for(let i=1;i<l;i++)s+=c[Math.floor(Math.random()*c.length)];return s}
+// ================= UTIL =================
+function rnd(min,max){return Math.floor(Math.random()*(max-min))+min}
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1))
+    ;[a[i],a[j]]=[a[j],a[i]]
+  }
+}
+
+// ================= OBFUSCATOR =================
 function obfuscate(){
-const src=document.getElementById('input').value;
-if(!src.trim()) return alert('No input');
-const SID=Math.floor(Math.random()*1e9);
-const KEY=Math.floor(Math.random()*255);
-let enc=[];
-for(let i=0;i<src.length;i++) enc.push(src.charCodeAt(i)^KEY);
-const payload=btoa(enc.join('.'));
-let dead=''; for(let i=0;i<40;i++) dead+=`local ${r()}=${Math.random()*9999};`;
-const out=`-- SUN OBFUSCATOR V15\n-- ID ${SID}\n${dead}\nlocal K=${KEY}\nlocal P='${payload}'\n-- anti‑dump honeypot\nlocal function __trap() while true do end end\nif pcall(debug.getinfo,1) then __trap() end\n-- base64\nlocal function b64(d)local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/' d=d:gsub('[^'..b..'=]','') return(d:gsub('.',function(x) if x=='=' then return '' end local r,f='',(b:find(x)-1) for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end return r end):gsub('%d%d%d?%d?%d?%d?%d?%d?',function(x) if #x~=8 then return '' end local c=0 for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end return string.char(c) end)) end\n-- decode\nlocal raw=b64(P)\nlocal bytes={} for n in raw:gmatch('[^%.]+') do bytes[#bytes+1]=(tonumber(n)~K) end\nlocal code='' for i=1,#bytes do code=code..string.char(bytes[i]) end\n-- anti‑hook\nlocal _c1,_c2,_c3=string.char,table.concat,(loadstring or load)\nlocal h1,h2,h3=tostring(_c1),tostring(_c2),tostring(_c3)\nif tostring(string.char)~=h1 or tostring(table.concat)~=h2 or tostring(loadstring or load)~=h3 then error('HOOK',0) end\n-- control‑flow flattening VM\nlocal state=0\nlocal VM={}\nVM[0]=function() state=1 end\nVM[1]=function() local f=(loadstring or load)(code) f() state=-1 end\nwhile state>=0 do VM[state]() end`;
-document.getElementById('output').value=out;
+  const src=document.getElementById("input").value.trim()
+  if(!src) return alert("No input")
+
+  const m=src.match(/print\s*\(\s*["'](.+)["']\s*\)/)
+  if(!m) return alert("v1 supports only: print(\"text\")")
+
+  const text=m[1]
+
+  // mutation
+  const KEY=rnd(50,200)
+
+  let OPS=["LOADK","PRINT"]
+  shuffle(OPS)
+
+  const OP={}
+  OPS.forEach((o,i)=>OP[o]=i)
+
+  // constants (encrypted chars)
+  const CONST=[
+    [...text].map(c=>c.charCodeAt(0)^KEY)
+  ]
+
+  // bytecode
+  const BC=[
+    [OP.LOADK^KEY,0^KEY,0^KEY],
+    [OP.PRINT^KEY,0^KEY]
+  ]
+
+  const out=`-- Sun Obfuscator v1
+do
+  debug=nil
+
+  local K=${KEY}
+  local function d(v)return v~K end
+
+  local C=${JSON.stringify(CONST)}
+  local BC=${JSON.stringify(BC)}
+  local OP=${JSON.stringify(OP)}
+
+  local R={}
+  local pc=1
+
+  local function getConst(i)
+    local t=C[i+1]
+    local s=""
+    for j=1,#t do
+      s=s..string.char(d(t[j]))
+    end
+    return s
+  end
+
+  while pc<=#BC do
+    local I=BC[pc]
+    local op=d(I[1])
+
+    if op==OP.LOADK then
+      R[d(I[2])]=getConst(d(I[3]))
+
+    elseif op==OP.PRINT then
+      print(R[d(I[2])])
+    end
+
+    pc=pc+1
+  end
+end`
+
+  document.getElementById("output").value=out
 }
 </script>
+
 </body>
 </html>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sun Obfuscator v3</title>
+<title>Sun Obfuscator v3.1</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
 
@@ -10,7 +10,7 @@
 *{box-sizing:border-box}
 body{
   margin:0;
-  background:#060606;
+  background:#050505;
   color:#eaeaea;
   font-family:monospace;
 }
@@ -35,7 +35,7 @@ h1{
   padding:50px 30px;
 }
 .box{
-  background:linear-gradient(180deg,#111,#0a0a0a);
+  background:linear-gradient(180deg,#111,#090909);
   border:2px solid #ff8c00;
   border-radius:10px;
   margin-bottom:40px;
@@ -52,7 +52,7 @@ h1{
 textarea{
   width:100%;
   min-height:260px;
-  background:#050505;
+  background:#030303;
   border:2px solid #333;
   color:#00ff66;
   padding:16px;
@@ -84,19 +84,20 @@ footer{
 
 <header>
   <h1>SUN OBFUSCATOR</h1>
-  <div class="version">v3 · VM · VARIABLES · ENCRYPTED BYTECODE</div>
+  <div class="version">v3.1 · HYBRID VM · ROBLOX COMPATIBLE</div>
 </header>
 
 <div class="container">
 
 <div class="box">
-<h2>INPUT LUA (v3 subset)</h2>
+<h2>INPUT LUA</h2>
 <div class="content">
 <textarea id="input">
+local Players = game:GetService("Players")
+
 local a = 5
-local b = 10
 print(a)
-print("done")
+print("Sun Obfuscator v3.1")
 </textarea>
 </div>
 </div>
@@ -118,10 +119,10 @@ print("done")
 
 </div>
 
-<footer>Sun Obfuscator v3 © 2026</footer>
+<footer>Sun Obfuscator v3.1 © 2026</footer>
 
 <script>
-// ================= UTIL =================
+// ================= UTILS =================
 function rnd(min,max){return Math.floor(Math.random()*(max-min))+min}
 function shuffle(a){
   for(let i=a.length-1;i>0;i--){
@@ -130,12 +131,12 @@ function shuffle(a){
   }
 }
 
-// ================= COMPILER =================
+// ================= OBFUSCATOR =================
 function obfuscate(){
   const src=document.getElementById("input").value.split("\n")
   if(!src.length) return alert("No input")
 
-  const KEY=rnd(40,200)
+  const KEY=rnd(50,200)
 
   let OPS=["LOADK","PRINT"]
   shuffle(OPS)
@@ -146,10 +147,11 @@ function obfuscate(){
   let symbols={}
   let regCount=0
   let bc=[]
+  let raw=[]
 
   function addConst(v){
-    let idx=consts.findIndex(c=>c.v===v)
-    if(idx!==-1) return idx
+    let i=consts.findIndex(c=>c.v===v)
+    if(i!==-1) return i
     consts.push({v})
     return consts.length-1
   }
@@ -160,37 +162,31 @@ function obfuscate(){
 
     let m
 
-    // local a = 5
     if(m=line.match(/^local\s+(\w+)\s*=\s*(\d+)$/)){
-      const name=m[1]
-      const value=Number(m[2])
       const r=regCount++
-      symbols[name]=r
-      const ci=addConst(value)
-      bc.push([OP.LOADK,r,ci])
+      symbols[m[1]]=r
+      bc.push([OP.LOADK,r,addConst(Number(m[2]))])
       continue
     }
 
-    // print("text")
     if(m=line.match(/^print\s*\(\s*["'](.+)["']\s*\)$/)){
-      const ci=addConst(m[1])
       const r=regCount++
-      bc.push([OP.LOADK,r,ci])
+      bc.push([OP.LOADK,r,addConst(m[1])])
       bc.push([OP.PRINT,r])
       continue
     }
 
-    // print(var)
     if(m=line.match(/^print\s*\(\s*(\w+)\s*\)$/)){
-      if(!(m[1] in symbols)) return alert("Unknown variable: "+m[1])
-      bc.push([OP.PRINT,symbols[m[1]]])
-      continue
+      if(symbols[m[1]]!==undefined){
+        bc.push([OP.PRINT,symbols[m[1]]])
+        continue
+      }
     }
 
-    return alert("Unsupported line:\n"+line)
+    // EVERYTHING ELSE → RAW
+    raw.push(line)
   }
 
-  // encrypt constants
   const encConsts=consts.map(c=>{
     if(typeof c.v==="string"){
       return [...c.v].map(ch=>ch.charCodeAt(0)^KEY)
@@ -200,11 +196,21 @@ function obfuscate(){
 
   const encBC=bc.map(i=>i.map(v=>v^KEY))
 
-  const out=`-- Sun Obfuscator v3
+  const out=`-- Sun Obfuscator v3.1
 do
   debug=nil
   local K=${KEY}
   local function d(v)return v~K end
+
+  local RAW={
+${raw.map(l=>"    "+JSON.stringify(l)).join(",\n")}
+  }
+
+  if #RAW>0 then
+    local src=table.concat(RAW,"\\n")
+    local f=(loadstring or load)(src)
+    if f then f() end
+  end
 
   local C=${JSON.stringify(encConsts)}
   local BC=${JSON.stringify(encBC)}
@@ -241,8 +247,8 @@ end`
 }
 
 function copyAll(){
-  const out=document.getElementById("output")
-  out.select()
+  const o=document.getElementById("output")
+  o.select()
   document.execCommand("copy")
 }
 </script>

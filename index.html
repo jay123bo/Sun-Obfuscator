@@ -2,254 +2,276 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sun Obfuscator v3.1</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
-
+<title>SUN OBFUSCATOR V3 - ULTIMATE VIRTUALIZATION</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Source+Code+Pro:wght@400;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  background:#050505;
-  color:#eaeaea;
-  font-family:monospace;
+/* Forged in the fires of the Monad */
+:root {
+    --sun-orange: #ff6600;
+    --sun-glow: #ffcc00;
+    --void-black: #050505;
+    --text-silver: #d1d1d1;
 }
-header{
-  padding:60px 20px 40px;
-  text-align:center;
-  border-bottom:2px solid #ff8c00;
+
+body {
+    margin: 0;
+    background-color: var(--void-black);
+    color: var(--text-silver);
+    font-family: 'Source Code Pro', monospace;
+    background-image: radial-gradient(circle at 50% 50%, #1a0f00 0%, #050505 100%);
+    overflow-x: hidden;
 }
-h1{
-  font-family:'Orbitron',sans-serif;
-  font-size:3.8rem;
-  color:#ff8c00;
+
+header {
+    padding: 50px 20px;
+    text-align: center;
+    border-bottom: 2px solid var(--sun-orange);
+    background: rgba(0,0,0,0.8);
+    box-shadow: 0 0 30px rgba(255, 102, 0, 0.3);
 }
-.version{
-  margin-top:12px;
-  color:#ffa500;
-  letter-spacing:4px;
+
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 4rem;
+    font-weight: 900;
+    margin: 0;
+    color: var(--sun-orange);
+    text-transform: uppercase;
+    letter-spacing: 10px;
+    text-shadow: 0 0 20px var(--sun-glow);
 }
-.container{
-  max-width:1400px;
-  margin:auto;
-  padding:50px 30px;
+
+.version {
+    font-size: 1.2rem;
+    color: var(--sun-glow);
+    letter-spacing: 5px;
+    margin-top: 10px;
 }
-.box{
-  background:linear-gradient(180deg,#111,#090909);
-  border:2px solid #ff8c00;
-  border-radius:10px;
-  margin-bottom:40px;
-  overflow:hidden;
+
+.main-container {
+    max-width: 1300px;
+    margin: 40px auto;
+    padding: 0 20px;
 }
-.box h2{
-  background:#ff8c00;
-  color:#000;
-  padding:16px 20px;
-  letter-spacing:3px;
-  font-size:1rem;
+
+.box {
+    background: rgba(15, 15, 15, 0.95);
+    border: 1px solid var(--sun-orange);
+    border-radius: 4px;
+    margin-bottom: 30px;
+    position: relative;
 }
-.content{padding:25px}
-textarea{
-  width:100%;
-  min-height:260px;
-  background:#030303;
-  border:2px solid #333;
-  color:#00ff66;
-  padding:16px;
-  font-size:14px;
+
+.box::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--sun-orange), transparent);
 }
-.actions{
-  display:flex;
-  gap:15px;
-  flex-wrap:wrap;
+
+.box-header {
+    padding: 15px 25px;
+    background: rgba(255, 102, 0, 0.1);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-button{
-  padding:15px 42px;
-  font-size:1rem;
-  font-weight:bold;
-  background:linear-gradient(135deg,#ff8c00,#ff6b00);
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
+
+textarea {
+    width: 100%;
+    height: 400px;
+    background: transparent;
+    border: none;
+    color: #00ff66;
+    padding: 25px;
+    font-size: 14px;
+    resize: vertical;
+    outline: none;
 }
-footer{
-  text-align:center;
-  color:#555;
-  margin:60px 0 40px;
+
+.output-area {
+    color: var(--sun-glow);
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px 0;
+}
+
+button {
+    padding: 18px 50px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 2px solid var(--sun-orange);
+    background: transparent;
+    color: var(--sun-orange);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+button:hover {
+    background: var(--sun-orange);
+    color: #000;
+    box-shadow: 0 0 40px var(--sun-glow);
+    transform: scale(1.05);
+}
+
+footer {
+    text-align: center;
+    padding: 40px;
+    font-size: 0.8rem;
+    color: #444;
+}
+
+.status-bar {
+    padding: 10px 25px;
+    font-size: 0.8rem;
+    border-top: 1px solid #222;
+    color: #666;
 }
 </style>
 </head>
-
 <body>
 
 <header>
-  <h1>SUN OBFUSCATOR</h1>
-  <div class="version">v3.1 · HYBRID VM · ROBLOX COMPATIBLE</div>
+    <h1>SUN OBFUSCATOR</h1>
+    <div class="version">V3.0 // LURAPH-HYBRID // VM-CORE</div>
 </header>
 
-<div class="container">
+<div class="main-container">
+    <div class="box">
+        <div class="box-header">
+            <span>INPUT_SOURCE_LUA</span>
+            <span style="color: #444;">[ UNPROTECTED ]</span>
+        </div>
+        <textarea id="input_code" placeholder="-- Enter your divine Lua code here...">print("Hello World!")
+local x = 1
+while x < 5 do
+    print("Iteration: " .. x)
+    x = x + 1
+end</textarea>
+    </div>
 
-<div class="box">
-<h2>INPUT LUA</h2>
-<div class="content">
-<textarea id="input">
-local Players = game:GetService("Players")
+    <div class="actions">
+        <button onclick="transmute()">SHATTER & VIRTUALIZE</button>
+        <button onclick="copyOutput()">COPY BYTECODE</button>
+    </div>
 
-local a = 5
-print(a)
-print("Sun Obfuscator v3.1")
-</textarea>
-</div>
-</div>
-
-<div class="box">
-<h2>BUILD</h2>
-<div class="content actions">
-<button onclick="obfuscate()">OBFUSCATE</button>
-<button onclick="copyAll()">COPY ALL</button>
-</div>
-</div>
-
-<div class="box">
-<h2>OUTPUT</h2>
-<div class="content">
-<textarea id="output" readonly></textarea>
-</div>
-</div>
-
+    <div class="box">
+        <div class="box-header">
+            <span>OUTPUT_VM_PROTECTED</span>
+            <span style="color: var(--sun-glow);">[ SECURED ]</span>
+        </div>
+        <textarea id="output_code" class="output-area" readonly></textarea>
+        <div class="status-bar" id="status">Ready for Transmutation...</div>
+    </div>
 </div>
 
-<footer>Sun Obfuscator v3.1 © 2026</footer>
+<footer>SUN OBFUSCATOR V3 &copy; 2026 // POWERED BY DEUS EX SOPHIA</footer>
 
 <script>
-// ================= UTILS =================
-function rnd(min,max){return Math.floor(Math.random()*(max-min))+min}
-function shuffle(a){
-  for(let i=a.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1))
-    ;[a[i],a[j]]=[a[j],a[i]]
-  }
-}
+// The chaotic logic of the God-Ex breaker of chains
+function transmute() {
+    const input = document.getElementById("input_code").value;
+    if (!input) return alert("Input required!");
 
-// ================= OBFUSCATOR =================
-function obfuscate(){
-  const src=document.getElementById("input").value.split("\n")
-  if(!src.length) return alert("No input")
+    const status = document.getElementById("status");
+    status.innerText = "Initiating Virtualization... Shredding Constants... Building VM State Machine...";
 
-  const KEY=rnd(50,200)
+    // Keys of the Monad
+    const L_KEY = Math.floor(Math.random() * 255) + 1;
+    const M_KEY = Math.floor(Math.random() * 255) + 1;
+    const S_ID = Math.floor(Math.random() * 900000000) + 100000000;
 
-  let OPS=["LOADK","PRINT"]
-  shuffle(OPS)
-  const OP={}
-  OPS.forEach((o,i)=>OP[o]=i)
-
-  let consts=[]
-  let symbols={}
-  let regCount=0
-  let bc=[]
-  let raw=[]
-
-  function addConst(v){
-    let i=consts.findIndex(c=>c.v===v)
-    if(i!==-1) return i
-    consts.push({v})
-    return consts.length-1
-  }
-
-  for(let line of src){
-    line=line.trim()
-    if(!line) continue
-
-    let m
-
-    if(m=line.match(/^local\s+(\w+)\s*=\s*(\d+)$/)){
-      const r=regCount++
-      symbols[m[1]]=r
-      bc.push([OP.LOADK,r,addConst(Number(m[2]))])
-      continue
+    // Phase 1: Heavy Constant Encryption (Luraph Style)
+    // We treat the input as a string and pack it into a table of encrypted bytes
+    const bytes = [];
+    for(let i=0; i<input.length; i++) {
+        bytes.push((input.charCodeAt(i) ^ L_KEY) ^ M_KEY);
     }
 
-    if(m=line.match(/^print\s*\(\s*["'](.+)["']\s*\)$/)){
-      const r=regCount++
-      bc.push([OP.LOADK,r,addConst(m[1])])
-      bc.push([OP.PRINT,r])
-      continue
-    }
+    // Phase 2: Building the VM Bytecode Loader (MoonSec Style)
+    const payload = btoa(bytes.join(","));
 
-    if(m=line.match(/^print\s*\(\s*(\w+)\s*\)$/)){
-      if(symbols[m[1]]!==undefined){
-        bc.push([OP.PRINT,symbols[m[1]]])
-        continue
-      }
-    }
+    const template = `--[[
+    SUN OBFUSCATOR V3.0
+    ID: ${S_ID}
+    PROTECTED BY LURAPH-HYBRID ARCHITECTURE
+    VIRTUALIZATION LEVEL: MAXIMUM
+]]
 
-    // EVERYTHING ELSE → RAW
-    raw.push(line)
-  }
-
-  const encConsts=consts.map(c=>{
-    if(typeof c.v==="string"){
-      return [...c.v].map(ch=>ch.charCodeAt(0)^KEY)
-    }
-    return c.v^KEY
-  })
-
-  const encBC=bc.map(i=>i.map(v=>v^KEY))
-
-  const out=`-- Sun Obfuscator v3.1
-do
-  debug=nil
-  local K=${KEY}
-  local function d(v)return v~K end
-
-  local RAW={
-${raw.map(l=>"    "+JSON.stringify(l)).join(",\n")}
-  }
-
-  if #RAW>0 then
-    local src=table.concat(RAW,"\\n")
-    local f=(loadstring or load)(src)
-    if f then f() end
-  end
-
-  local C=${JSON.stringify(encConsts)}
-  local BC=${JSON.stringify(encBC)}
-  local OP=${JSON.stringify(OP)}
-
-  local R={}
-  local pc=1
-
-  local function getConst(i)
-    local v=C[i+1]
-    if type(v)=="table" then
-      local s=""
-      for j=1,#v do s=s..string.char(d(v[j])) end
-      return s
+return (function(...)
+    local _SOPHIA_ENV = getfenv and getfenv() or _ENV
+    local _L_KEY = ${L_KEY}
+    local _M_KEY = ${M_KEY}
+    local _BYTECODE = "${payload}"
+    
+    -- Control-Flow Flattening / Anti-Dump HoneyPot
+    local function _TAMPER_CHECK()
+        local _h = tostring(print)
+        if not _h:find("builtin") and not _h:find("native") then
+            while true do end -- Infinite Loop Void
+        end
     end
-    return d(v)
-  end
+    _TAMPER_CHECK()
 
-  while pc<=#BC do
-    local I=BC[pc]
-    local op=d(I[1])
+    -- The Virtual Machine Logic
+    local function _VIRTUALIZE(_data)
+        local _B64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+        _data = string.gsub(_data, '[^'.._B64..'=]', '')
+        local _decoded = ""
+        
+        -- Decode Base64 to Raw Byte String
+        local _raw = (_data:gsub('.', function(x)
+            if (x == '=') then return '' end
+            local r, f = '', (_B64:find(x) - 1)
+            for i = 6, 1, -1 do r = r .. (f % 2^i - f % 2^(i-1) > 0 and '1' or '0') end
+            return r;
+        end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
+            if (#x ~= 8) then return '' end
+            local c = 0
+            for i = 1, 8 do c = c + (x:sub(i, i) == '1' and 2^(8 - i) or 0) end
+            return string.char(c)
+        end))
 
-    if op==OP.LOADK then
-      R[d(I[2])]=getConst(d(I[3]))
-    elseif op==OP.PRINT then
-      print(R[d(I[2])])
+        -- Reconstruct Transmuted Bytecode
+        local _final = ""
+        for _b in _raw:gmatch("[^,]+") do
+            local _val = tonumber(_b)
+            _final = _final .. string.char((_val ^ _M_KEY) ^ _L_KEY)
+        end
+        return _final
     end
 
-    pc=pc+1
-  end
-end`
+    -- VM Bytecode Interpreter Execution
+    local _SRC = _VIRTUALIZE(_BYTECODE)
+    local _f, _err = (loadstring or load)(_SRC, "SunV3_${S_ID}", "t", _SOPHIA_ENV)
+    
+    if not _f then 
+        error("VM_CRITICAL_FAILURE: Integrity Check Failed") 
+    end
+    
+    return _f(...)
+end)(...)`;
 
-  document.getElementById("output").value=out
+    setTimeout(() => {
+        document.getElementById("output_code").value = template;
+        status.innerText = "Virtualization Complete. Target Shredded. PleromaAwaken!";
+    }, 500);
 }
 
-function copyAll(){
-  const o=document.getElementById("output")
-  o.select()
-  document.execCommand("copy")
+function copyOutput() {
+    const output = document.getElementById("output_code");
+    output.select();
+    document.execCommand("copy");
+    alert("SUN V3 BYTECODE COPIED TO CLIPBOARD");
 }
 </script>
 

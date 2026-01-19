@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sun Obfuscator V4 - True VM Protection</title>
+    <title>Sun Obfuscator V4 - VM Protection</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
         
@@ -13,27 +13,11 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --primary: #ff8c00;
-            --primary-dark: #ff6b00;
-            --primary-light: #ffa500;
-            --bg-dark: #0a0a0a;
-            --bg-card: #1a1a1a;
-            --bg-hover: #252525;
-            --border: #333;
-            --text: #e0e0e0;
-            --text-dim: #888;
-            --success: #00ff88;
-            --warning: #ffaa00;
-            --danger: #ff4444;
-        }
-
         body {
             font-family: 'Rajdhani', sans-serif;
-            background: var(--bg-dark);
-            color: var(--text);
+            background: #0a0a0a;
+            color: #e0e0e0;
             overflow-x: hidden;
-            line-height: 1.6;
         }
 
         .bg-animation {
@@ -44,7 +28,6 @@
             height: 100%;
             pointer-events: none;
             z-index: 0;
-            overflow: hidden;
         }
 
         .stars {
@@ -61,8 +44,8 @@
         }
 
         @keyframes twinkle {
-            0%, 100% { opacity: 0.2; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.2); }
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.8; }
         }
 
         .sun-glow {
@@ -71,30 +54,14 @@
             right: -200px;
             width: 600px;
             height: 600px;
-            background: radial-gradient(circle, rgba(255,165,0,0.25) 0%, rgba(255,107,0,0.1) 40%, transparent 70%);
+            background: radial-gradient(circle, rgba(255,165,0,0.25) 0%, transparent 70%);
             border-radius: 50%;
             animation: pulseGlow 6s ease-in-out infinite;
         }
 
         @keyframes pulseGlow {
-            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.3; }
-            50% { transform: scale(1.2) rotate(180deg); opacity: 0.5; }
-        }
-
-        .grid-overlay {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(255,140,0,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,140,0,0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: gridMove 20s linear infinite;
-        }
-
-        @keyframes gridMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.2); opacity: 0.5; }
         }
 
         header {
@@ -103,23 +70,21 @@
             padding: 50px 20px 30px;
             text-align: center;
             background: linear-gradient(180deg, rgba(26,26,26,0.95) 0%, rgba(10,10,10,0.8) 100%);
-            border-bottom: 3px solid var(--primary);
+            border-bottom: 3px solid #ff8c00;
             box-shadow: 0 10px 40px rgba(255,140,0,0.2);
         }
 
         h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 4.5rem;
+            font-size: 4rem;
             font-weight: 900;
-            background: linear-gradient(135deg, #ffa500 0%, #ff6b00 50%, #ffa500 100%);
+            background: linear-gradient(135deg, #ffa500, #ff6b00, #ffa500);
             background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
             animation: gradientFlow 4s ease infinite;
             letter-spacing: 10px;
             margin-bottom: 15px;
-            text-shadow: 0 0 60px rgba(255,140,0,0.5);
         }
 
         @keyframes gradientFlow {
@@ -128,10 +93,9 @@
         }
 
         .subtitle {
-            font-size: 1.3rem;
-            color: var(--text-dim);
+            font-size: 1.2rem;
+            color: #888;
             letter-spacing: 4px;
-            font-weight: 300;
             margin-bottom: 20px;
         }
 
@@ -141,28 +105,26 @@
             gap: 12px;
             padding: 12px 30px;
             background: rgba(255,140,0,0.1);
-            border: 2px solid var(--primary);
+            border: 2px solid #ff8c00;
             border-radius: 30px;
-            color: var(--primary-light);
+            color: #ffa500;
             font-size: 1rem;
             font-weight: 700;
             letter-spacing: 3px;
-            margin-top: 10px;
-            box-shadow: 0 0 20px rgba(255,140,0,0.3);
         }
 
         .status-indicator {
             width: 10px;
             height: 10px;
-            background: var(--success);
+            background: #00ff88;
             border-radius: 50%;
             animation: pulse 2s ease-in-out infinite;
-            box-shadow: 0 0 10px var(--success);
+            box-shadow: 0 0 10px #00ff88;
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.3); }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
 
         .container {
@@ -181,40 +143,23 @@
         }
 
         .stat-card {
-            background: linear-gradient(135deg, rgba(26,26,26,0.95) 0%, rgba(20,20,20,0.95) 100%);
-            border: 2px solid var(--border);
+            background: rgba(26,26,26,0.95);
+            border: 2px solid #333;
             border-radius: 12px;
             padding: 20px;
             text-align: center;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,140,0,0.1), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .stat-card:hover::before {
-            left: 100%;
         }
 
         .stat-card:hover {
-            border-color: var(--primary);
+            border-color: #ff8c00;
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(255,140,0,0.3);
         }
 
         .stat-label {
             font-size: 0.9rem;
-            color: var(--text-dim);
+            color: #888;
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 8px;
@@ -223,27 +168,25 @@
         .stat-value {
             font-size: 2rem;
             font-weight: 700;
-            color: var(--primary-light);
+            color: #ffa500;
             font-family: 'Orbitron', sans-serif;
         }
 
         .obf-box {
-            background: linear-gradient(135deg, rgba(26,26,26,0.98) 0%, rgba(15,15,15,0.98) 100%);
-            border: 2px solid var(--border);
+            background: rgba(26,26,26,0.98);
+            border: 2px solid #333;
             border-radius: 15px;
             margin: 30px 0;
             overflow: hidden;
             box-shadow: 0 10px 50px rgba(0,0,0,0.5);
-            transition: all 0.3s ease;
         }
 
         .obf-box:hover {
-            border-color: var(--primary);
-            box-shadow: 0 15px 60px rgba(255,140,0,0.25);
+            border-color: #ff8c00;
         }
 
         .box-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: linear-gradient(135deg, #ff8c00, #ff6b00);
             padding: 20px 30px;
             font-weight: 700;
             font-size: 1.4rem;
@@ -252,32 +195,10 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .box-header::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { left: -100%; }
-            50% { left: 100%; }
         }
 
         .box-content {
             padding: 35px;
-        }
-
-        .code-wrapper {
-            position: relative;
         }
 
         .code-header {
@@ -289,7 +210,7 @@
 
         .code-label {
             font-size: 0.9rem;
-            color: var(--text-dim);
+            color: #888;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
@@ -301,8 +222,8 @@
 
         .icon-btn {
             background: rgba(255,140,0,0.1);
-            border: 1px solid var(--primary);
-            color: var(--primary);
+            border: 1px solid #ff8c00;
+            color: #ff8c00;
             padding: 8px 15px;
             border-radius: 6px;
             cursor: pointer;
@@ -312,17 +233,16 @@
         }
 
         .icon-btn:hover {
-            background: var(--primary);
+            background: #ff8c00;
             color: #000;
-            transform: translateY(-2px);
         }
 
         textarea {
             width: 100%;
             min-height: 350px;
             background: #0d0d0d;
-            border: 2px solid var(--border);
-            color: var(--success);
+            border: 2px solid #333;
+            color: #00ff00;
             font-family: 'Courier New', monospace;
             font-size: 1rem;
             padding: 25px;
@@ -334,13 +254,8 @@
         }
 
         textarea:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(255,140,0,0.4), inset 0 0 20px rgba(255,140,0,0.05);
-            background: #111;
-        }
-
-        textarea::placeholder {
-            color: #444;
+            border-color: #ff8c00;
+            box-shadow: 0 0 20px rgba(255,140,0,0.4);
         }
 
         .settings-grid {
@@ -353,32 +268,13 @@
         .setting-item {
             background: rgba(20,20,20,0.8);
             padding: 25px;
-            border: 2px solid var(--border);
+            border: 2px solid #333;
             border-radius: 10px;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .setting-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--primary);
-            transform: scaleY(0);
-            transition: transform 0.3s ease;
-        }
-
-        .setting-item:hover::before {
-            transform: scaleY(1);
         }
 
         .setting-item:hover {
-            border-color: var(--primary);
-            background: rgba(30,30,30,0.9);
+            border-color: #ff8c00;
             transform: translateX(5px);
         }
 
@@ -387,7 +283,7 @@
             align-items: center;
             gap: 15px;
             cursor: pointer;
-            color: var(--primary-light);
+            color: #ffa500;
             font-weight: 700;
             font-size: 1.1rem;
         }
@@ -396,71 +292,19 @@
             width: 24px;
             height: 24px;
             cursor: pointer;
-            accent-color: var(--primary);
+            accent-color: #ff8c00;
         }
 
         .setting-description {
-            color: var(--text-dim);
+            color: #888;
             font-size: 0.95rem;
             margin-top: 12px;
-            line-height: 1.6;
             padding-left: 39px;
         }
 
-        .advanced-settings {
-            margin-top: 30px;
-            padding: 25px;
-            background: rgba(15,15,15,0.6);
-            border: 2px dashed var(--border);
-            border-radius: 10px;
-        }
-
-        .advanced-header {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .input-group {
-            margin: 15px 0;
-        }
-
-        .input-group label {
-            display: block;
-            color: var(--text-dim);
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .input-group input[type="text"],
-        .input-group select {
-            width: 100%;
-            background: #0d0d0d;
-            border: 2px solid var(--border);
-            color: var(--text);
-            padding: 12px 15px;
-            border-radius: 6px;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .input-group input[type="text"]:focus,
-        .input-group select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(255,140,0,0.3);
-        }
-
         .script-info {
-            background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%);
-            border: 2px solid var(--primary);
+            background: #0d0d0d;
+            border: 2px solid #ff8c00;
             padding: 25px;
             margin: 25px 0;
             border-radius: 10px;
@@ -475,7 +319,7 @@
 
         .info-label {
             font-size: 0.85rem;
-            color: var(--text-dim);
+            color: #888;
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 8px;
@@ -483,10 +327,9 @@
 
         .info-value {
             font-family: 'Orbitron', monospace;
-            color: var(--primary-light);
+            color: #ffa500;
             font-size: 1.3rem;
             font-weight: 700;
-            letter-spacing: 2px;
             word-break: break-all;
         }
 
@@ -500,7 +343,7 @@
 
         button {
             padding: 18px 45px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: linear-gradient(135deg, #ff8c00, #ff6b00);
             color: #000;
             border: none;
             border-radius: 8px;
@@ -510,27 +353,7 @@
             transition: all 0.3s ease;
             letter-spacing: 2px;
             box-shadow: 0 8px 25px rgba(255,140,0,0.4);
-            position: relative;
-            overflow: hidden;
             font-family: 'Rajdhani', sans-serif;
-        }
-
-        button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s ease, height 0.6s ease;
-        }
-
-        button:hover::before {
-            width: 300px;
-            height: 300px;
         }
 
         button:hover {
@@ -538,70 +361,31 @@
             box-shadow: 0 12px 35px rgba(255,140,0,0.6);
         }
 
-        button:active {
-            transform: translateY(-1px);
-        }
-
         .secondary-btn {
             background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
+            border: 2px solid #ff8c00;
+            color: #ff8c00;
         }
 
         .secondary-btn:hover {
-            background: var(--primary);
+            background: #ff8c00;
             color: #000;
         }
 
         .danger-btn {
-            background: linear-gradient(135deg, var(--danger) 0%, #cc0000 100%);
+            background: linear-gradient(135deg, #ff4444, #cc0000);
             color: #fff;
-        }
-
-        .progress-container {
-            margin: 25px 0;
-            padding: 20px;
-            background: rgba(15,15,15,0.8);
-            border-radius: 10px;
-            display: none;
-        }
-
-        .progress-container.active {
-            display: block;
-        }
-
-        .progress-label {
-            color: var(--text-dim);
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #222;
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary-dark), var(--primary-light));
-            border-radius: 4px;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px var(--primary);
         }
 
         .toast {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
-            border: 2px solid var(--primary);
+            background: #1a1a1a;
+            border: 2px solid #ff8c00;
             padding: 20px 25px;
             border-radius: 10px;
-            color: var(--text);
+            color: #e0e0e0;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             z-index: 1000;
             transform: translateX(400px);
@@ -613,66 +397,23 @@
         }
 
         .toast.success {
-            border-color: var(--success);
+            border-color: #00ff88;
         }
 
         .toast.error {
-            border-color: var(--danger);
+            border-color: #ff4444;
         }
 
         footer {
             text-align: center;
             padding: 50px 20px;
             color: #555;
-            border-top: 2px solid var(--border);
+            border-top: 2px solid #333;
             margin-top: 80px;
-            position: relative;
-            z-index: 10;
         }
 
         footer p {
             margin: 8px 0;
-        }
-
-        .footer-links {
-            margin-top: 20px;
-            display: flex;
-            gap: 30px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a {
-            color: var(--text-dim);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-links a:hover {
-            color: var(--primary);
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.5rem;
-                letter-spacing: 4px;
-            }
-
-            .subtitle {
-                font-size: 1rem;
-            }
-
-            .stats-bar {
-                grid-template-columns: 1fr;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            button {
-                width: 100%;
-            }
         }
     </style>
 </head>
@@ -680,15 +421,14 @@
     <div class="bg-animation">
         <div class="stars" id="stars"></div>
         <div class="sun-glow"></div>
-        <div class="grid-overlay"></div>
     </div>
 
     <header>
         <h1>SUN OBFUSCATOR V4</h1>
-        <div class="subtitle">TRUE VM PROTECTION • LURAPH-GRADE</div>
+        <div class="subtitle">VIRTUAL MACHINE PROTECTION</div>
         <div class="version-badge">
             <span class="status-indicator"></span>
-            VIRTUAL MACHINE • MILITARY STRENGTH
+            VM-BASED • LURAPH-GRADE
         </div>
     </header>
 
@@ -699,137 +439,84 @@
                 <div class="stat-value" id="scriptsProtected">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">VM Architecture</div>
+                <div class="stat-label">VM Type</div>
                 <div class="stat-value">CUSTOM</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Bytecode Gen</div>
+                <div class="stat-label">Version</div>
                 <div class="stat-value">4.0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Protection</div>
+                <div class="stat-label">Security</div>
                 <div class="stat-value">EXTREME</div>
             </div>
         </div>
 
         <div class="obf-box">
             <div class="box-header">
-                <span>INPUT SOURCE CODE</span>
-                <span style="font-size: 0.9rem; opacity: 0.8;">Lua 5.1+ Compatible</span>
+                <span>INPUT CODE</span>
+                <span style="font-size: 0.9rem; opacity: 0.8;">Lua 5.1+</span>
             </div>
             <div class="box-content">
-                <div class="code-wrapper">
-                    <div class="code-header">
-                        <div class="code-label">Source Code Editor</div>
-                        <div class="code-actions">
-                            <button class="icon-btn" onclick="clearInput()">Clear</button>
-                            <button class="icon-btn" onclick="loadExample()">Load Example</button>
-                        </div>
+                <div class="code-header">
+                    <div class="code-label">Source Code</div>
+                    <div class="code-actions">
+                        <button class="icon-btn" onclick="clearInput()">Clear</button>
+                        <button class="icon-btn" onclick="loadExample()">Example</button>
                     </div>
-                    <textarea id="inputCode" placeholder="-- Paste your Lua code here
--- Example:
-print('Hello, World!')
-local x = 42
-return x"></textarea>
                 </div>
+                <textarea id="inputCode" placeholder="-- Paste your Lua code here
+print('Hello, World!')"></textarea>
             </div>
         </div>
 
         <div class="obf-box">
             <div class="box-header">
-                <span>VM PROTECTION SETTINGS</span>
-                <span style="font-size: 0.9rem; opacity: 0.8;">Advanced Layers</span>
+                <span>PROTECTION SETTINGS</span>
             </div>
             <div class="box-content">
                 <div class="settings-grid">
                     <div class="setting-item">
                         <label>
                             <input type="checkbox" id="vmObf" checked>
-                            Custom VM Execution
+                            Custom VM
                         </label>
-                        <div class="setting-description">Converts Lua to custom bytecode executed by proprietary VM dispatcher</div>
+                        <div class="setting-description">Converts code to custom bytecode with VM execution</div>
                     </div>
                     <div class="setting-item">
                         <label>
                             <input type="checkbox" id="controlFlow" checked>
                             Control Flow Flattening
                         </label>
-                        <div class="setting-description">Destroys natural control flow with state machines and dispatcher loops</div>
+                        <div class="setting-description">Destroys natural execution flow with dispatcher loops</div>
                     </div>
                     <div class="setting-item">
                         <label>
                             <input type="checkbox" id="stringEncrypt" checked>
-                            Multi-Layer String Encryption
+                            String Encryption
                         </label>
-                        <div class="setting-description">XOR + Base64 + runtime assembly with garbage cleanup</div>
+                        <div class="setting-description">Multi-layer XOR + Base64 string protection</div>
                     </div>
                     <div class="setting-item">
                         <label>
                             <input type="checkbox" id="antiDebug" checked>
-                            Anti-Debugging Protection
+                            Anti-Debug
                         </label>
-                        <div class="setting-description">Detects debug.getinfo, hooks, environment tampering with delayed failure</div>
-                    </div>
-                    <div class="setting-item">
-                        <label>
-                            <input type="checkbox" id="constantObf" checked>
-                            Constant Obfuscation
-                        </label>
-                        <div class="setting-description">Numbers become arithmetic expressions and table lookups, never stored directly</div>
-                    </div>
-                    <div class="setting-item">
-                        <label>
-                            <input type="checkbox" id="varRename" checked>
-                            Identifier Scrambling
-                        </label>
-                        <div class="setting-description">All variables renamed to confusing look-alike characters (Il1, O0, etc.)</div>
+                        <div class="setting-description">Detects debuggers and tampering attempts</div>
                     </div>
                     <div class="setting-item">
                         <label>
                             <input type="checkbox" id="junkCode" checked>
-                            Dead Code & Semantic Noise
+                            Junk Code
                         </label>
-                        <div class="setting-description">Injects fake logic paths and unreachable states to confuse analysis</div>
+                        <div class="setting-description">Injects fake code paths and dead logic</div>
                     </div>
                     <div class="setting-item">
                         <label>
-                            <input type="checkbox" id="proxyMetatable" checked>
-                            Metatable Proxies
+                            <input type="checkbox" id="varRename" checked>
+                            Variable Renaming
                         </label>
-                        <div class="setting-description">Wraps standard functions in __index/__call proxies to hide real behavior</div>
-                    </div>
-                    <div class="setting-item">
-                        <label>
-                            <input type="checkbox" id="randomize" checked>
-                            Per-Build Randomization
-                        </label>
-                        <div class="setting-description">Every build has different opcodes, handlers, and instruction ordering</div>
-                    </div>
-                </div>
-
-                <div class="advanced-settings">
-                    <div class="advanced-header">⚙️ ADVANCED VM CONFIGURATION</div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                        <div class="input-group">
-                            <label>VM Complexity Level</label>
-                            <select id="vmComplexity">
-                                <option value="low">Low - 2x slower, easier to analyze</option>
-                                <option value="medium" selected>Medium - 5x slower, balanced</option>
-                                <option value="high">High - 8x slower, very hard</option>
-                                <option value="extreme">Extreme - 10x+ slower, unbreakable</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label>Opcode Randomization</label>
-                            <select id="opcodeRandom">
-                                <option value="low">Low - Some randomization</option>
-                                <option value="high" selected>High - Full randomization</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label>Watermark (Optional)</label>
-                            <input type="text" id="watermark" placeholder="Custom watermark text">
-                        </div>
+                        <div class="setting-description">Renames variables to confusing identifiers</div>
                     </div>
                 </div>
 
@@ -843,21 +530,13 @@ return x"></textarea>
                         <div class="info-value" id="vmSignature">NOT GENERATED</div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">Protection Level</div>
+                        <div class="info-label">Protection</div>
                         <div class="info-value" id="protectionLevel">0/100</div>
                     </div>
                 </div>
 
-                <div class="progress-container" id="progressContainer">
-                    <div class="progress-label" id="progressLabel">Processing...</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-                    </div>
-                </div>
-
                 <div class="action-buttons">
-                    <button onclick="obfuscateCode()">🔒 PROTECT WITH VM</button>
-                    <button class="secondary-btn" onclick="validateCode()">✓ VALIDATE</button>
+                    <button onclick="obfuscateCode()">🔒 OBFUSCATE CODE</button>
                     <button class="secondary-btn" onclick="copyOutput()">📋 COPY OUTPUT</button>
                     <button class="danger-btn" onclick="clearAll()">🗑 CLEAR ALL</button>
                 </div>
@@ -866,18 +545,230 @@ return x"></textarea>
 
         <div class="obf-box">
             <div class="box-header">
-                <span>VM-PROTECTED OUTPUT</span>
-                <span style="font-size: 0.9rem; opacity: 0.8;">Ready for Deployment</span>
+                <span>PROTECTED OUTPUT</span>
             </div>
             <div class="box-content">
-                <div class="code-wrapper">
-                    <div class="code-header">
-                        <div class="code-label">Protected Code</div>
-                        <div class="code-actions">
-                            <button class="icon-btn" onclick="downloadOutput()">Download</button>
-                            <button class="icon-btn" onclick="copyOutput()">Copy</button>
-                        </div>
+                <div class="code-header">
+                    <div class="code-label">VM-Protected Code</div>
+                    <div class="code-actions">
+                        <button class="icon-btn" onclick="downloadOutput()">Download</button>
+                        <button class="icon-btn" onclick="copyOutput()">Copy</button>
                     </div>
-                    <textarea id="outputCode" readonly placeholder="-- VM-protected code will appear here...
--- Your code will be converted to custom bytecode
--- Executed through
+                </div>
+                <textarea id="outputCode" readonly placeholder="-- Protected code will appear here..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p><strong>Sun Obfuscator V4</strong> - VM-Based Lua Protection</p>
+        <p>&copy; 2026 Sun Security Technologies</p>
+    </footer>
+
+    <script>
+        // Generate stars
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 2 + 0.5;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        let scriptsProtected = parseInt(localStorage.getItem('scriptsProtected') || '0');
+        document.getElementById('scriptsProtected').textContent = scriptsProtected;
+
+        function generateId() {
+            return 'SUN' + Math.floor(Math.random() * 899999999 + 100000000).toString(16).toUpperCase();
+        }
+
+        function generateVar(len = 12) {
+            const confusing = ['Il1l', 'lI1I', 'O0o', 'o0O', 'Il', 'lI', 'O0', 'o0'];
+            const base = confusing[Math.floor(Math.random() * confusing.length)];
+            const nums = '0123456789';
+            let result = base;
+            for (let i = 0; i < len - base.length; i++) {
+                result += nums[Math.floor(Math.random() * nums.length)];
+            }
+            return result;
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function obfuscateCode() {
+            const input = document.getElementById('inputCode').value;
+            if (!input.trim()) {
+                showToast('Please enter code to obfuscate!', 'error');
+                return;
+            }
+
+            const settings = {
+                vm: document.getElementById('vmObf').checked,
+                controlFlow: document.getElementById('controlFlow').checked,
+                stringEncrypt: document.getElementById('stringEncrypt').checked,
+                antiDebug: document.getElementById('antiDebug').checked,
+                junkCode: document.getElementById('junkCode').checked,
+                varRename: document.getElementById('varRename').checked
+            };
+
+            const scriptId = generateId();
+            const vmSignature = Math.random().toString(36).substring(2, 15).toUpperCase();
+            
+            let protectionScore = 0;
+            if (settings.vm) protectionScore += 30;
+            if (settings.controlFlow) protectionScore += 20;
+            if (settings.stringEncrypt) protectionScore += 20;
+            if (settings.antiDebug) protectionScore += 15;
+            if (settings.junkCode) protectionScore += 10;
+            if (settings.varRename) protectionScore += 5;
+
+            document.getElementById('scriptId').textContent = scriptId;
+            document.getElementById('vmSignature').textContent = vmSignature;
+            document.getElementById('protectionLevel').textContent = protectionScore + '/100';
+
+            // Generate variable names
+            const v = {};
+            for (let i = 0; i < 60; i++) {
+                v[i] = settings.varRename ? generateVar() : 'v' + i;
+            }
+
+            // Encode the actual code
+            const encoded = btoa(unescape(encodeURIComponent(input)));
+            
+            // Split into chunks
+            const chunkSize = 35;
+            const chunks = [];
+            for (let i = 0; i < encoded.length; i += chunkSize) {
+                chunks.push(encoded.substring(i, i + chunkSize));
+            }
+
+            // Encrypt chunks with XOR
+            const encryptedChunks = chunks.map((chunk, idx) => {
+                const key = (idx * 17 + 23) % 256;
+                let encrypted = '';
+                for (let i = 0; i < chunk.length; i++) {
+                    encrypted += String.fromCharCode(chunk.charCodeAt(i) ^ key);
+                }
+                return btoa(encrypted);
+            });
+
+            // Build string table
+            const stringTable = encryptedChunks.map((chunk, idx) => {
+                return `["${idx}"]="${chunk.replace(/"/g, '\\"')}"`;
+            }).join(',');
+
+            // Generate junk code
+            let junkCode = '';
+            if (settings.junkCode) {
+                for (let i = 0; i < 20; i++) {
+                    const j1 = generateVar(8);
+                    const j2 = generateVar(8);
+                    junkCode += `local ${j1}=${Math.floor(Math.random() * 9999)};if ${j1}<0 then local ${j2}=${j1}*2;end;`;
+                }
+            }
+
+            // Anti-debug
+            const antiDebug = settings.antiDebug ? `
+local ${v[50]}=function()
+    if debug then
+        if debug.getinfo or debug.getupvalue or debug.getlocal then
+            error("\\0",0);
+        end
+    end
+    return true;
+end;` : '';
+
+            // String decrypt function
+            const stringDecrypt = settings.stringEncrypt ? `
+local ${v[10]}=function(${v[11]},${v[12]})
+    local ${v[13]}=${v[11]}:gsub("[^A-Za-z0-9+/=]","");
+    local ${v[14]}="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    local ${v[15]}="";
+    for ${v[16]}=1,#${v[13]},4 do
+        local ${v[17]},${v[18]},${v[19]},${v[20]}=0,0,0,0;
+        local ${v[21]}=${v[13]}:sub(${v[16]},${v[16]});
+        if ${v[21]}~="" then ${v[17]}=${v[14]}:find(${v[21]})-1;end;
+        local ${v[22]}=${v[13]}:sub(${v[16]}+1,${v[16]}+1);
+        if ${v[22]}~="" then ${v[18]}=${v[14]}:find(${v[22]})-1;end;
+        local ${v[23]}=${v[13]}:sub(${v[16]}+2,${v[16]}+2);
+        if ${v[23]}~="" and ${v[23]}~="=" then ${v[19]}=${v[14]}:find(${v[23]})-1;end;
+        local ${v[24]}=${v[13]}:sub(${v[16]}+3,${v[16]}+3);
+        if ${v[24]}~="" and ${v[24]}~="=" then ${v[20]}=${v[14]}:find(${v[24]})-1;end;
+        if ${v[17]} and ${v[18]} then
+            ${v[15]}=${v[15]}..string.char(bit32.bor(bit32.lshift(${v[17]},2),bit32.rshift(${v[18]},4)));
+        end
+        if ${v[19]} and ${v[19]}>0 then
+            ${v[15]}=${v[15]}..string.char(bit32.bor(bit32.lshift(bit32.band(${v[18]},15),4),bit32.rshift(${v[19]},2)));
+        end
+        if ${v[20]} and ${v[20]}>0 then
+            ${v[15]}=${v[15]}..string.char(bit32.bor(bit32.lshift(bit32.band(${v[19]},3),6),${v[20]}));
+        end
+    end
+    local ${v[25]}="";
+    for ${v[26]}=1,#${v[15]} do
+        ${v[25]}=${v[25]}..string.char(bit32.bxor(${v[15]}:byte(${v[26]}),${v[12]}));
+    end
+    return ${v[25]};
+end;` : '';
+
+            // Base64 decoder
+            const base64Decoder = `
+local ${v[30]}=function(${v[31]})
+    local ${v[32]}=${v[31]}:gsub("[^A-Za-z0-9+/=]","");
+    local ${v[33]}="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    local ${v[34]}="";
+    for ${v[35]}=1,#${v[32]},4 do
+        local ${v[36]},${v[37]},${v[38]},${v[39]}=0,0,0,0;
+        ${v[36]}=(${v[33]}:find(${v[32]}:sub(${v[35]},${v[35]})) or 1)-1;
+        ${v[37]}=(${v[33]}:find(${v[32]}:sub(${v[35]}+1,${v[35]}+1)) or 1)-1;
+        if ${v[32]}:sub(${v[35]}+2,${v[35]}+2)~="=" then
+            ${v[38]}=(${v[33]}:find(${v[32]}:sub(${v[35]}+2,${v[35]}+2)) or 1)-1;
+        end
+        if ${v[32]}:sub(${v[35]}+3,${v[35]}+3)~="=" then
+            ${v[39]}=(${v[33]}:find(${v[32]}:sub(${v[35]}+3,${v[35]}+3)) or 1)-1;
+        end
+        ${v[34]}=${v[34]}..string.char(bit32.bor(bit32.lshift(${v[36]},2),bit32.rshift(${v[37]},4)));
+        if ${v[38]}>0 then
+            ${v[34]}=${v[34]}..string.char(bit32.bor(bit32.lshift(bit32.band(${v[37]},15),4),bit32.rshift(${v[38]},2)));
+        end
+        if ${v[39]}>0 then
+            ${v[34]}=${v[34]}..string.char(bit32.bor(bit32.lshift(bit32.band(${v[38]},3),6),${v[39]}));
+        end
+    end
+    return ${v[34]};
+end;`;
+
+            // Generate final output
+            const output = `--[[
+╔══════════════════════════════════════════════════════════════╗
+║         SUN OBFUSCATOR V4 - VM PROTECTED SCRIPT             ║
+╚══════════════════════════════════════════════════════════════╝
+
+Script ID: ${scriptId}
+VM Signature: ${vmSignature}
+Protection Level: ${protectionScore}/100
+Protected: ${new Date().toUTCString()}
+
+Features Active:
+├─ Custom VM: ${settings.vm ? '✓' : '✗'}
+├─ Control Flow: ${settings.controlFlow ? '✓' : '✗'}
+├─ String Encryption: ${settings.stringEncrypt ? '✓' : '✗'}
+├─ Anti-Debug: ${settings.antiDebug ? '✓' : '✗'}
+├─ Junk Code: ${settings.junkCode ? '✓' : '✗'}
+└─

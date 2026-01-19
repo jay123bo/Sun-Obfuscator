@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sun Obfuscator v1</title>
+<title>Sun Obfuscator v3</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
 
@@ -14,8 +14,6 @@ body{
   color:#eaeaea;
   font-family:monospace;
 }
-
-/* ===== HEADER ===== */
 header{
   padding:60px 20px 40px;
   text-align:center;
@@ -24,18 +22,13 @@ header{
 h1{
   font-family:'Orbitron',sans-serif;
   font-size:3.8rem;
-  letter-spacing:4px;
   color:#ff8c00;
-  animation:fadeDown .9s ease;
 }
 .version{
   margin-top:12px;
   color:#ffa500;
   letter-spacing:4px;
-  animation:fadeUp .9s ease;
 }
-
-/* ===== LAYOUT ===== */
 .container{
   max-width:1400px;
   margin:auto;
@@ -47,7 +40,6 @@ h1{
   border-radius:10px;
   margin-bottom:40px;
   overflow:hidden;
-  animation:fadeUp .8s ease;
 }
 .box h2{
   background:#ff8c00;
@@ -57,26 +49,15 @@ h1{
   font-size:1rem;
 }
 .content{padding:25px}
-
-/* ===== TEXTAREA ===== */
 textarea{
   width:100%;
-  min-height:280px;
+  min-height:260px;
   background:#050505;
   border:2px solid #333;
   color:#00ff66;
   padding:16px;
   font-size:14px;
-  resize:vertical;
-  transition:border .3s, box-shadow .3s;
 }
-textarea:focus{
-  outline:none;
-  border-color:#ff8c00;
-  box-shadow:0 0 15px #ff8c0033;
-}
-
-/* ===== BUTTONS ===== */
 .actions{
   display:flex;
   gap:15px;
@@ -86,47 +67,15 @@ button{
   padding:15px 42px;
   font-size:1rem;
   font-weight:bold;
-  letter-spacing:2px;
   background:linear-gradient(135deg,#ff8c00,#ff6b00);
   border:none;
   border-radius:8px;
   cursor:pointer;
-  transition:transform .2s ease, box-shadow .2s ease;
 }
-button:hover{
-  transform:translateY(-2px);
-  box-shadow:0 10px 25px #ff8c0044;
-}
-button:active{
-  transform:translateY(0);
-}
-
-/* ===== COPY FEEDBACK ===== */
-.copied{
-  animation:pulse .4s ease;
-}
-
-/* ===== FOOTER ===== */
 footer{
   text-align:center;
   color:#555;
   margin:60px 0 40px;
-  letter-spacing:2px;
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes fadeDown{
-  from{opacity:0; transform:translateY(-25px)}
-  to{opacity:1; transform:none}
-}
-@keyframes fadeUp{
-  from{opacity:0; transform:translateY(25px)}
-  to{opacity:1; transform:none}
-}
-@keyframes pulse{
-  0%{box-shadow:0 0 0 #ff8c00}
-  50%{box-shadow:0 0 25px #ff8c00}
-  100%{box-shadow:none}
 }
 </style>
 </head>
@@ -135,15 +84,20 @@ footer{
 
 <header>
   <h1>SUN OBFUSCATOR</h1>
-  <div class="version">v1 · VM · ENCRYPTED BYTECODE · MUTATION</div>
+  <div class="version">v3 · VM · VARIABLES · ENCRYPTED BYTECODE</div>
 </header>
 
 <div class="container">
 
 <div class="box">
-<h2>INPUT LUA (v1 subset)</h2>
+<h2>INPUT LUA (v3 subset)</h2>
 <div class="content">
-<textarea id="input">print("Hello from Sun v1")</textarea>
+<textarea id="input">
+local a = 5
+local b = 10
+print(a)
+print("done")
+</textarea>
 </div>
 </div>
 
@@ -164,9 +118,10 @@ footer{
 
 </div>
 
-<footer>Sun Obfuscator v1 © 2026</footer>
+<footer>Sun Obfuscator v3 © 2026</footer>
 
 <script>
+// ================= UTIL =================
 function rnd(min,max){return Math.floor(Math.random()*(max-min))+min}
 function shuffle(a){
   for(let i=a.length-1;i>0;i--){
@@ -175,14 +130,11 @@ function shuffle(a){
   }
 }
 
+// ================= COMPILER =================
 function obfuscate(){
-  const src=document.getElementById("input").value.trim()
-  if(!src) return alert("No input")
+  const src=document.getElementById("input").value.split("\n")
+  if(!src.length) return alert("No input")
 
-  const m=src.match(/print\s*\(\s*["'](.+)["']\s*\)/)
-  if(!m) return alert("Sun v1 supports only print(\"text\")")
-
-  const text=m[1]
   const KEY=rnd(40,200)
 
   let OPS=["LOADK","PRINT"]
@@ -190,38 +142,97 @@ function obfuscate(){
   const OP={}
   OPS.forEach((o,i)=>OP[o]=i)
 
-  const CONST=[[...text].map(c=>c.charCodeAt(0)^KEY)]
-  const BC=[
-    [OP.LOADK^KEY,0^KEY,0^KEY],
-    [OP.PRINT^KEY,0^KEY]
-  ]
+  let consts=[]
+  let symbols={}
+  let regCount=0
+  let bc=[]
 
-  const out=`-- Sun Obfuscator v1
+  function addConst(v){
+    let idx=consts.findIndex(c=>c.v===v)
+    if(idx!==-1) return idx
+    consts.push({v})
+    return consts.length-1
+  }
+
+  for(let line of src){
+    line=line.trim()
+    if(!line) continue
+
+    let m
+
+    // local a = 5
+    if(m=line.match(/^local\s+(\w+)\s*=\s*(\d+)$/)){
+      const name=m[1]
+      const value=Number(m[2])
+      const r=regCount++
+      symbols[name]=r
+      const ci=addConst(value)
+      bc.push([OP.LOADK,r,ci])
+      continue
+    }
+
+    // print("text")
+    if(m=line.match(/^print\s*\(\s*["'](.+)["']\s*\)$/)){
+      const ci=addConst(m[1])
+      const r=regCount++
+      bc.push([OP.LOADK,r,ci])
+      bc.push([OP.PRINT,r])
+      continue
+    }
+
+    // print(var)
+    if(m=line.match(/^print\s*\(\s*(\w+)\s*\)$/)){
+      if(!(m[1] in symbols)) return alert("Unknown variable: "+m[1])
+      bc.push([OP.PRINT,symbols[m[1]]])
+      continue
+    }
+
+    return alert("Unsupported line:\n"+line)
+  }
+
+  // encrypt constants
+  const encConsts=consts.map(c=>{
+    if(typeof c.v==="string"){
+      return [...c.v].map(ch=>ch.charCodeAt(0)^KEY)
+    }
+    return c.v^KEY
+  })
+
+  const encBC=bc.map(i=>i.map(v=>v^KEY))
+
+  const out=`-- Sun Obfuscator v3
 do
   debug=nil
   local K=${KEY}
   local function d(v)return v~K end
-  local C=${JSON.stringify(CONST)}
-  local BC=${JSON.stringify(BC)}
+
+  local C=${JSON.stringify(encConsts)}
+  local BC=${JSON.stringify(encBC)}
   local OP=${JSON.stringify(OP)}
+
   local R={}
   local pc=1
 
   local function getConst(i)
-    local t=C[i+1]
-    local s=""
-    for j=1,#t do s=s..string.char(d(t[j])) end
-    return s
+    local v=C[i+1]
+    if type(v)=="table" then
+      local s=""
+      for j=1,#v do s=s..string.char(d(v[j])) end
+      return s
+    end
+    return d(v)
   end
 
   while pc<=#BC do
     local I=BC[pc]
     local op=d(I[1])
+
     if op==OP.LOADK then
       R[d(I[2])]=getConst(d(I[3]))
     elseif op==OP.PRINT then
       print(R[d(I[2])])
     end
+
     pc=pc+1
   end
 end`
@@ -231,11 +242,8 @@ end`
 
 function copyAll(){
   const out=document.getElementById("output")
-  if(!out.value) return
   out.select()
   document.execCommand("copy")
-  out.classList.add("copied")
-  setTimeout(()=>out.classList.remove("copied"),400)
 }
 </script>
 

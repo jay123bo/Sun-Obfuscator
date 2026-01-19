@@ -2,46 +2,30 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sun Obfuscator v3.1</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sun Obfuscator V3.1</title>
 
 <style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  background:#060606;
-  color:#eaeaea;
-  font-family:monospace;
-}
-header{
-  padding:60px 20px 40px;
-  text-align:center;
-  border-bottom:2px solid #ff8c00;
-}
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#080808;color:#eaeaea;font-family:'Courier New',monospace}
+header{text-align:center;padding:60px 20px;border-bottom:2px solid #ff8c00}
 h1{
   font-family:'Orbitron',sans-serif;
   font-size:4rem;
+  font-weight:900;
   background:linear-gradient(45deg,#ffa500,#ff6b00,#ffa500);
   -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  -webkit-text-fill-color:transparent
 }
-.version{
-  margin-top:10px;
-  color:#ffa500;
-  letter-spacing:3px;
-}
-.container{
-  max-width:1400px;
-  margin:auto;
-  padding:40px;
-}
+.version{margin-top:10px;color:#ffa500;letter-spacing:3px}
+.container{max-width:1400px;margin:auto;padding:40px}
 .box{
-  background:#111;
+  background:#141414;
   border:2px solid #ff8c00;
-  border-radius:10px;
+  border-radius:8px;
   margin-bottom:40px;
-  animation:fadeUp .6s ease;
+  animation:fadeUp .6s ease
 }
 @keyframes fadeUp{
   from{opacity:0;transform:translateY(15px)}
@@ -50,50 +34,55 @@ h1{
 .box h2{
   background:#ff8c00;
   color:#000;
-  padding:16px;
-  letter-spacing:3px;
-  font-size:1.1rem;
+  padding:15px;
+  font-size:1.2rem;
+  letter-spacing:2px
 }
-.content{padding:25px}
+.box .content{padding:25px}
 textarea{
   width:100%;
   min-height:260px;
-  background:#050505;
+  background:#0b0b0b;
   border:2px solid #333;
   color:#00ff66;
   padding:15px;
-  font-size:14px;
-  border-radius:6px;
+  font-family:'Courier New',monospace;
+  border-radius:5px
 }
-.actions{
-  display:flex;
+.settings{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
   gap:15px;
-  flex-wrap:wrap;
+  margin-top:20px
+}
+.setting{
+  border:1px solid #333;
+  padding:15px;
+  border-radius:5px;
+  color:#ffa500;
+  font-weight:bold
 }
 button{
+  margin-top:25px;
   padding:15px 40px;
   font-size:1.1rem;
   font-weight:bold;
   background:linear-gradient(135deg,#ff8c00,#ff6b00);
   border:none;
-  border-radius:8px;
+  border-radius:6px;
   cursor:pointer;
-  transition:.25s;
+  transition:.25s
 }
 button:hover{transform:scale(1.05)}
-footer{
-  text-align:center;
-  color:#555;
-  margin:60px 0;
-}
+footer{text-align:center;color:#555;margin:60px 0}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>SUN OBFUSCATOR</h1>
-  <div class="version">v3.1 · ROBLOX SAFE · PAYLOAD ENGINE</div>
+<h1>SUN OBFUSCATOR</h1>
+<div class="version">VERSION 3.1 – PAYLOAD · ROBLOX SAFE · MUTATED</div>
 </header>
 
 <div class="container">
@@ -101,18 +90,21 @@ footer{
 <div class="box">
 <h2>INPUT LUA</h2>
 <div class="content">
-<textarea id="input">
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-
-print("Sun v3.1 working")
-</textarea>
+<textarea id="input"></textarea>
 </div>
 </div>
 
 <div class="box">
-<h2>BUILD</h2>
-<div class="content actions">
+<h2>PROTECTION LAYERS (ACTIVE)</h2>
+<div class="content">
+<div class="settings">
+<div class="setting">✔ Payload Encryption</div>
+<div class="setting">✔ Runtime Reconstruction</div>
+<div class="setting">✔ Anti-Dump Bait</div>
+<div class="setting">✔ Fake VM Noise</div>
+<div class="setting">✔ Per-Build Mutation</div>
+<div class="setting">✔ Roblox-Safe Execution</div>
+</div>
 <button onclick="obfuscate()">OBFUSCATE</button>
 <button onclick="copyAll()">COPY ALL</button>
 </div>
@@ -133,18 +125,18 @@ print("Sun v3.1 working")
 function rnd(min,max){return Math.floor(Math.random()*(max-min))+min}
 
 function encode(str,key){
-  let out=[]
+  let a=[]
   for(let i=0;i<str.length;i++){
-    out.push(str.charCodeAt(i)^key)
+    a.push(str.charCodeAt(i)^key)
   }
-  return btoa(out.join(","))
+  return btoa(a.join("."))
 }
 
 function obfuscate(){
   const src=document.getElementById("input").value
   if(!src.trim()) return alert("No input")
 
-  const KEY=rnd(20,200)
+  const KEY=rnd(40,220)
   const PAYLOAD=encode(src,KEY)
 
   const out=`-- Sun Obfuscator v3.1
@@ -153,19 +145,19 @@ return (function()
   local P="${PAYLOAD}"
 
   -- fake vm noise
-  local S={}
-  for i=1,5 do
-    S[i]=function() return i*K end
+  local X={}
+  for i=1,8 do
+    X[i]=function() return i*K end
   end
 
   -- decode
   local function D(p)
-    local r={}
+    local t={}
     local raw=game:GetService("HttpService"):Base64Decode(p)
-    for n in raw:gmatch("[^,]+") do
-      r[#r+1]=string.char(tonumber(n)~K)
+    for n in raw:gmatch("[^%.]+") do
+      t[#t+1]=string.char(tonumber(n)~K)
     end
-    return table.concat(r)
+    return table.concat(t)
   end
 
   -- anti-dump bait

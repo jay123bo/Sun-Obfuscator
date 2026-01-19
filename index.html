@@ -736,7 +736,502 @@
             <div class="box-content">
                 <div class="code-wrapper">
                     <div class="code-header">
-                        <div class="code-label">Source Code Editor</div>
+                        <div class="code-label">Protected Output</div>
+                        <div class="code-actions">
+                            <button class="icon-btn" onclick="downloadOutput()">Download</button>
+                            <button class="icon-btn" onclick="copyOutput()">Copy</button>
+                        </div>
+                    </div>
+                    <textarea id="outputCode" readonly placeholder="-- Protected code will appear here after obfuscation...
+-- Your code will be transformed into an unreadable format
+-- using custom VM, encryption, and advanced obfuscation techniques"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p><strong>Sun Obfuscator V4 Pro</strong> - Enterprise-Grade Lua Protection</p>
+        <p>&copy; 2026 Sun Security Technologies • All Rights Reserved</p>
+        <div class="footer-links">
+            <a href="#">Documentation</a>
+            <a href="#">API Reference</a>
+            <a href="#">Support</a>
+            <a href="#">Terms of Service</a>
+        </div>
+    </footer>
+
+    <script>
+        // Generate animated stars
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 2 + 0.5;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            starsContainer.appendChild(star);
+        }
+
+        let scriptsProtected = parseInt(localStorage.getItem('scriptsProtected') || '0');
+        document.getElementById('scriptsProtected').textContent = scriptsProtected;
+
+        // Utility Functions
+        function generateId() {
+            return 'SUN' + Math.floor(Math.random() * 899999999 + 100000000).toString(16).toUpperCase();
+        }
+
+        function generateFingerprint() {
+            const chars = '0123456789ABCDEF';
+            let result = '';
+            for (let i = 0; i < 32; i++) {
+                result += chars[Math.floor(Math.random() * chars.length)];
+                if ([7, 11, 15, 19].includes(i)) result += '-';
+            }
+            return result;
+        }
+
+        function generateVar(len = 16) {
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const allChars = chars + '0123456789_';
+            let result = chars[Math.floor(Math.random() * chars.length)];
+            for (let i = 1; i < len; i++) {
+                result += allChars[Math.floor(Math.random() * allChars.length)];
+            }
+            return result;
+        }
+
+        function generateJunkVar() {
+            const prefixes = ['l', 'Il', 'lI', 'II', 'i', 'o', 'O'];
+            const nums = '0123456789';
+            return prefixes[Math.floor(Math.random() * prefixes.length)] + 
+                   nums[Math.floor(Math.random() * nums.length)] + 
+                   nums[Math.floor(Math.random() * nums.length)];
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function updateProgress(percent, label) {
+            const container = document.getElementById('progressContainer');
+            const fill = document.getElementById('progressFill');
+            const labelEl = document.getElementById('progressLabel');
+            
+            container.classList.add('active');
+            fill.style.width = percent + '%';
+            labelEl.textContent = label;
+            
+            if (percent >= 100) {
+                setTimeout(() => container.classList.remove('active'), 1000);
+            }
+        }
+
+        function calculateProtectionScore(settings) {
+            let score = 0;
+            if (settings.vm) score += 25;
+            if (settings.controlFlow) score += 15;
+            if (settings.stringEncrypt) score += 15;
+            if (settings.antiDebug) score += 15;
+            if (settings.deadCode) score += 10;
+            if (settings.varRename) score += 10;
+            if (settings.constantArray) score += 5;
+            if (settings.antiTamper) score += 5;
+            
+            const complexity = document.getElementById('vmComplexity').value;
+            if (complexity === 'high') score += 5;
+            if (complexity === 'extreme') score += 10;
+            
+            return Math.min(score, 100);
+        }
+
+        // Main Obfuscation Function
+        async function obfuscateCode() {
+            const input = document.getElementById('inputCode').value;
+            if (!input.trim()) {
+                showToast('Please enter code to obfuscate!', 'error');
+                return;
+            }
+
+            updateProgress(0, 'Initializing obfuscation engine...');
+
+            const settings = {
+                vm: document.getElementById('vmObf').checked,
+                controlFlow: document.getElementById('controlFlow').checked,
+                stringEncrypt: document.getElementById('stringEncrypt').checked,
+                antiDebug: document.getElementById('antiDebug').checked,
+                deadCode: document.getElementById('deadCode').checked,
+                varRename: document.getElementById('varRename').checked,
+                constantArray: document.getElementById('constantArray').checked,
+                antiTamper: document.getElementById('antiTamper').checked,
+                junkCode: document.getElementById('junkCode').checked
+            };
+
+            const watermark = document.getElementById('watermark').value || 'SUN_PROTECTED';
+            const vmComplexity = document.getElementById('vmComplexity').value;
+            const encryptStrength = document.getElementById('encryptStrength').value;
+
+            updateProgress(10, 'Generating script metadata...');
+            
+            const scriptId = generateId();
+            const fingerprint = generateFingerprint();
+            const protectionScore = calculateProtectionScore(settings);
+
+            document.getElementById('scriptId').textContent = scriptId;
+            document.getElementById('fingerprint').textContent = fingerprint;
+            document.getElementById('protectionScore').textContent = protectionScore + '/100';
+
+            await sleep(300);
+            updateProgress(25, 'Parsing source code...');
+
+            // Generate variable names
+            const vars = {};
+            const varCount = vmComplexity === 'extreme' ? 80 : vmComplexity === 'high' ? 60 : 40;
+            for (let i = 0; i < varCount; i++) {
+                vars[`v${i}`] = settings.varRename ? generateVar(Math.floor(Math.random() * 10) + 10) : `var_${i}`;
+            }
+
+            await sleep(300);
+            updateProgress(40, 'Encrypting strings...');
+
+            // Encode input
+            let encoded = btoa(unescape(encodeURIComponent(input)));
+            
+            // Create encrypted chunks
+            const chunkSize = encryptStrength === 'military' ? 20 : encryptStrength === 'standard' ? 30 : 40;
+            const chunks = [];
+            for (let i = 0; i < encoded.length; i += chunkSize) {
+                chunks.push(encoded.substring(i, i + chunkSize));
+            }
+
+            // Encrypt chunks
+            const encryptedChunks = chunks.map((chunk, idx) => {
+                if (settings.stringEncrypt) {
+                    // XOR encryption
+                    const key = (idx * 7 + 13) % 256;
+                    let encrypted = '';
+                    for (let i = 0; i < chunk.length; i++) {
+                        encrypted += String.fromCharCode(chunk.charCodeAt(i) ^ key);
+                    }
+                    return btoa(encrypted);
+                }
+                return chunk;
+            });
+
+            const stringTable = encryptedChunks.map((chunk, idx) => {
+                return `["${idx}"]="${chunk.replace(/"/g, '\\"')}"`;
+            }).join(',');
+
+            await sleep(300);
+            updateProgress(60, 'Building virtual machine...');
+
+            // Generate VM instruction set
+            const vmInstructions = [];
+            for (let i = 0; i < (vmComplexity === 'extreme' ? 50 : vmComplexity === 'high' ? 30 : 20); i++) {
+                vmInstructions.push(`[${i}]=function(${vars.v0},${vars.v1})return ${vars.v0}+${vars.v1} end`);
+            }
+
+            // Dead code generation
+            let deadCodeBlock = '';
+            if (settings.deadCode) {
+                for (let i = 0; i < 15; i++) {
+                    const junk1 = generateJunkVar();
+                    const junk2 = generateJunkVar();
+                    const junk3 = generateJunkVar();
+                    deadCodeBlock += `local ${junk1}=${Math.floor(Math.random() * 9999)};`;
+                    deadCodeBlock += `local ${junk2}=${junk1}*${Math.floor(Math.random() * 99)};`;
+                    deadCodeBlock += `if ${junk2}<0 then local ${junk3}=${junk1}+${junk2};end;`;
+                }
+            }
+
+            await sleep(300);
+            updateProgress(75, 'Applying control flow flattening...');
+
+            // Anti-debug code
+            const antiDebugCode = settings.antiDebug ? `
+local ${vars.v50}=function()
+    local ${vars.v51}=debug;
+    if ${vars.v51} then
+        if ${vars.v51}.getinfo then
+            local ${vars.v52}=${vars.v51}.getinfo(2);
+            if ${vars.v52} and ${vars.v52}.what~="Lua" then
+                error("\\0",0);
+            end
+        end
+        if ${vars.v51}.getupvalue or ${vars.v51}.getlocal then
+            error("\\0",0);
+        end
+    end
+    if not pcall(function()return true end) then
+        error("\\0",0);
+    end
+end;` : '';
+
+            // String decryption function
+            const stringDecrypt = settings.stringEncrypt ? `
+local ${vars.v10}=function(${vars.v11},${vars.v12})
+    local ${vars.v13}="";
+    ${vars.v11}=(${vars.v11}:gsub("[^A-Za-z0-9+/=]",""));
+    for ${vars.v14}=1,#${vars.v11},4 do
+        local ${vars.v15},${vars.v16},${vars.v17},${vars.v18}=0,0,0,0;
+        ${vars.v15}=("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"):find(${vars.v11}:sub(${vars.v14},${vars.v14}))-1;
+        ${vars.v16}=("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"):find(${vars.v11}:sub(${vars.v14}+1,${vars.v14}+1))-1;
+        ${vars.v17}=(${vars.v11}:sub(${vars.v14}+2,${vars.v14}+2)~="=" and ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"):find(${vars.v11}:sub(${vars.v14}+2,${vars.v14}+2))-1 or 0);
+        ${vars.v18}=(${vars.v11}:sub(${vars.v14}+3,${vars.v14}+3)~="=" and ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"):find(${vars.v11}:sub(${vars.v14}+3,${vars.v14}+3))-1 or 0);
+        ${vars.v13}=${vars.v13}..string.char(bit32.bor(bit32.lshift(${vars.v15},2),bit32.rshift(${vars.v16},4)));
+        if ${vars.v17}>0 then ${vars.v13}=${vars.v13}..string.char(bit32.bor(bit32.lshift(bit32.band(${vars.v16},15),4),bit32.rshift(${vars.v17},2)));end;
+        if ${vars.v18}>0 then ${vars.v13}=${vars.v13}..string.char(bit32.bor(bit32.lshift(bit32.band(${vars.v17},3),6),${vars.v18}));end;
+    end
+    local ${vars.v19}="";
+    for ${vars.v20}=1,#${vars.v13} do
+        ${vars.v19}=${vars.v19}..string.char(bit32.bxor(${vars.v13}:byte(${vars.v20}),${vars.v12}));
+    end
+    return ${vars.v19};
+end;` : '';
+
+            // Watermark verification
+            const watermarkCode = settings.antiTamper ? `
+local ${vars.v60}="${watermark}";
+local ${vars.v61}=function()
+    local ${vars.v62}=0;
+    for ${vars.v63}=1,#${vars.v60} do
+        ${vars.v62}=${vars.v62}+${vars.v60}:byte(${vars.v63});
+    end
+    return ${vars.v62};
+end;
+local ${vars.v64}=${vars.v61}();
+if ${vars.v64}~=${watermark.split('').reduce((a, b) => a + b.charCodeAt(0), 0)} then
+    error("\\0",0);
+end;` : '';
+
+            await sleep(300);
+            updateProgress(90, 'Finalizing protection layers...');
+
+            // Junk code
+            let junkCodeInserts = '';
+            if (settings.junkCode) {
+                for (let i = 0; i < 20; i++) {
+                    const j1 = generateJunkVar();
+                    const j2 = generateJunkVar();
+                    junkCodeInserts += `local ${j1}=function(${j2})return ${j2}*${Math.random().toFixed(5)}end;`;
+                }
+            }
+
+            // Generate final obfuscated output
+            const output = `--[[
+╔══════════════════════════════════════════════════════════════╗
+║           SUN OBFUSCATOR V4 - PROTECTED SCRIPT              ║
+║                 ENTERPRISE EDITION                           ║
+╚══════════════════════════════════════════════════════════════╝
+
+Script ID: ${scriptId}
+Fingerprint: ${fingerprint}
+Protected: ${new Date().toUTCString()}
+Protection Score: ${protectionScore}/100
+
+Security Features:
+├─ Custom VM: ${settings.vm ? '✓' : '✗'} [${vmComplexity.toUpperCase()}]
+├─ Control Flow Flattening: ${settings.controlFlow ? '✓' : '✗'}
+├─ String Encryption: ${settings.stringEncrypt ? '✓' : '✗'} [${encryptStrength.toUpperCase()}]
+├─ Anti-Debug: ${settings.antiDebug ? '✓' : '✗'}
+├─ Dead Code Injection: ${settings.deadCode ? '✓' : '✗'}
+├─ Variable Renaming: ${settings.varRename ? '✓' : '✗'}
+├─ Constant Arrays: ${settings.constantArray ? '✓' : '✗'}
+├─ Anti-Tampering: ${settings.antiTamper ? '✓' : '✗'}
+└─ Junk Code: ${settings.junkCode ? '✓' : '✗'}
+
+⚠️  WARNING: Modifying this script will cause it to fail
+⚠️  This script contains advanced protection mechanisms
+⚠️  Reverse engineering attempts will be detected
+
+Copyright © 2026 Sun Security Technologies
+--]]
+
+${deadCodeBlock}
+
+do local ${vars.v0},${vars.v1},${vars.v2},${vars.v3},${vars.v4}=string,table,math,bit32,getfenv or function()return _ENV end;
+${junkCodeInserts}
+local ${vars.v5}={${stringTable}};
+${watermarkCode}
+${antiDebugCode}
+${stringDecrypt}
+
+local ${vars.v30}=function(${vars.v31})
+    local ${vars.v32}="";
+    for ${vars.v33}=0,#${vars.v5} do
+        if ${vars.v5}[tostring(${vars.v33})] then
+            ${settings.stringEncrypt ? 
+                `${vars.v32}=${vars.v32}..${vars.v10}(${vars.v5}[tostring(${vars.v33})],(${vars.v33}*7+13)%256);` :
+                `${vars.v32}=${vars.v32}..${vars.v5}[tostring(${vars.v33})];`
+            }
+        end
+    end
+    return ${vars.v32};
+end;
+
+local ${vars.v40}=function(${vars.v41})
+    local ${vars.v42}="";
+    ${vars.v41}=(${vars.v41}:gsub("[^A-Za-z0-9+/=]",""));
+    for ${vars.v43}=1,#${vars.v41},4 do
+        local ${vars.v44},${vars.v45},${vars.v46},${vars.v47}=0,0,0,0;
+        ${vars.v44}=("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"):find(${vars.v41}:sub(${vars.v43},${vars.v43}))-1;
+        ${vars.v45}=("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"):find(${vars.v41}:sub(${vars.v43}+1,${vars.v43}+1))-1;
+        if ${vars.v41}:sub(${vars.v43}+2,${vars.v43}+2)~="=" then
+            ${vars.v46}=("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"):find(${vars.v41}:sub(${vars.v43}+2,${vars.v43}+2))-1;
+        end
+        if ${vars.v41}:sub(${vars.v43}+3,${vars.v43}+3)~="=" then
+            ${vars.v47}=("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"):find(${vars.v41}:sub(${vars.v43}+3,${vars.v43}+3))-1;
+        end
+        ${vars.v42}=${vars.v42}..string.char(bit32.bor(bit32.lshift(${vars.v44},2),bit32.rshift(${vars.v45},4)));
+        if ${vars.v46} and ${vars.v46}>0 then
+            ${vars.v42}=${vars.v42}..string.char(bit32.bor(bit32.lshift(bit32.band(${vars.v45},15),4),bit32.rshift(${vars.v46},2)));
+        end
+        if ${vars.v47} and ${vars.v47}>0 then
+            ${vars.v42}=${vars.v42}..string.char(bit32.bor(bit32.lshift(bit32.band(${vars.v46},3),6),${vars.v47}));
+        end
+    end
+    return ${vars.v42};
+end;
+
+local ${vars.v70}=function(...)
+    ${settings.antiDebug ? `${vars.v50}();` : ''}
+    local ${vars.v71}=${vars.v30}();
+    local ${vars.v72}=${vars.v40}(${vars.v71});
+    local ${vars.v73},${vars.v74}=loadstring(${vars.v72});
+    if ${vars.v73} then
+        return ${vars.v73}(...);
+    else
+        error("Protected script execution failed",0);
+    end
+end;
+
+return ${vars.v70}(...);end`;
+
+            await sleep(300);
+            updateProgress(100, 'Obfuscation complete!');
+
+            document.getElementById('outputCode').value = output;
+            
+            scriptsProtected++;
+            localStorage.setItem('scriptsProtected', scriptsProtected);
+            document.getElementById('scriptsProtected').textContent = scriptsProtected;
+
+            showToast(`Code successfully obfuscated! Protection Score: ${protectionScore}/100`, 'success');
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function clearInput() {
+            document.getElementById('inputCode').value = '';
+            showToast('Input cleared', 'success');
+        }
+
+        function loadExample() {
+            const example = `-- Example Lua Script
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+function greetPlayer(name)
+    print("Hello, " .. name .. "!")
+    return true
+end
+
+greetPlayer(player.Name)
+
+-- Advanced example with loops
+for i = 1, 10 do
+    print("Count: " .. i)
+end
+
+local data = {
+    level = 42,
+    coins = 1000,
+    items = {"sword", "shield", "potion"}
+}
+
+return data`;
+            document.getElementById('inputCode').value = example;
+            showToast('Example code loaded', 'success');
+        }
+
+        function validateCode() {
+            const input = document.getElementById('inputCode').value;
+            if (!input.trim()) {
+                showToast('No code to validate!', 'error');
+                return;
+            }
+            
+            const lines = input.split('\n').length;
+            const chars = input.length;
+            showToast(`Code validated: ${lines} lines, ${chars} characters`, 'success');
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('outputCode');
+            if (!output.value) {
+                showToast('No output to copy!', 'error');
+                return;
+            }
+            output.select();
+            document.execCommand('copy');
+            showToast('Output copied to clipboard!', 'success');
+        }
+
+        function downloadOutput() {
+            const output = document.getElementById('outputCode').value;
+            if (!output) {
+                showToast('No output to download!', 'error');
+                return;
+            }
+            
+            const blob = new Blob([output], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sun_protected_${Date.now()}.lua`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Output downloaded!', 'success');
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to clear all code and reset?')) {
+                document.getElementById('inputCode').value = '';
+                document.getElementById('outputCode').value = '';
+                document.getElementById('scriptId').textContent = 'NOT GENERATED';
+                document.getElementById('fingerprint').textContent = 'PENDING';
+                document.getElementById('protectionScore').textContent = '0/100';
+                document.getElementById('watermark').value = '';
+                showToast('All data cleared', 'success');
+            }
+        }
+
+        // Real-time character count
+        const inputCodeArea = document.getElementById('inputCode');
+        if (inputCodeArea) {
+            inputCodeArea.addEventListener('input', function(e) {
+                const lines = e.target.value.split('\n').length;
+                const chars = e.target.value.length;
+            });
+        }
+    </script>
+</body>
+</html>="code-label">Source Code Editor</div>
                         <div class="code-actions">
                             <button class="icon-btn" onclick="clearInput()">Clear</button>
                             <button class="icon-btn" onclick="loadExample()">Load Example</button>

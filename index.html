@@ -771,4 +771,125 @@ Features Active:
 ├─ String Encryption: ${settings.stringEncrypt ? '✓' : '✗'}
 ├─ Anti-Debug: ${settings.antiDebug ? '✓' : '✗'}
 ├─ Junk Code: ${settings.junkCode ? '✓' : '✗'}
-└─
+└─ Variable Renaming: ${settings.varRename ? '✓' : '✗'}
+
+⚠️  WARNING: This script is VM-protected
+⚠️  Tampering will cause execution failure
+--]]
+
+${junkCode}
+
+do
+local ${v[0]}={${stringTable}};
+${antiDebug}
+${stringDecrypt}
+${base64Decoder}
+
+local ${v[40]}=function()
+    local ${v[41]}="";
+    for ${v[42]}=0,#${v[0]} do
+        if ${v[0]}[tostring(${v[42]})] then
+            ${settings.stringEncrypt ? 
+                `${v[41]}=${v[41]}..${v[10]}(${v[0]}[tostring(${v[42]})],(${v[42]}*17+23)%256);` :
+                `${v[41]}=${v[41]}..${v[0]}[tostring(${v[42}})];`
+            }
+        end
+    end
+    return ${v[41]};
+end;
+
+local ${v[45]}=function(...)
+    ${settings.antiDebug ? `${v[50]}();` : ''}
+    local ${v[46]}=${v[40]}();
+    local ${v[47]}=${v[30]}(${v[46]});
+    local ${v[48]},${v[49]}=loadstring(${v[47]});
+    if ${v[48]} then
+        return ${v[48]}(...);
+    else
+        error("VM execution failed",0);
+    end
+end;
+
+return ${v[45]}(...);
+end`;
+
+            document.getElementById('outputCode').value = output;
+
+            scriptsProtected++;
+            localStorage.setItem('scriptsProtected', scriptsProtected);
+            document.getElementById('scriptsProtected').textContent = scriptsProtected;
+
+            showToast(`Successfully obfuscated! Protection: ${protectionScore}/100`, 'success');
+        }
+
+        function clearInput() {
+            document.getElementById('inputCode').value = '';
+            showToast('Input cleared', 'success');
+        }
+
+        function loadExample() {
+            const example = `-- Example Lua Script
+local player = game:GetService("Players").LocalPlayer
+
+function greet(name)
+    print("Hello, " .. name .. "!")
+    return true
+end
+
+greet(player.Name)
+
+for i = 1, 5 do
+    print("Count: " .. i)
+end
+
+local data = {
+    health = 100,
+    coins = 500
+}
+
+return data`;
+            document.getElementById('inputCode').value = example;
+            showToast('Example loaded', 'success');
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('outputCode');
+            if (!output.value) {
+                showToast('No output to copy!', 'error');
+                return;
+            }
+            output.select();
+            document.execCommand('copy');
+            showToast('Copied to clipboard!', 'success');
+        }
+
+        function downloadOutput() {
+            const output = document.getElementById('outputCode').value;
+            if (!output) {
+                showToast('No output to download!', 'error');
+                return;
+            }
+            
+            const blob = new Blob([output], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sun_protected_${Date.now()}.lua`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Downloaded!', 'success');
+        }
+
+        function clearAll() {
+            if (confirm('Clear everything?')) {
+                document.getElementById('inputCode').value = '';
+                document.getElementById('outputCode').value = '';
+                document.getElementById('scriptId').textContent = 'PENDING';
+                document.getElementById('vmSignature').textContent = 'NOT GENERATED';
+                document.getElementById('protectionLevel').textContent = '0/100';
+                showToast('Cleared', 'success');
+            }
+        }
+    </script>
+</body>
+</html>

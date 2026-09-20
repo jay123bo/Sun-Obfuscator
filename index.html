@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cipher Obfuscator — 10/10 Maximum Lua Protection</title>
-<meta name="description" content="Cipher Obfuscator — 10/10 maximum Lua protection. Anti-tamper, hide globals, encrypt strings, control flow, decompose, mangle numbers/booleans, rename variables. Formerly Sun Obfuscator. Vercel-ready, 100% offline.">
+<meta name="description" content="Cipher Obfuscator — 10/10 maximum Lua protection. Runtime integrity, hide globals, encrypt strings, safe control flow, decomposition, number/boolean mangling, variable renaming. Formerly Sun Obfuscator. Vercel-ready, 100% offline.">
 <meta name="theme-color" content="#FFD60A">
 <meta name="color-scheme" content="dark">
 <meta property="og:title" content="Cipher Obfuscator — 10/10 Maximum Lua Protection">
@@ -547,7 +547,7 @@ print(player.Name)"></textarea>
           </div>
         </div>
         <div class="kpi4">
-          <div class="k good"><label>Engine</label><strong>Cipher VM v2</strong><em>AST + VM • UTF-8 safe</em></div>
+          <div class="k good"><label>Engine</label><strong>Cipher VM v3</strong><em>Lexer + VM • UTF-8 safe • self-tested</em></div>
           <div class="k"><label>Mode</label><strong id="kMode">Maximum</strong><em id="kDesc">10/10 • 22B • 3L • all ON</em></div>
           <div class="k good"><label>Deploy</label><strong>Vercel Ready</strong><em>static • edge • 0 deps</em></div>
           <div class="k"><label>Security</label><strong>Offline</strong><em>no upload • no telemetry</em></div>
@@ -558,7 +558,7 @@ print(player.Name)"></textarea>
 </div>
 
 <div id="features" class="features">
-  <div class="feat"><h4><i>⬢</i> 1. Anti Tamper</h4><p><b>Runtime integrity.</b> Checks <code>#VM_DATA</code>, header length, <code>debug</code> / <code>hookfunction</code> traps, errors on tamper. Incompatible with Beautify.</p><span class="status">● Enabled at 10/10</span></div>
+  <div class="feat"><h4><i>⬢</i> 1. Anti Tamper</h4><p><b>Runtime integrity.</b> Verifies shard count, header length, encoded-payload hash, and decoded byte length before execution.</p><span class="status">● Enabled at 10/10</span></div>
   <div class="feat"><h4><i>◉</i> 2. Hide Globals</h4><p><b>Proxy indirection.</b> <code>print</code> / <code>game</code> → <code>_G[ decrypt("...")]</code> via hidden table — no plain globals to scan.</p><span class="status">● Enabled at 10/10</span></div>
   <div class="feat"><h4><i>⬣</i> 3. Encrypt Strings</h4><p><b>XOR + custom B64.</b> Every literal becomes <code>decrypt("…")</code> with per-file key + shuffled alphabet.</p><span class="status">● Enabled at 10/10</span></div>
   <div class="feat"><h4><i>⧉</i> 4. Decompose</h4><p><b>Flatten expressions.</b> <code>a = b + c*2</code> → temps <code>_tmp1, _tmp2</code> — logic shattered.</p><span class="status">● Enabled at 10/10</span></div>
@@ -572,9 +572,9 @@ print(player.Name)"></textarea>
 <div class="how">
   <div class="steps">
     <h3>How 10/10 works — pipeline</h3>
-    <div class="step"><div class="num">1</div><div><h4>AST transforms (9 passes)</h4><p>Rename → Hide Globals → Mangle Booleans/Numbers → Decompose → Control Flow → Encrypt Strings → Anti-Tamper header. Every pass keeps runtime identical.</p></div></div>
-    <div class="step"><div class="num">2</div><div><h4>Cipher VM sealing</h4><p>Transformed source is UTF-8 encoded, split into 22-byte shards, layered: <b>rolling XOR + additive (+i) + reverse+xor</b>, then custom B64 with shuffled alphabet. Random keys per build.</p></div></div>
-    <div class="step"><div class="num">3</div><div><h4>Obfuscated loader</h4><p>Random <code>_0x…</code> locals, junk opaque predicates, integrity checks, <code>(loadstring or load)</code> indirection, optional minify. One file, Luau ready.</p></div></div>
+    <div class="step"><div class="num">1</div><div><h4>Lexer transforms</h4><p>Strings/comments are token-aware, then safe renaming, boolean/number mangling, conservative decomposition, control-flow wrapping, and runtime checks are applied without rewriting inside literals or comments.</p></div></div>
+    <div class="step"><div class="num">2</div><div><h4>Cipher VM sealing</h4><p>Transformed source is UTF-8 encoded, split into 22-byte shards, layered with <b>rolling XOR + additive + reverse/XOR</b>, then custom B64 with a shuffled alphabet. Fresh keys are generated for every build.</p></div></div>
+    <div class="step"><div class="num">3</div><div><h4>Obfuscated loader</h4><p>Random <code>_0x…</code> locals, junk, payload hashing, decoded-size checks, <code>(loadstring or load)</code> indirection, and optional minify. The VM is round-trip tested before output.</p></div></div>
     <div class="step"><div class="num">4</div><div><h4>Vercel static</h4><p>No server. All crypto runs in your browser. Deploy in one click — edge-cached, private, instant.</p></div></div>
   </div>
   <div class="faq">

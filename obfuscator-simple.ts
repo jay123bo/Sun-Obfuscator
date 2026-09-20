@@ -483,12 +483,20 @@ function hideGlobalReferences(code: string): string {
   const tokens = scanLua(code);
   const scopes = buildScopes(parsed.ast, () => "__unused");
   const replacements: Replacement[] = [];
+  const previousSignificant: Array<LuaToken | null> = [];
+  let previous: LuaToken | null = null;
 
-  for (const token of tokens) {
+  for (let i = 0; i < tokens.length; i++) {
+    previousSignificant[i] = previous;
+    if (tokens[i].kind !== "comment") previous = tokens[i];
+  }
+
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i];
     if (token.kind !== "word" || !token.value || !LUA_GLOBALS.has(token.value)) continue;
 
-    const previous = [...tokens.slice(0, tokens.indexOf(token))].reverse().find(t => t.kind !== "comment");
-    if (previous && (previous.raw === "." || previous.raw === ":" || previous.value === "function")) continue;
+    const previousToken = previousSignificant[i];
+    if (previousToken && (previousToken.raw === "." || previousToken.raw === ":" || previousToken.value === "function")) continue;
 
     const scope = findScope(scopes, token.start);
     if (resolveBinding(scope, token.value, token.start)) continue;
@@ -870,28 +878,33 @@ export class LuaObfuscator {
     const replacements: Replacement[] = [];
     const tokens = scanLua(code);
 
-    const propertyRanges: Replacement[] = [];
+    const propertyRanges = new Set<string>();
     walkAst(parsed.ast, (node, parent) => {
       if (node.type !== "Identifier") return;
       if (parent?.type === "MemberExpression" && parent.identifier === node) {
         const range = getRange(node);
-        if (range) propertyRanges.push({ start: range[0], end: range[1], value: "" });
+        if (range) propertyRanges.add(range[0] + ":" + range[1]);
       }
       if (parent?.type === "TableKeyString" && parent.key === node) {
         const range = getRange(node);
-        if (range) propertyRanges.push({ start: range[0], end: range[1], value: "" });
+        if (range) propertyRanges.add(range[0] + ":" + range[1]);
       }
     });
 
-    const isProtectedRange = (start: number, end: number) =>
-      propertyRanges.some(range => range.start === start && range.end === end);
+    const previousSignificant: Array<LuaToken | null> = [];
+    let previousToken: LuaToken | null = null;
+    for (let i = 0; i < tokens.length; i++) {
+      previousSignificant[i] = previousToken;
+      if (tokens[i].kind !== "comment") previousToken = tokens[i];
+    }
 
-    for (const token of tokens) {
+    for (let i = 0; i < tokens.length; i++) {
+      const token = tokens[i];
       if (token.kind !== "word" || !token.value || LUA_KEYWORDS.has(token.value)) continue;
 
-      const previous = tokens.slice(0, tokens.indexOf(token)).reverse().find(t => t.kind !== "comment");
+      const previous = previousSignificant[i];
       if (previous && (previous.raw === "." || previous.raw === ":")) continue;
-      if (isProtectedRange(token.start, token.end)) continue;
+      if (propertyRanges.has(token.start + ":" + token.end)) continue;
 
       const scope = findScope(scopes, token.start);
       const binding = resolveBinding(scope, token.value, token.start);

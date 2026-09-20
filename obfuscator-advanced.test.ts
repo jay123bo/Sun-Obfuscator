@@ -406,3 +406,21 @@ describe("Edge Cases for Advanced Obfuscation", () => {
 		expect(result.code).toContain("local y = 10");
 	});
 });
+
+describe("VM Seal Regression", () => {
+	test("should produce valid sealed Lua for string arguments", () => {
+		const result = obfuscateLua('print("hello world")', {
+			protectionLevel: 100,
+			vmSeal: true,
+			hideGlobals: true,
+			selfValidate: true,
+		});
+
+		expect(result.success).toBe(true);
+		expect(result.code).toBeDefined();
+		expect(result.code).not.toContain("(hello world)");
+
+		const parseResult = parseLua(result.code!);
+		expect(parseResult.success).toBe(true);
+	});
+});

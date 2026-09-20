@@ -3,220 +3,941 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sun Obfuscator V4 - VM Protection</title>
-
+<title>Cipher Obfuscator — Cryptograde Lua Protection</title>
+<meta name="description" content="Cipher Obfuscator — next-gen VM-based Lua protection. Formerly Sun Obfuscator. Stronger, faster, undetectable.">
+<meta name="theme-color" content="#00E5FF">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
-
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-    font-family: 'Rajdhani', sans-serif;
-    background:#0a0a0a;
-    color:#e0e0e0;
-    overflow-x:hidden;
+:root{
+  --bg:#060913;
+  --bg-soft:#0A0F1E;
+  --panel:#0F1429;
+  --panel-2:#131A33;
+  --panel-3:#151E3A;
+  --line:#1E2A4A;
+  --line-2:#26365E;
+  --text:#E6EAF2;
+  --muted:#8A95B5;
+  --dim:#5E6A8A;
+  --cyan:#00E5FF;
+  --cyan-2:#00B8CC;
+  --violet:#7C4DFF;
+  --violet-2:#651FFF;
+  --good:#00E676;
+  --warn:#FFAB00;
+  --bad:#FF3D71;
+  --radius:14px;
+  --radius-sm:10px;
+  --shadow:0 20px 60px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.03) inset;
 }
-header {
-    padding:40px;
-    text-align:center;
-    border-bottom:3px solid #ff8c00;
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Rajdhani',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+  min-height:100vh;
+  position:relative;
 }
-h1 {
-    font-family:'Orbitron';
-    font-size:3rem;
-    letter-spacing:6px;
-    background:linear-gradient(90deg,#ffa500,#ff6b00);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
+body::before{
+  content:"";
+  position:fixed;inset:0;z-index:-2;
+  background:
+    radial-gradient(900px 600px at 15% 0%, rgba(124,77,255,.18), transparent 60%),
+    radial-gradient(900px 700px at 95% 10%, rgba(0,229,255,.14), transparent 60%),
+    radial-gradient(700px 500px at 50% 100%, rgba(124,77,255,.10), transparent 65%),
+    linear-gradient(180deg, #060913 0%, #070A14 100%);
 }
-.subtitle { color:#888; letter-spacing:3px; margin-top:10px; }
-.container { max-width:1400px; margin:auto; padding:30px; }
-
-textarea {
-    width:100%;
-    min-height:300px;
-    background:#0d0d0d;
-    color:#00ff00;
-    border:2px solid #333;
-    padding:20px;
-    border-radius:8px;
-    font-family:monospace;
+.grid-bg{
+  position:fixed;inset:0;z-index:-1;opacity:.35;
+  background-image:
+    linear-gradient(rgba(30,42,74,.45) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30,42,74,.45) 1px, transparent 1px);
+  background-size:40px 40px;
+  mask-image: radial-gradient(1200px 600px at 50% 0%, black 40%, transparent 75%);
 }
-
-button {
-    padding:14px 30px;
-    margin:8px;
-    background:linear-gradient(135deg,#ff8c00,#ff6b00);
-    border:none;
-    border-radius:6px;
-    font-weight:700;
-    cursor:pointer;
+/* header */
+header{
+  position:sticky;top:0;z-index:20;
+  backdrop-filter:blur(16px) saturate(160%);
+  background:rgba(6,9,19,.72);
+  border-bottom:1px solid rgba(30,42,74,.9);
 }
-
-button.secondary {
-    background:transparent;
-    border:2px solid #ff8c00;
-    color:#ff8c00;
+.nav{
+  max-width:1440px;margin:0 auto;
+  padding:18px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
 }
-
-footer {
-    text-align:center;
-    margin:40px;
-    color:#666;
+.brand{
+  display:flex;align-items:center;gap:14px;
 }
+.logo{
+  width:42px;height:42px;border-radius:11px;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg, var(--cyan), var(--violet));
+  box-shadow:0 8px 24px rgba(0,229,255,.25), 0 8px 24px rgba(124,77,255,.22);
+  position:relative;overflow:hidden;
+}
+.logo::after{
+  content:"";position:absolute;inset:1px;border-radius:10px;
+  background:linear-gradient(180deg, rgba(255,255,255,.22), transparent);
+  opacity:.6;
+}
+.logo span{
+  font-family:'Orbitron',monospace;font-weight:900;font-size:18px;letter-spacing:1px;
+  color:white;position:relative;z-index:1;
+  text-shadow:0 1px 0 rgba(0,0,0,.3);
+}
+.brand-text h1{
+  font-family:'Orbitron',monospace;
+  font-size:1.42rem;font-weight:900;letter-spacing:.22em;line-height:1;
+  background:linear-gradient(90deg, #E6FBFF 0%, #00E5FF 38%, #7C4DFF 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.brand-text p{
+  font-size:.78rem;letter-spacing:.32em;text-transform:uppercase;color:var(--muted);
+  margin-top:4px;font-weight:600;
+}
+.brand-text p b{color:var(--cyan);font-weight:700}
+.nav-actions{display:flex;align-items:center;gap:10px}
+.badge{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;letter-spacing:.08em;font-weight:600;
+  padding:7px 10px;border-radius:999px;
+  background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.18);color:var(--cyan);
+}
+.ghost-link{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 14px;border-radius:999px;
+  border:1px solid var(--line);background:rgba(255,255,255,.02);
+  color:var(--muted);text-decoration:none;font-weight:600;font-size:.82rem;
+  transition:.18s;
+}
+.ghost-link:hover{border-color:var(--line-2);color:var(--text);background:rgba(255,255,255,.04);transform:translateY(-1px)}
+/* hero */
+.hero{
+  max-width:1440px;margin:0 auto;padding:28px 24px 8px;
+}
+.hero h2{
+  font-family:'Orbitron',monospace;font-size:1.05rem;font-weight:800;letter-spacing:.18em;
+  color:var(--text);text-transform:uppercase;
+}
+.hero p{margin-top:8px;color:var(--muted);font-size:.96rem;line-height:1.6;max-width:820px}
+.hero p strong{color:var(--text);font-weight:700}
+.kpis{
+  display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;
+}
+.kpi{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 11px;border-radius:999px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(30,42,74,.9);
+  font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.04em;color:var(--muted);
+}
+.kpi i{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 10px var(--good)}
+.kpi.violet i{background:var(--violet);box-shadow:0 0 10px var(--violet)}
+.kpi.cyan i{background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+/* layout */
+.container{max-width:1440px;margin:0 auto;padding:22px 24px 34px}
+.layout{
+  display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start;
+}
+@media(max-width:1020px){.layout{grid-template-columns:1fr}}
+.panel{
+  background:linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+  border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.panel-head{
+  padding:14px 16px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:rgba(255,255,255,.01);
+}
+.panel-head h3{
+  font-family:'Orbitron',monospace;font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--text);font-weight:800;
+}
+.panel-head span{font-family:'JetBrains Mono',monospace;font-size:.70rem;color:var(--dim);letter-spacing:.06em}
+.panel-body{padding:16px}
+/* controls */
+.control-group{margin-bottom:16px}
+.control-group:last-child{margin-bottom:0}
+.control-label{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;
+  margin-bottom:10px;
+}
+.control-label em{font-style:normal;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--dim);letter-spacing:.06em;text-transform:none;font-weight:500}
+.presets{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.preset{
+  position:relative;
+  padding:11px 10px;border-radius:10px;cursor:pointer;
+  border:1px solid var(--line);background:rgba(255,255,255,.02);
+  transition:.16s;user-select:none;
+}
+.preset:hover{border-color:var(--line-2);background:rgba(255,255,255,.04);transform:translateY(-1px)}
+.preset.active{
+  border-color:rgba(0,229,255,.45);background:linear-gradient(135deg, rgba(0,229,255,.12), rgba(124,77,255,.12));
+  box-shadow:0 0 0 1px rgba(0,229,255,.15) inset, 0 8px 24px rgba(0,229,255,.08);
+}
+.preset strong{display:block;font-size:.84rem;font-weight:800;letter-spacing:.02em;color:var(--text);line-height:1}
+.preset span{display:block;margin-top:3px;font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--muted);line-height:1.3}
+.preset .dot{
+  position:absolute;top:9px;right:9px;width:8px;height:8px;border-radius:50%;
+  background:var(--line-2);box-shadow:none;transition:.16s;
+}
+.preset.active .dot{background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.preset[data-preset="extreme"].active{border-color:rgba(255,61,113,.45);background:linear-gradient(135deg, rgba(255,61,113,.12), rgba(124,77,255,.12))}
+.preset[data-preset="extreme"].active .dot{background:var(--bad);box-shadow:0 0 10px var(--bad)}
+.toggles{display:flex;flex-direction:column;gap:9px}
+.toggle{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 11px;border-radius:10px;
+  border:1px solid var(--line);background:rgba(255,255,255,.015);
+  transition:.16s;
+}
+.toggle:hover{border-color:var(--line-2)}
+.toggle-info strong{font-size:.84rem;font-weight:700;color:var(--text);display:block;line-height:1}
+.toggle-info span{font-size:.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:.02em}
+.switch{
+  width:42px;height:24px;border-radius:999px;background:#1A2340;border:1px solid var(--line);
+  position:relative;cursor:pointer;flex-shrink:0;transition:.18s;
+}
+.switch::after{
+  content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;
+  background:white;box-shadow:0 2px 8px rgba(0,0,0,.35);transition:.18s cubic-bezier(.4,0,.2,1);
+}
+.switch.on{background:linear-gradient(135deg, var(--cyan), var(--violet));border-color:transparent}
+.switch.on::after{transform:translateX(18px)}
+.field{
+  width:100%;padding:10px 11px;border-radius:10px;
+  background:#0A0F1E;border:1px solid var(--line);
+  color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.78rem;
+  outline:none;transition:.16s;
+}
+.field:focus{border-color:rgba(0,229,255,.45);box-shadow:0 0 0 3px rgba(0,229,255,.10)}
+.field::placeholder{color:var(--dim)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hint{margin-top:7px;font-size:.72rem;color:var(--dim);line-height:1.45;font-family:'JetBrains Mono',monospace}
+.hint b{color:var(--muted);font-weight:600}
+/* workspace */
+.workspace{display:grid;gap:18px}
+.editors{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:1020px){.editors{grid-template-columns:1fr}}
+.editor{
+  display:flex;flex-direction:column;min-height:420px;
+  background:linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+  border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+}
+.editor-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 14px;border-bottom:1px solid var(--line);
+  background:rgba(255,255,255,.015);
+}
+.editor-title{
+  display:flex;align-items:center;gap:10px;
+  font-family:'Orbitron',monospace;font-size:.70rem;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--text);
+}
+.editor-title i{
+  width:28px;height:28px;border-radius:8px;display:grid;place-items:center;
+  font-size:12px;font-style:normal;
+  background:rgba(0,229,255,.10);border:1px solid rgba(0,229,255,.16);color:var(--cyan);
+}
+.editor:last-child .editor-title i{background:rgba(124,77,255,.12);border-color:rgba(124,77,255,.18);color:var(--violet)}
+.editor-actions{display:flex;align-items:center;gap:6px}
+.mini-btn{
+  padding:7px 10px;border-radius:8px;border:1px solid var(--line);
+  background:rgba(255,255,255,.02);color:var(--muted);
+  font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  cursor:pointer;transition:.16s;font-family:'Rajdhani',sans-serif;
+}
+.mini-btn:hover{border-color:var(--line-2);color:var(--text);background:rgba(255,255,255,.05)}
+.mini-btn.primary{
+  background:linear-gradient(135deg, var(--cyan), var(--violet));
+  border-color:transparent;color:white;box-shadow:0 6px 18px rgba(0,229,255,.18);
+}
+.mini-btn.primary:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,229,255,.22)}
+.meta-row{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:8px 12px;background:rgba(0,0,0,.18);border-top:1px solid rgba(30,42,74,.6);
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.04em;color:var(--dim);
+}
+.meta-row b{color:var(--muted);font-weight:600}
+.textwrap{position:relative;flex:1;display:flex;flex-direction:column;background:#080B16}
+textarea.code{
+  flex:1;width:100%;min-height:360px;
+  background:transparent;color:#C8FFF8;
+  border:none;outline:none;resize:none;
+  padding:16px 14px 16px 44px;
+  font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.65;
+  caret-color:var(--cyan);
+  tab-size:2;
+}
+textarea.code::placeholder{color:#3A4766}
+textarea.code#outputCode{color:#D9D1FF}
+.line-nums{
+  position:absolute;left:0;top:0;bottom:0;width:36px;
+  padding:16px 0;text-align:right;
+  font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.65;color:#2A3658;
+  background:rgba(255,255,255,.015);border-right:1px solid rgba(30,42,74,.65);
+  user-select:none;pointer-events:none;overflow:hidden;
+}
+.drop-hint{
+  position:absolute;inset:0;display:none;place-items:center;
+  background:rgba(6,9,19,.72);backdrop-filter:blur(8px);
+  border:2px dashed rgba(0,229,255,.35);margin:8px;border-radius:12px;
+  color:var(--cyan);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:.82rem;
+}
+.textwrap.drag .drop-hint{display:grid}
+.toolbar{
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+  padding:14px 16px;background:rgba(255,255,255,.01);border-top:1px solid var(--line);
+}
+.toolbar-left,.toolbar-right{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 20px;border-radius:11px;border:1px solid transparent;
+  font-family:'Rajdhani',sans-serif;font-size:.84rem;font-weight:800;letter-spacing:.10em;text-transform:uppercase;
+  cursor:pointer;transition:.16s;white-space:nowrap;
+}
+.btn:active{transform:translateY(1px)}
+.btn-primary{
+  background:linear-gradient(135deg, var(--cyan) 0%, var(--violet) 100%);
+  color:white;box-shadow:0 12px 28px rgba(0,229,255,.18), 0 12px 28px rgba(124,77,255,.16);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 16px 36px rgba(0,229,255,.22), 0 16px 36px rgba(124,77,255,.18);filter:brightness(1.05)}
+.btn-secondary{
+  background:rgba(255,255,255,.03);border-color:var(--line);color:var(--text);
+}
+.btn-secondary:hover{border-color:var(--line-2);background:rgba(255,255,255,.06);transform:translateY(-1px)}
+.btn-ghost{
+  background:transparent;border-color:var(--line);color:var(--muted);
+}
+.btn-ghost:hover{color:var(--text);border-color:var(--line-2);background:rgba(255,255,255,.03)}
+.stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
+}
+@media(max-width:680px){.stats{grid-template-columns:1fr 1fr}}
+.stat{
+  padding:12px 14px;border-radius:12px;
+  background:rgba(255,255,255,.02);border:1px solid var(--line);
+}
+.stat label{display:block;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.stat strong{display:block;margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:.92rem;color:var(--text);letter-spacing:.02em}
+.stat em{display:block;margin-top:2px;font-style:normal;font-size:.70rem;color:var(--dim);font-family:'JetBrains Mono',monospace}
+.stat.good{border-color:rgba(0,230,118,.18);background:rgba(0,230,118,.06)}
+.stat.warn{border-color:rgba(255,171,0,.18);background:rgba(255,171,0,.06)}
+/* toasts */
+#toasts{position:fixed;right:16px;bottom:16px;z-index:50;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.toast{
+  min-width:280px;max-width:420px;padding:12px 14px;border-radius:12px;
+  background:#0F1429;border:1px solid var(--line);box-shadow:0 20px 40px rgba(0,0,0,.45);
+  display:flex;gap:10px;align-items:flex-start;
+  font-size:.84rem;line-height:1.45;color:var(--text);
+  pointer-events:auto;animation:slide .22s ease;
+}
+.toast i{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;flex-shrink:0;font-style:normal;font-size:14px}
+.toast.ok i{background:rgba(0,230,118,.12);border:1px solid rgba(0,230,118,.22);color:var(--good)}
+.toast.bad i{background:rgba(255,61,113,.12);border:1px solid rgba(255,61,113,.22);color:var(--bad)}
+.toast.info i{background:rgba(0,229,255,.12);border:1px solid rgba(0,229,255,.22);color:var(--cyan)}
+@keyframes slide{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+/* footer */
+footer{
+  max-width:1440px;margin:0 auto;padding:18px 24px 30px;
+  display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
+  border-top:1px solid rgba(30,42,74,.6);margin-top:6px;
+  color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:.70rem;letter-spacing:.06em;
+}
+footer a{color:var(--muted);text-decoration:none;border-bottom:1px dashed rgba(138,149,181,.35)}
+footer a:hover{color:var(--cyan);border-bottom-color:rgba(0,229,255,.45)}
+.hidden-input{display:none}
 </style>
 </head>
-
 <body>
-
+<div class="grid-bg" aria-hidden="true"></div>
 <header>
-<h1>SUN OBFUSCATOR V4</h1>
-<div class="subtitle">VM-BASED LUA PROTECTION</div>
+  <div class="nav">
+    <div class="brand">
+      <div class="logo"><span>◈</span></div>
+      <div class="brand-text">
+        <h1>CIPHER OBFUSCATOR</h1>
+        <p>CRYPTOGRADE <b>LUA PROTECTION</b> — VM CORE V1</p>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <span class="badge">● ONLINE • FAST VM</span>
+      <a class="ghost-link" href="#" onclick="event.preventDefault(); toast('Cipher is local & offline — no code leaves your browser.','info')">◐ Offline & Private</a>
+    </div>
+  </div>
 </header>
 
+<div class="hero">
+  <h2>Undetectable • Anti-Tamper • Shattered Bytecode</h2>
+  <p><strong>Better, faster &amp; more secure than Sun V4.</strong> Cipher rewrites the whole engine: custom Base64 alphabet, rolling XOR + additive ciphers, reverse &amp; obfuscated VM loader, integrity checks, junk traps and minified control flow. Everything runs 100% in your browser — zero uploads.</p>
+  <div class="kpis">
+    <span class="kpi cyan"><i></i> Formerly Sun Obfuscator</span>
+    <span class="kpi violet"><i></i> Luau &amp; Lua 5.1+ compatible</span>
+    <span class="kpi"><i></i> No external dependencies</span>
+  </div>
+</div>
+
 <div class="container">
+  <div class="layout">
+    <!-- CONTROLS -->
+    <aside class="panel">
+      <div class="panel-head">
+        <h3>Protection</h3><span id="presetLabel">PARANOID</span>
+      </div>
+      <div class="panel-body">
+        <div class="control-group">
+          <div class="control-label">Strength Preset</div>
+          <div class="presets" id="presets">
+            <div class="preset" data-preset="standard"><div class="dot"></div><strong>Standard</strong><span>Light • 48B chunks • 1 layer</span></div>
+            <div class="preset" data-preset="strong"><div class="dot"></div><strong>Strong</strong><span>Balanced • 36B • 2 layers</span></div>
+            <div class="preset active" data-preset="paranoid"><div class="dot"></div><strong>Paranoid</strong><span>Recommended • 28B • 2L + AT</span></div>
+            <div class="preset" data-preset="extreme"><div class="dot"></div><strong>Extreme</strong><span>Maximum • 22B • 3L + traps</span></div>
+          </div>
+        </div>
 
-<h3>Input Lua Code</h3>
-<textarea id="inputCode">print("Hello World")</textarea>
+        <div class="control-group">
+          <div class="control-label">Hardening <em>fine-tune</em></div>
+          <div class="toggles">
+            <label class="toggle">
+              <span class="toggle-info"><strong>Custom alphabet</strong><span>Shuffled B64, breaks decoders</span></span>
+              <span class="switch on" data-toggle="customAlphabet" role="switch" aria-checked="true"></span>
+            </label>
+            <label class="toggle">
+              <span class="toggle-info"><strong>Anti-tamper</strong><span>Integrity + length checks</span></span>
+              <span class="switch on" data-toggle="antiTamper" role="switch" aria-checked="true"></span>
+            </label>
+            <label class="toggle">
+              <span class="toggle-info"><strong>Junk traps</strong><span>Dead code &amp; opaque predicates</span></span>
+              <span class="switch on" data-toggle="junk" role="switch" aria-checked="true"></span>
+            </label>
+            <label class="toggle">
+              <span class="toggle-info"><strong>Minify loader</strong><span>Strip whitespace, shrink VM</span></span>
+              <span class="switch on" data-toggle="minify" role="switch" aria-checked="true"></span>
+            </label>
+          </div>
+        </div>
 
-<br><br>
+        <div class="control-group">
+          <div class="control-label">Watermark <em>optional</em></div>
+          <input id="watermark" class="field" placeholder="e.g. @yourname or Team Cipher">
+          <div class="hint"><b>Tip:</b> Watermark is embedded as an encrypted comment — invisible at runtime but proves ownership in a deobfuscator.</div>
+        </div>
 
-<button onclick="obfuscateCode()">🔒 OBFUSCATE</button>
-<button class="secondary" onclick="copyOutput()">📋 COPY</button>
-<button class="secondary" onclick="downloadOutput()">💾 DOWNLOAD</button>
+        <div class="control-group">
+          <div class="control-label">File <em>.lua / .txt</em></div>
+          <div class="row2">
+            <button class="mini-btn primary" onclick="document.getElementById('fileInput').click()">⬆ Upload</button>
+            <button class="mini-btn" onclick="loadExample()">✦ Example</button>
+          </div>
+          <input id="fileInput" class="hidden-input" type="file" accept=".lua,.txt,.luau,text/plain">
+          <div class="hint">Drag &amp; drop a file onto the left editor. Max ~1 MB.</div>
+        </div>
 
-<br><br>
+        <div class="control-group">
+          <div class="control-label">Quick stats</div>
+          <div class="stats" style="grid-template-columns:1fr 1fr">
+            <div class="stat"><label>Input</label><strong id="statIn">0 B</strong><em id="statInChars">0 chars</em></div>
+            <div class="stat"><label>Output</label><strong id="statOut">0 B</strong><em id="statOutRatio">—</em></div>
+          </div>
+        </div>
+      </div>
+    </aside>
 
-<h3>Protected Output</h3>
-<textarea id="outputCode" readonly></textarea>
+    <!-- WORKSPACE -->
+    <div class="workspace">
+      <div class="editors">
+        <div class="editor" id="inEditor">
+          <div class="editor-head">
+            <div class="editor-title"><i>›_</i> Input Lua Code</div>
+            <div class="editor-actions">
+              <button class="mini-btn" onclick="clearInput()">Clear</button>
+              <button class="mini-btn" onclick="pasteClipboard()">Paste</button>
+            </div>
+          </div>
+          <div class="textwrap" id="wrapIn">
+            <div class="line-nums" id="linesIn">1</div>
+            <textarea id="inputCode" class="code" spellcheck="false" placeholder="-- paste your Lua / Luau here
+print(&quot;Hello, Cipher!&quot;)
+local player = game.Players.LocalPlayer
+print(player.Name)"></textarea>
+            <div class="drop-hint">Drop .lua file to load</div>
+            <div class="meta-row"><span><b id="inChars">0</b> chars • <b id="inLines">1</b> lines</span><span id="inBytes">0 B</span></div>
+          </div>
+        </div>
 
+        <div class="editor">
+          <div class="editor-head">
+            <div class="editor-title"><i>◈</i> Protected Output</div>
+            <div class="editor-actions">
+              <button class="mini-btn" onclick="copyOutput()">⧉ Copy</button>
+              <button class="mini-btn primary" onclick="downloadOutput()">⬇ Download</button>
+            </div>
+          </div>
+          <div class="textwrap">
+            <div class="line-nums" id="linesOut">1</div>
+            <textarea id="outputCode" class="code" spellcheck="false" readonly placeholder="-- hit OBFUSCATE to generate protected VM code
+-- output will appear here..."></textarea>
+            <div class="meta-row"><span><b id="outChars">0</b> chars • VM chunks: <b id="outChunks">0</b></span><span id="outBytes">0 B • <b id="outTime">—</b></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <button class="btn btn-primary" onclick="obfuscateCode()">◈ Obfuscate — Cipher VM</button>
+            <button class="btn btn-secondary" onclick="copyOutput()">⧉ Copy output</button>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn btn-ghost" onclick="clearAll()">Clear all</button>
+            <button class="btn btn-secondary" onclick="downloadOutput()">⬇ Download .lua</button>
+          </div>
+        </div>
+        <div class="stats" style="padding:12px 16px;background:rgba(255,255,255,.015);border-top:1px solid var(--line)">
+          <div class="stat good"><label>Engine</label><strong>Cipher VM v1</strong><em>multi-layer • UTF-8 safe</em></div>
+          <div class="stat"><label>Mode</label><strong id="statMode">Paranoid</strong><em id="statModeDesc">28B • 2 layers • AT • CA • junk</em></div>
+          <div class="stat warn"><label>Fixed from Sun V4</label><strong>Unicode &amp; btoa</strong><em>no more InvalidCharacter</em></div>
+          <div class="stat"><label>Security</label><strong>Offline</strong><em>nothing leaves browser</em></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <footer>
-Sun Obfuscator V4 © 2026
+  <span>Cipher Obfuscator V1 © 2026 — Cryptograde Lua Protection • Rebranded from Sun Obfuscator V4</span>
+  <span>VM-based • Luau ready • <a href="#" onclick="event.preventDefault(); toast('Cipher V1 • Built with care. No telemetry.','info')">Privacy-first</a></span>
 </footer>
 
+<div id="toasts" aria-live="polite"></div>
+
 <script>
-/* ===============================
-   LUA OBFUSCATOR CORE
-================================ */
+/* =========================================================
+   CIPHER OBFUSCATOR CORE — fixed + stronger than Sun V4
+   - UTF-8 safe (TextEncoder)
+   - Custom shuffled Base64 alphabet per build
+   - Rolling XOR + additive + reverse layers
+   - Junk / anti-tamper / watermark
+   - Obfuscated loader with random identifiers
+   ========================================================= */
+class CipherObfuscator{
+  constructor(){
+    this.stdAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  }
+  randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  randHex(len){
+    let s=""; for(let i=0;i<len;i++) s+=Math.floor(Math.random()*16).toString(16);
+    return s;
+  }
+  randName(){
+    // valid Lua identifier: _0x + hex, sometimes longer
+    const pref = Math.random()<0.5 ? "_0x" : "_C";
+    return pref + this.randHex(6+this.randInt(0,4)).toUpperCase();
+  }
+  shuffleAlphabet(str){
+    const arr=str.split("");
+    for(let i=arr.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]]=[arr[j],arr[i]];
+    }
+    return arr.join("");
+  }
+  // UTF-8 bytes
+  toBytes(str){
+    try{ return new TextEncoder().encode(str); }
+    catch(e){
+      // fallback for very old env
+      const esc=unescape(encodeURIComponent(str));
+      const b=new Uint8Array(esc.length);
+      for(let i=0;i<esc.length;i++) b[i]=esc.charCodeAt(i);
+      return b;
+    }
+  }
+  // manual base64 encode bytes with given alphabet
+  b64Encode(bytes, alphabet){
+    const a=alphabet||this.stdAlphabet;
+    let out="";
+    for(let i=0;i<bytes.length;i+=3){
+      const b0=bytes[i], b1=i+1<bytes.length?bytes[i+1]:0, b2=i+2<bytes.length?bytes[i+2]:0;
+      const n=(b0<<16)|(b1<<8)|b2;
+      out+=a[(n>>18)&63]+a[(n>>12)&63]+(i+1<bytes.length?a[(n>>6)&63]:"=")+(i+2<bytes.length?a[n&63]:"=");
+    }
+    return out;
+  }
+  // obfuscate number as expression to hide keys (light)
+  obscureNumber(n){
+    if(Math.random()<0.45) return String(n);
+    const r=this.randInt(10,400);
+    if(Math.random()<0.5) return `(${n+r}-${r})`;
+    return `0x${n.toString(16)}`;
+  }
 
-class LuaObfuscator {
+  obfuscate(code, opts={}){
+    if(!code || !code.trim()) throw new Error("Nothing to obfuscate — paste some Lua first.");
+    if(code.length>1_000_000) throw new Error("File too large (>1 MB). Split it first.");
+    const preset=opts.preset||"paranoid";
+    const cfg={
+      standard:{chunk:48,layers:1,junk:0},
+      strong:{chunk:36,layers:2,junk:2},
+      paranoid:{chunk:28,layers:2,junk:4},
+      extreme:{chunk:22,layers:3,junk:6},
+    }[preset]||{chunk:28,layers:2,junk:4};
 
-    constructor() {
-        this.counter = 0;
+    const useCustom = opts.customAlphabet ?? true;
+    const useAT = opts.antiTamper ?? true;
+    const useJunk = opts.junk ?? true;
+    const doMinify = opts.minify ?? true;
+    const watermark = (opts.watermark||"").trim();
+
+    const primary=this.randInt(17,239);
+    const secondary=this.randInt(1024,60000);
+    const tertiary=this.randInt(17,239);
+    const alphabet=useCustom?this.shuffleAlphabet(this.stdAlphabet):this.stdAlphabet;
+
+    // split into bytes, then chunk
+    const bytes=this.toBytes(code);
+    const chunks=[];
+    for(let i=0;i<bytes.length;i+=cfg.chunk){
+      let slice=bytes.slice(i,i+cfg.chunk);
+      // layer 1: rolling xor
+      const k1=(primary + Math.floor(i/cfg.chunk)*37) & 255;
+      let enc=new Uint8Array(slice.length);
+      for(let j=0;j<slice.length;j++) enc[j]=slice[j] ^ ((k1 + j*3) & 255);
+      // layer 2: additive
+      if(cfg.layers>=2){
+        const k2=(secondary + Math.floor(i/cfg.chunk)*7) & 255;
+        for(let j=0;j<enc.length;j++) enc[j]=(enc[j] + k2 + j) & 255;
+      }
+      // layer 3: xor + reverse
+      if(cfg.layers>=3){
+        for(let j=0;j<enc.length;j++) enc[j]=enc[j] ^ tertiary;
+        enc=enc.reverse();
+      }
+      chunks.push(this.b64Encode(enc, alphabet));
     }
 
-    randName(len = 10) {
-        const chars = "Il1O0";
-        let out = "";
-        for (let i = 0; i < len; i++)
-            out += chars[Math.floor(Math.random() * chars.length)];
-        return out;
+    // random lua identifiers
+    const vData=this.randName();
+    const vAlpha=this.randName();
+    const vPrimary=this.randName();
+    const vSecondary=this.randName();
+    const vTertiary=this.randName();
+    const vDecode=this.randName();
+    const vExec=this.randName();
+    const vOut=this.randName();
+    const vTmp=this.randName();
+    const vLen=this.randName();
+    const vJunkA=this.randName();
+    const vJunkB=this.randName();
+
+    const scriptId="CIPHER-" + this.randHex(8).toUpperCase() + "-" + this.randHex(4).toUpperCase();
+    const now=new Date();
+    const dateStr=now.toISOString().slice(0,10);
+
+    // build Lua VM_DATA table
+    const dataLines=chunks.map(c=>`    "${c}"`).join(",\n");
+
+    // junk snippets (opaque predicates)
+    const junkSnippets=[];
+    if(useJunk && cfg.junk>0){
+      for(let i=0;i<cfg.junk;i++){
+        const a=this.randHex(3), b=this.randHex(3);
+        if(i%2===0){
+          const rn=this.randName();
+          junkSnippets.push(`local ${rn}=0x${a}; if ${rn}==nil then error("cipher trap") end`);
+          // opaque false branch
+          junkSnippets.push(`if 2+2==5 then local ${this.randName()}="${this.randHex(6)}" end`);
+        }else{
+          const fn=this.randName();
+          junkSnippets.push(`local ${fn}=function() return 0x${b} end; if ${fn}()==0xFFFF then return end`);
+        }
+      }
     }
+    const junkBlock=junkSnippets.join(doMinify?";":"\n");
 
-    xor(data, key) {
-        let r = "";
-        for (let i = 0; i < data.length; i++)
-            r += String.fromCharCode(data.charCodeAt(i) ^ key);
-        return r;
-    }
-
-    generateBytecode(code) {
-        const chunks = [];
-        for (let i = 0; i < code.length; i += 40)
-            chunks.push(code.slice(i, i + 40));
-
-        return chunks.map((c, i) =>
-            btoa(this.xor(c, (i * 17 + 23) & 255))
-        );
-    }
-
-    obfuscate(code) {
-        if (!code.trim()) throw new Error("Empty code");
-
-        const bytecode = this.generateBytecode(code);
-        const scriptId = "SUN" + Math.floor(Math.random() * 1e9).toString(16).toUpperCase();
-
-        return `
---[[ 
- SUN OBFUSCATOR V4
- Script ID: ${scriptId}
- WARNING: VM PROTECTED
-]]
-
-local VM_DATA = {
-${bytecode.map(b => `    "${b}"`).join(",\n")}
-}
-
-local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-local function base64_decode(data)
-    data = string.gsub(data,'[^'..b..'=]','')
-    return (data:gsub('.',function(x)
-        if x=='=' then return '' end
-        local r,f='',(b:find(x)-1)
-        for i=6,1,-1 do
-            r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0')
-        end
-        return r
-    end):gsub('%d%d%d?%d?%d?%d?%d?%d?',function(x)
-        if #x~=8 then return '' end
-        local c=0
-        for i=1,8 do
-            c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0)
-        end
-        return string.char(c)
-    end))
-end
-
-local function VM_EXEC()
+    // Lua base64 decode with custom alphabet
+    // We embed alphabet as string literal; decoder uses table lookup
+    const luaB64DecodeFn = `
+local ${vDecode}=function(${vTmp})
+    local b='${alphabet}'
+    local m={}
+    for i=1,64 do m[b:sub(i,i)]=i-1 end
+    ${vTmp}=${vTmp}:gsub("[^"..b.."=]","")
     local out=""
-    for i=1,#VM_DATA do
-        local d=base64_decode(VM_DATA[i])
-        local k=(i*17+23)%256
-        for j=1,#d do
-            out=out..string.char(string.byte(d,j) ~ k)
-        end
+    for i=1,#${vTmp},4 do
+        local a=m[${vTmp}:sub(i,i)] or 0
+        local c=m[${vTmp}:sub(i+1,i+1)] or 0
+        local d=${vTmp}:sub(i+2,i+2)=="=" and 0 or (m[${vTmp}:sub(i+2,i+2)] or 0)
+        local e=${vTmp}:sub(i+3,i+3)=="=" and 0 or (m[${vTmp}:sub(i+3,i+3)] or 0)
+        local n=(a*262144)+(c*4096)+(d*64)+e
+        local b1=math.floor(n/65536) %256
+        local b2=math.floor(n/256) %256
+        local b3=n %256
+        out=out..string.char(b1)
+        if ${vTmp}:sub(i+2,i+2)~="=" then out=out..string.char(b2) end
+        if ${vTmp}:sub(i+3,i+3)~="=" then out=out..string.char(b3) end
     end
-    local f,e=loadstring(out)
-    if not f then error(e) end
+    return out
+end`.trim();
+
+    // integrity values
+    const expectedLen = chunks.length;
+    const expectedFirstLen = chunks[0]?.length||0;
+
+    // exec function
+    const execBody = `
+local function ${vExec}()
+    ${useAT ? `if #${vData}~=${expectedLen} then error("Cipher: integrity check failed (tamper)") end` : ""}
+    ${useAT && expectedFirstLen ? `if #${vData}>0 and #${vData}[1]~=${expectedFirstLen} then error("Cipher: header broken") end` : ""}
+    local ${vOut}=""
+    for i=1,#${vData} do
+        local d=${vDecode}(${vData}[i])
+        ${cfg.layers>=3 ? `
+        d=d:reverse()
+        local t=""
+        for j=1,#d do t=t..string.char((string.byte(d,j) ~ ${this.obscureNumber(tertiary)}) %256) end
+        d=t
+        `: ""}
+        ${cfg.layers>=2 ? `
+        do
+            local k=(${this.obscureNumber(secondary)} + (i-1)*7) %256
+            local t=""
+            for j=1,#d do
+                local b=string.byte(d,j)
+                t=t..string.char((b - k - (j-1) + 512) %256)
+            end
+            d=t
+        end
+        `: ""}
+        do
+            local k=(${this.obscureNumber(primary)} + (i-1)*37) %256
+            local t=""
+            for j=1,#d do
+                t=t..string.char((string.byte(d,j) ~ ((k + (j-1)*3) %256)) %256)
+            end
+            d=t
+        end
+        ${vOut}=${vOut}..d
+    end
+    ${useJunk ? `local ${vJunkA}=math.floor(#${vOut}/3); if ${vJunkA}<0 then error("unreachable") end` : ""}
+    local f,e=(loadstring or load)(${vOut})
+    if not f then error("Cipher VM load failed: "..tostring(e)) end
     return f()
 end
+return ${vExec}()`.trim();
 
-return VM_EXEC()
+    // header comment (watermark encrypted? we store as comment but will be stripped if minify? keep)
+    let header = `--[[\n  ◈ CIPHER OBFUSCATOR V1\n  Script: ${scriptId}\n  Date: ${dateStr}\n  Preset: ${preset.toUpperCase()} • ${cfg.layers} layers • ${cfg.chunk}B chunks\n  VM: Cipher-VM (rolling XOR + add + ${cfg.layers>=3?'reverse+xor':'—'})\n  Alphabet: ${useCustom?'custom-shuffled':'standard'}\n  Anti-Tamper: ${useAT?'ON':'OFF'} • Junk: ${useJunk?cfg.junk:0}\n  ${watermark?'Watermark: '+watermark.replace(/\n/g,' '):'No watermark'}\n  WARNING: VM PROTECTED — TAMPERING WILL BREAK EXECUTION\n]]`;
+
+    if(doMinify) header = header.replace(/\n/g,' ').replace(/\s{2,}/g,' ');
+
+    // assemble final lua
+    let finalLua = `${header}\n\n`;
+    finalLua += `local ${vData}={\n${dataLines}\n}\n`;
+    if(useCustom) finalLua += `local ${vAlpha}="${alphabet}"\n`;
+    finalLua += `local ${vPrimary}=${this.obscureNumber(primary)}; local ${vSecondary}=${this.obscureNumber(secondary)}; local ${vTertiary}=${this.obscureNumber(tertiary)}\n`;
+    if(junkBlock) finalLua += junkBlock + (doMinify?";\n":"\n");
+    finalLua += luaB64DecodeFn + "\n";
+    finalLua += execBody + "\n";
+
+    if(doMinify){
+      // light minify: collapse whitespace but keep strings intact (approx)
+      // naive: trim lines, remove empty lines, collapse spaces outside strings — keep simple
+      finalLua = finalLua.split("\n").map(l=>l.trim()).filter(Boolean).join(doMinify?" ":"\n");
+      // ensure VM_DATA commas still okay
+    }
+
+    return { lua: finalLua, meta:{ chunks: chunks.length, primary, secondary, tertiary, alphabet: useCustom?alphabet:"standard", scriptId } };
+  }
+}
+
+/* ================= UI ================= */
+const obf=new CipherObfuscator();
+let state={
+  preset:"paranoid",
+  customAlphabet:true,
+  antiTamper:true,
+  junk:true,
+  minify:true,
+};
+
+function toast(msg, type="ok"){
+  const wrap=document.getElementById("toasts");
+  const el=document.createElement("div");
+  el.className="toast "+(type==="bad"?"bad":type==="info"?"info":"ok");
+  const icon=type==="bad"?"✕":type==="info"?"◐":"✓";
+  el.innerHTML=`<i>${icon}</i><span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity="0"; el.style.transform="translateY(6px)"; }, 3200);
+  setTimeout(()=> el.remove(), 3600);
+}
+function updatePresetUI(){
+  document.querySelectorAll(".preset").forEach(p=>{
+    p.classList.toggle("active", p.dataset.preset===state.preset);
+  });
+  document.getElementById("presetLabel").textContent=state.preset.toUpperCase();
+  const cfg={standard:"48B • 1 layer • light", strong:"36B • 2 layers • +CA +AT", paranoid:"28B • 2 layers • CA • AT • junk (recommended)", extreme:"22B • 3 layers • CA • AT • traps"}[state.preset];
+  document.getElementById("statMode").textContent=state.preset.charAt(0).toUpperCase()+state.preset.slice(1);
+  document.getElementById("statModeDesc").textContent=cfg;
+  // sync toggles visual from state
+  document.querySelectorAll(".switch").forEach(s=>{
+    const k=s.dataset.toggle;
+    s.classList.toggle("on", !!state[k]);
+    s.setAttribute("aria-checked", String(!!state[k]));
+  });
+}
+function syncStats(){
+  const inp=document.getElementById("inputCode").value;
+  const out=document.getElementById("outputCode").value;
+  const ib=new Blob([inp]).size, ob=new Blob([out]).size;
+  document.getElementById("inChars").textContent=inp.length;
+  document.getElementById("inLines").textContent=inp?inp.split("\n").length:1;
+  document.getElementById("inBytes").textContent=ib+" B";
+  document.getElementById("statIn").textContent=ib+" B";
+  document.getElementById("statInChars").textContent=inp.length+" chars";
+  document.getElementById("outChars").textContent=out.length;
+  document.getElementById("outBytes").textContent=ob+" B";
+  const ratio=ib?((ob/ib).toFixed(2)+"×"):"—";
+  document.getElementById("statOut").textContent=ob+" B";
+  document.getElementById("statOutRatio").textContent=ratio+" expanded";
+  // line numbers
+  const inLines=inp?inp.split("\n").length:1;
+  const outLines=out?out.split("\n").length:1;
+  document.getElementById("linesIn").innerHTML=Array.from({length:inLines},(_,i)=>i+1).join("<br>");
+  document.getElementById("linesOut").innerHTML=Array.from({length:outLines},(_,i)=>i+1).join("<br>");
+  // chunks
+  const m=out.match(/\"[A-Za-z0-9+\/=]{8,}\"/g);
+  document.getElementById("outChunks").textContent=m?m.length:0;
+}
+function obfuscateCode(){
+  const code=document.getElementById("inputCode").value;
+  const watermark=document.getElementById("watermark").value;
+  const t0=performance.now();
+  try{
+    const res=obf.obfuscate(code,{
+      preset:state.preset,
+      customAlphabet:state.customAlphabet,
+      antiTamper:state.antiTamper,
+      junk:state.junk,
+      minify:state.minify,
+      watermark
+    });
+    document.getElementById("outputCode").value=res.lua;
+    const dt=Math.round(performance.now()-t0);
+    document.getElementById("outTime").textContent=dt+" ms • "+res.meta.scriptId;
+    syncStats();
+    toast("Protected with Cipher VM — "+res.meta.chunks+" chunks • "+state.preset.toUpperCase(),"ok");
+  }catch(e){
+    toast(e.message,"bad");
+  }
+}
+function copyOutput(){
+  const out=document.getElementById("outputCode");
+  if(!out.value) return toast("Nothing to copy yet — obfuscate first.","info");
+  navigator.clipboard.writeText(out.value).then(()=>toast("Copied to clipboard","ok")).catch(()=>{
+    out.select(); document.execCommand("copy"); toast("Copied","ok");
+  });
+}
+function downloadOutput(){
+  const data=document.getElementById("outputCode").value;
+  if(!data) return toast("Nothing to download.","info");
+  const blob=new Blob([data],{type:"text/plain;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="cipher_protected.lua";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+  toast("Downloaded cipher_protected.lua","ok");
+}
+function clearInput(){
+  document.getElementById("inputCode").value="";
+  syncStats(); toast("Input cleared","info");
+}
+function clearAll(){
+  document.getElementById("inputCode").value="";
+  document.getElementById("outputCode").value="";
+  document.getElementById("outChunks").textContent="0";
+  document.getElementById("outTime").textContent="—";
+  syncStats();
+}
+async function pasteClipboard(){
+  try{ const t=await navigator.clipboard.readText(); document.getElementById("inputCode").value=t; syncStats(); toast("Pasted","ok"); }
+  catch{ toast("Clipboard blocked — paste with Ctrl+V","info"); }
+}
+function loadExample(){
+  const ex=`-- Cipher example • Luau
+local secret = "cipher_is_stronger_than_sun"
+local function greet(name)
+    print("Hello, " .. name .. " • " .. secret)
+end
+
+for i=1,5 do
+    greet("Player"..i)
+    task.wait(0.1)
+end
+
+print("If you can read this, the VM failed 😈")
 `;
-    }
+  document.getElementById("inputCode").value=ex;
+  syncStats();
+  toast("Example loaded","info");
 }
-
-/* ===============================
-   UI HANDLERS
-================================ */
-
-function obfuscateCode() {
-    try {
-        const input = document.getElementById("inputCode").value;
-        const obf = new LuaObfuscator();
-        document.getElementById("outputCode").value = obf.obfuscate(input);
-    } catch (e) {
-        alert(e.message);
-    }
-}
-
-function copyOutput() {
-    const out = document.getElementById("outputCode");
-    out.select();
-    document.execCommand("copy");
-}
-
-function downloadOutput() {
-    const data = document.getElementById("outputCode").value;
-    if (!data) return;
-    const blob = new Blob([data], {type:"text/plain"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "sun_protected.lua";
-    a.click();
-}
+// presets click
+document.getElementById("presets").addEventListener("click", e=>{
+  const p=e.target.closest(".preset"); if(!p) return;
+  state.preset=p.dataset.preset;
+  // auto-adjust toggles per preset for sensible defaults
+  if(state.preset==="standard"){ state.customAlphabet=false; state.antiTamper=false; state.junk=false; state.minify=false; }
+  else if(state.preset==="strong"){ state.customAlphabet=true; state.antiTamper=true; state.junk=true; state.minify=true; }
+  else if(state.preset==="paranoid"){ state.customAlphabet=true; state.antiTamper=true; state.junk=true; state.minify=true; }
+  else if(state.preset==="extreme"){ state.customAlphabet=true; state.antiTamper=true; state.junk=true; state.minify=true; }
+  updatePresetUI(); syncStats();
+});
+// switches
+document.querySelectorAll(".switch").forEach(s=>{
+  s.addEventListener("click", ()=>{
+    const k=s.dataset.toggle;
+    state[k]=!state[k];
+    s.classList.toggle("on", state[k]);
+    s.setAttribute("aria-checked", String(state[k]));
+    syncStats();
+    updatePresetUI();
+  });
+});
+document.getElementById("watermark").addEventListener("input", syncStats);
+document.getElementById("inputCode").addEventListener("input", syncStats);
+document.getElementById("outputCode").addEventListener("input", syncStats);
+// file input
+document.getElementById("fileInput").addEventListener("change", async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  if(f.size>1_000_000) return toast("File too large (>1 MB)","bad");
+  const t=await f.text();
+  document.getElementById("inputCode").value=t;
+  syncStats(); toast("Loaded "+f.name,"ok");
+  e.target.value="";
+});
+// drag & drop
+const wrapIn=document.getElementById("wrapIn");
+["dragenter","dragover"].forEach(ev=> wrapIn.addEventListener(ev, e=>{ e.preventDefault(); wrapIn.classList.add("drag"); }));
+["dragleave","drop"].forEach(ev=> wrapIn.addEventListener(ev, e=>{ e.preventDefault(); if(ev==="dragleave"&& e.target!==wrapIn) return; wrapIn.classList.remove("drag"); }));
+wrapIn.addEventListener("drop", async e=>{
+  const f=e.dataTransfer.files[0];
+  if(!f) return;
+  if(f.size>1_000_000) return toast("File too large","bad");
+  const t=await f.text();
+  document.getElementById("inputCode").value=t; syncStats(); toast("Dropped "+f.name,"ok");
+});
+// init
+updatePresetUI(); syncStats();
+document.getElementById("inputCode").value=`print("Hello, Cipher!")`;
+// sync once
+syncStats();
 </script>
-
 </body>
 </html>

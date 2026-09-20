@@ -395,6 +395,23 @@ export default function Home() {
 
 	const protectionStrength = getProtectionStrength();
 
+	const enableUltimateMode = () => {
+		setSettings({
+			...settings,
+			mangleNames: true,
+			encodeStrings: true,
+			encodeNumbers: true,
+			controlFlow: true,
+			minify: true,
+			compressionLevel: 100,
+			encryptionAlgorithm: "xor",
+			controlFlowFlattening: true,
+			deadCodeInjection: true,
+			antiDebugging: true,
+			formattingStyle: "minified",
+		});
+	};
+
 	return (
 		<BackgroundGradientAnimation
 			gradientBackgroundStart="rgb(15, 23, 42)"
@@ -430,6 +447,14 @@ export default function Home() {
 						</div>
 					</div>
 					<nav className="flex flex-wrap gap-3 w-full sm:w-auto" aria-label="Main actions">
+						<Button
+							onClick={enableUltimateMode}
+							className="group bg-gradient-to-r from-orange-500/20 to-red-500/20 hover:from-orange-500/30 hover:to-red-500/30 text-orange-100 border border-orange-400/30 flex-1 sm:flex-none transition-all duration-300 shadow-lg hover:shadow-orange-500/20 hover:scale-[1.02]"
+							aria-label="Enable Ultimate 100% Protection"
+						>
+							<Zap className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
+							Ultimate 100%
+						</Button>
 						<Button
 							onClick={copyToClipboard}
 							disabled={!outputCode}
@@ -1143,7 +1168,7 @@ export default function Home() {
 													</p>
 												</div>
 												<p className="text-[10px] text-gray-400 pl-4">
-													All features + anti-debugging measures (strongest protection)
+													All features + anti-debugging. At 100%: global indirection, VM sealing, integrity checks, and post-build validation.
 												</p>
 											</div>
 										)}

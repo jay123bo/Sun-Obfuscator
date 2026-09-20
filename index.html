@@ -991,16 +991,44 @@ class CipherObfuscator{
     if(!decryptName) return code;
     const tokens=this.lex(code);
     const globals=new Set(this.globalsList);
+    const declared=new Set();
+    for(let i=0;i<tokens.length;i++){
+      const tok=tokens[i];
+      if(tok.type!=="word") continue;
+      if(tok.value==="local"){
+        const n=this.nextSig(tokens,i);
+        if(n && n.type==="word" && n.value!=="function") declared.add(n.value);
+        else if(n && n.type==="word" && n.value==="function"){
+          const nameIdx=tokens.indexOf(n,i+1);
+          const name=this.nextSig(tokens,nameIdx);
+          if(name && name.type==="word") declared.add(name.value);
+        }
+      }
+      if(tok.value==="function"){
+        let j=i+1, seenParen=false;
+        while(j<tokens.length){
+          const x=tokens[j];
+          if(x.type==="comment"){j++;continue;}
+          if(x.raw==="("){seenParen=true;j++;continue;}
+          if(seenParen && x.raw===")") break;
+          if(seenParen && x.type==="word" && x.value!=="self") declared.add(x.value);
+          j++;
+        }
+      }
+    }
     const key=this._stringKey;
     const alphabet=this._alphabetForStrings||this.stdAlphabet;
     return this.rewriteTokens(code,tokens,(tok,i,all)=>{
       if(tok.type!=="word" || !globals.has(tok.value)) return null;
+      if(tok.value==="_G" || tok.value==="shared") return null;
+      if(declared.has(tok.value)) return null;
       const p=this.previousSig(all,i);
       if(p && (p.raw==="." || p.raw===":" || p.value==="local" || p.value==="function")) return null;
       const enc=this.encodeStringValue(tok.value,key,alphabet);
       return "_G["+decryptName+"(\""+enc+"\")]";
     });
   }
+
 
   mangleBooleans(code){
     const tokens=this.lex(code);
@@ -1070,41 +1098,44 @@ class CipherObfuscator{
   decomposeExpressions(code){
     const lines=code.split("\n");
     const out=[];
-    const re=/^(\s*(?:local\s+)?[A-Za-z_]\w*\s*=\s*)([A-Za-z_]\w*|-?\d+(?:\.\d+)?)\s*([+\-*\/%])\s*([A-Za-z_]\w*|-?\d+(?:\.\d+)?)\s*$/;
+    const re=/^(\s*)((?:local\s+)?[A-Za-z_]\w*)\s*=\s*([A-Za-z_]\w*|-?\d+(?:\.\d+)?)\s*([+\-*\/%])\s*([A-Za-z_]\w*|-?\d+(?:\.\d+)?)\s*$/;
     for(const line of lines){
       const m=line.match(re);
       if(!m){out.push(line);continue;}
-      const t1=this.randName(),t2=this.randName();
-      out.push(m[1].replace(/=\s*$/,"= ")+t1+" = "+m[2]);
-      out.push("local "+t2+" = "+m[4]);
-      out.push(m[1]+t1+" "+m[3]+" "+t2);
+      const indent=m[1], lhs=m[2], left=m[3], op=m[4], right=m[5];
+      const t1=this.randName(), t2=this.randName();
+      out.push(indent+"local "+t1+" = "+left);
+      out.push(indent+"local "+t2+" = "+right);
+      out.push(indent+lhs+" = "+t1+" "+op+" "+t2);
     }
     return out.join("\n");
   }
+
 
   controlFlowObfuscate(code){
     const tokens=this.lex(code);
     const unsafe=tokens.some(t=>t.type==="word" && (t.value==="goto")) || code.indexOf("::")>=0;
     if(unsafe) return code;
-    const st=this.randInt(200,900);
-    const done=st+1;
+    const state=this.randName()+"_S";
+    const startState=this.randInt(200,900);
+    const doneState=startState+1;
     return [
-      "local "+this.randName()+"_S="+st,
+      "local "+state+"="+startState,
       "while true do",
-      "if "+this.randName()+"_S=="+st+" then",
+      "if "+state+"=="+startState+" then",
       "do",
       code,
       "end",
-      st===done?"":"--",
-      "break",
-      "elseif "+this.randName()+"_S=="+done+" then",
+      state+"="+doneState,
+      "elseif "+state+"=="+doneState+" then",
       "break",
       "else",
       "break",
       "end",
       "end"
-    ].join("\n").replace(/\n--\n/,"\n");
+    ].join("\n");
   }
+
 
   injectAntiTamper(code){
     const g=this.randName();

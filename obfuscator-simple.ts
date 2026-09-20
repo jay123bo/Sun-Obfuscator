@@ -639,6 +639,13 @@ function verifyVmRoundTrip(
 }
 
 function applyVmSeal(code: string): string {
+  const sourceValidation = parseLua(code);
+  if (!sourceValidation.success) {
+    throw new Error(
+      "VM seal refused invalid Lua payload: " + (sourceValidation.error || "syntax error")
+    );
+  }
+
   const alphabetBase = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
   const alphabet = alphabetBase.split("").sort(() => Math.random() - 0.5).join("");
   const primary = 17 + Math.floor(Math.random() * 223);
@@ -715,6 +722,13 @@ function applyVmSeal(code: string): string {
     "do local k=(" + safe(primary) + "+(i-1)*37)%256 local t=''for j=1,#d do t=t..string.char(" + bx + "(string.byte(d,j),((k+(j-1)*3)%256)))end d=t end " +
     out + "=" + out + "..d end " +
     "local f,e=(loadstring or load)(" + out + ")if not f then error('VM load failed: '..tostring(e))end return f()end return " + exec + "()";
+
+  const wrappedValidation = parseLua(lua);
+  if (!wrappedValidation.success) {
+    throw new Error(
+      "VM loader generation produced invalid Lua: " + (wrappedValidation.error || "syntax error")
+    );
+  }
 
   return lua;
 }

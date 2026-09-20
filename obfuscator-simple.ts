@@ -56,6 +56,7 @@ export interface ObfuscationOptions {
    * Automatically enabled at protectionLevel 100 unless explicitly disabled.
    */
   vmSeal?: boolean;
+  hideGlobals?: boolean;
 
   /**
    * AST/range validation is enabled by default after transformation.
@@ -75,6 +76,14 @@ const LUA_KEYWORDS = new Set([
   "and", "break", "do", "else", "elseif", "end", "false", "for", "function",
   "goto", "if", "in", "local", "nil", "not", "or", "repeat", "return",
   "then", "true", "until", "while",
+]);
+const LUA_GLOBALS = new Set([
+  "assert", "collectgarbage", "dofile", "error", "getmetatable", "ipairs", "load",
+  "loadfile", "loadstring", "next", "pairs", "pcall", "print", "rawequal", "rawget",
+  "rawset", "select", "setmetatable", "tonumber", "tostring", "type", "unpack",
+  "xpcall", "coroutine", "debug", "io", "math", "os", "package", "string", "table",
+  "bit32", "utf8", "arg", "game", "workspace", "script", "task", "shared", "plugin",
+  "Vector2", "Vector3", "CFrame", "Color3", "BrickColor", "Enum", "Instance", "UDim2"
 ]);
 
 function readLongBracketEnd(code: string, start: number): number {
@@ -476,6 +485,34 @@ function containsGotoOrLabel(tokens: LuaToken[]): boolean {
     tokens.some(token => token.raw === "::");
 }
 
+function hideGlobalReferences(code: string): string {
+  const parsed = parseLua(code);
+  if (!parsed.success || !parsed.ast) return code;
+
+  const tokens = scanLua(code);
+  const scopes = buildScopes(parsed.ast, () => "__unused");
+  const replacements: Replacement[] = [];
+
+  for (const token of tokens) {
+    if (token.kind !== "word" || !token.value || !LUA_GLOBALS.has(token.value)) continue;
+
+    const previous = [...tokens.slice(0, tokens.indexOf(token))].reverse().find(t => t.kind !== "comment");
+    if (previous && (previous.raw === "." || previous.raw === ":" || previous.value === "function")) continue;
+
+    const scope = findScope(scopes, token.start);
+    if (resolveBinding(scope, token.value, token.start)) continue;
+
+    const bytes = toUtf8Bytes(token.value);
+    replacements.push({
+      start: token.start,
+      end: token.end,
+      value: "_G[string.char(" + bytes.join(",") + ")]",
+    });
+  }
+
+  return rewriteRanges(code, replacements);
+}
+
 function transformConditions(code: string, intensity: number, metrics: MetricsTracker): string {
   if (intensity <= 0) return code;
   const parsed = parseLua(code);
@@ -595,7 +632,7 @@ function verifyVmRoundTrip(
   const recovered =
     typeof TextDecoder !== "undefined"
       ? new TextDecoder("utf-8").decode(bytes)
-      : decodeURIComponent(escape(String.fromCharCode(...decoded)));
+      : decodeURIComponent(escape(decoded.map(byte => String.fromCharCode(byte)).join("")));
 
   if (recovered !== original) {
     throw new Error("VM self-test failed: payload round-trip mismatch");
@@ -761,6 +798,11 @@ export class LuaObfuscator {
 
       if (options.mangleNames !== false) {
         transformed = this.mangleLocalNames(transformed);
+      }
+
+      const hideGlobals = options.hideGlobals ?? level >= 100;
+      if (hideGlobals) {
+        transformed = hideGlobalReferences(transformed);
       }
 
       const style = options.formattingStyle;
@@ -954,6 +996,7 @@ export function obfuscateLua(code: string, options?: ObfuscationOptions): Obfusc
     deadCodeInjection: level >= 80,
     antiDebugging: level >= 95,
     vmSeal: level >= 100,
+    hideGlobals: level >= 100,
     selfValidate: true,
     protectionLevel: level,
   };

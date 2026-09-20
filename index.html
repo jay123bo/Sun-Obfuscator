@@ -604,304 +604,552 @@ print(player.Name)"></textarea>
    ========================================================= */
 class CipherObfuscator{
   constructor(){
-    this.stdAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    this.globalsList = ["game","workspace","script","print","warn","error","pairs","ipairs","next","require","getgenv","getfenv","setfenv","loadstring","load","Instance","Vector3","CFrame","Color3","Enum","Vector2","UDim2","BrickColor","math","string","table","coroutine","task","spawn","wait","delay","tick","pcall","xpcall","assert","collectgarbage","_G","shared","debug","hookfunction","getrawmetatable"];
+    this.stdAlphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    this.globalsList=[
+      "game","workspace","script","print","warn","error","pairs","ipairs","next","require",
+      "getgenv","getfenv","setfenv","loadstring","load","Instance","Vector3","CFrame","Color3",
+      "Enum","Vector2","UDim2","BrickColor","math","string","table","coroutine","task","spawn",
+      "wait","delay","tick","pcall","xpcall","assert","collectgarbage","_G","shared","debug"
+    ];
+    this.vmModulo=1000000007;
   }
-  randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
-  randHex(len){ let s=""; for(let i=0;i<len;i++) s+=Math.floor(Math.random()*16).toString(16); return s; }
-  randName(){ const pref=Math.random()<0.5?"_0x":"_C"; return pref+this.randHex(6+this.randInt(0,4)).toUpperCase(); }
-  shuffleAlphabet(s){ const a=s.split(""); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a.join(""); }
-  toBytes(str){ try{ return new TextEncoder().encode(str); }catch(e){ const esc=unescape(encodeURIComponent(str)); const b=new Uint8Array(esc.length); for(let i=0;i<esc.length;i++) b[i]=esc.charCodeAt(i); return b; } }
-  b64Encode(bytes, alphabet){
+
+  randomU32(){
+    if(typeof crypto!=="undefined" && crypto.getRandomValues){
+      const a=new Uint32Array(1);
+      crypto.getRandomValues(a);
+      return a[0]>>>0;
+    }
+    return (Math.random()*0x100000000)>>>0;
+  }
+
+  randInt(a,b){
+    const span=b-a+1;
+    return a + (this.randomU32()%span);
+  }
+
+  randHex(len){
+    let s="";
+    for(let i=0;i<len;i++) s+=(this.randomU32()%16).toString(16);
+    return s;
+  }
+
+  randName(){
+    return (this.randomU32()&1 ? "_0x" : "_C") + this.randHex(8).toUpperCase();
+  }
+
+  shuffleAlphabet(s){
+    const a=s.split("");
+    for(let i=a.length-1;i>0;i--){
+      const j=this.randInt(0,i);
+      const t=a[i]; a[i]=a[j]; a[j]=t;
+    }
+    return a.join("");
+  }
+
+  toBytes(str){
+    try{
+      return new TextEncoder().encode(str);
+    }catch(e){
+      const esc=unescape(encodeURIComponent(str));
+      const b=new Uint8Array(esc.length);
+      for(let i=0;i<esc.length;i++) b[i]=esc.charCodeAt(i);
+      return b;
+    }
+  }
+
+  fromBytes(bytes){
+    try{
+      return new TextDecoder("utf-8",{fatal:true}).decode(bytes);
+    }catch(e){
+      let s="";
+      for(let i=0;i<bytes.length;i++) s+=String.fromCharCode(bytes[i]);
+      return decodeURIComponent(escape(s));
+    }
+  }
+
+  b64Encode(bytes,alphabet){
     const a=alphabet||this.stdAlphabet;
     let out="";
     for(let i=0;i<bytes.length;i+=3){
-      const b0=bytes[i], b1=i+1<bytes.length?bytes[i+1]:0, b2=i+2<bytes.length?bytes[i+2]:0;
+      const b0=bytes[i]||0;
+      const b1=i+1<bytes.length?bytes[i+1]:0;
+      const b2=i+2<bytes.length?bytes[i+2]:0;
       const n=(b0<<16)|(b1<<8)|b2;
-      out+=a[(n>>18)&63]+a[(n>>12)&63]+(i+1<bytes.length?a[(n>>6)&63]:"=")+(i+2<bytes.length?a[n&63]:"=");
+      out+=a[(n>>>18)&63]+a[(n>>>12)&63]+(i+1<bytes.length?a[(n>>>6)&63]:"=")+(i+2<bytes.length?a[n&63]:"=");
     }
     return out;
   }
+
+  b64Decode(data,alphabet){
+    const a=alphabet||this.stdAlphabet;
+    const m={};
+    for(let i=0;i<64;i++) m[a[i]]=i;
+    const clean=String(data).replace(new RegExp("[^"+a+"=]","g"),"");
+    const out=new Uint8Array(Math.floor(clean.length*3/4)+3);
+    let w=0;
+    for(let i=0;i<clean.length;i+=4){
+      const c0=clean[i],c1=clean[i+1],c2=clean[i+2],c3=clean[i+3];
+      if(!c0||!c1) break;
+      const x0=m[c0]??0,x1=m[c1]??0;
+      const x2=c2==="="?0:(m[c2]??0),x3=c3==="="?0:(m[c3]??0);
+      const n=(x0<<18)|(x1<<12)|(x2<<6)|x3;
+      out[w++]=(n>>>16)&255;
+      if(c2!=="=") out[w++]=(n>>>8)&255;
+      if(c3!=="=") out[w++]=n&255;
+    }
+    return out.slice(0,w);
+  }
+
+  vmDecode(chunks,primary,secondary,tertiary,alphabet,layers){
+    let total=0;
+    for(const c of chunks) total+=this.b64Decode(c,alphabet).length;
+    const out=new Uint8Array(total);
+    let w=0;
+    for(let i=0;i<chunks.length;i++){
+      let d=this.b64Decode(chunks[i],alphabet);
+      if(layers>=3){
+        d=d.slice().reverse();
+        for(let j=0;j<d.length;j++) d[j]=d[j]^tertiary;
+      }
+      if(layers>=2){
+        const k2=(secondary+i*7)&255;
+        for(let j=0;j<d.length;j++) d[j]=(d[j]-k2-j+512)&255;
+      }
+      const k1=(primary+i*37)&255;
+      for(let j=0;j<d.length;j++) d[j]=d[j]^((k1+j*3)&255);
+      out.set(d,w); w+=d.length;
+    }
+    return out;
+  }
+
+  hashChunks(chunks){
+    let h=0;
+    for(let i=0;i<chunks.length;i++){
+      const s=chunks[i];
+      for(let j=0;j<s.length;j++) h=(h*131+s.charCodeAt(j))%this.vmModulo;
+      h=(h+(i+1)*17)%this.vmModulo;
+    }
+    return h;
+  }
+
   obscureNumber(n){
-    const r=this.randInt(10,400);
-    if(Math.random()<0.33) return String(n);
-    if(Math.random()<0.5) return `(${n+r}-${r})`;
-    return `0x${n.toString(16)}`;
+    if(!Number.isFinite(n)) return "0";
+    if(Number.isInteger(n)){
+      const r=this.randInt(11,401);
+      const mode=this.randInt(0,2);
+      if(mode===0) return "("+(n+r)+"-"+r+")";
+      if(mode===1 && n>=0) return "(0x"+n.toString(16)+")";
+      return "("+(n+r)+"-"+r+")";
+    }
+    return "(" + String(n) + "+0)";
   }
-  /* ---------- helpers for AST transforms ---------- */
-  // protect strings and comments -> placeholders
-  protect(code){
-    const placeholders=[];
-    const re = /--\[\[[\s\S]*?\]\]|--[^\n]*|"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|\[\[[\s\S]*?\]\]|\[=\[[\s\S]*?\]=\]/g;
-    const protectedCode = code.replace(re, (m)=>{
-      placeholders.push(m);
-      return `__CIPH_PH_${placeholders.length-1}__`;
-    });
-    return {protectedCode, placeholders};
+
+  readLongBracket(code,pos){
+    if(code[pos]!=="[") return -1;
+    let i=pos+1;
+    while(code[i]==="=") i++;
+    if(code[i]!=="[") return -1;
+    const level=i-(pos+1);
+    const close="]"+"=".repeat(level)+"]";
+    const end=code.indexOf(close,i+1);
+    return end<0 ? code.length : end+close.length;
   }
-  restore(code, placeholders){
-    return code.replace(/__CIPH_PH_(\d+)__/g, (_,i)=>placeholders[Number(i)]);
+
+  lex(code){
+    const t=[];
+    const n=code.length;
+    let i=0;
+    const isIdStart=c=>!!c && /[A-Za-z_]/.test(c);
+    const isId=c=>!!c && /[A-Za-z0-9_]/.test(c);
+    while(i<n){
+      const ch=code[i];
+      if(/\s/.test(ch)){i++;continue;}
+
+      if(ch==="-" && code[i+1]==="-"){
+        const lb=this.readLongBracket(code,i+2);
+        if(lb>=0){t.push({type:"comment",start:i,end:lb,raw:code.slice(i,lb)});i=lb;continue;}
+        let j=code.indexOf("\n",i+2); if(j<0) j=n;
+        t.push({type:"comment",start:i,end:j,raw:code.slice(i,j)}); i=j; continue;
+      }
+
+      if(ch==="\"" || ch==="'"){
+        const q=ch; const start=i; i++;
+        while(i<n){
+          if(code[i]==="\\"){i+=Math.min(2,n-i);continue;}
+          if(code[i]===q){i++;break;}
+          i++;
+        }
+        t.push({type:"string",start,end:i,raw:code.slice(start,i)}); continue;
+      }
+
+      if(ch==="["){
+        const lb=this.readLongBracket(code,i);
+        if(lb>=0){
+          t.push({type:"string",start:i,end:lb,raw:code.slice(i,lb)});
+          i=lb; continue;
+        }
+      }
+
+      if(isIdStart(ch)){
+        const start=i; i++;
+        while(i<n && isId(code[i])) i++;
+        const raw=code.slice(start,i);
+        t.push({type:"word",start,end:i,raw,value:raw}); continue;
+      }
+
+      if(/[0-9]/.test(ch) || (ch==="." && /[0-9]/.test(code[i+1]||""))){
+        const start=i;
+        if(code[i]==="0" && /[xX]/.test(code[i+1]||"")){
+          i+=2; while(i<n && /[0-9A-Fa-f]/.test(code[i])) i++;
+          if(code[i]==="." ){i++; while(i<n && /[0-9A-Fa-f]/.test(code[i])) i++;}
+          if(/[pP]/.test(code[i]||"")){i++; if(/[+-]/.test(code[i]||""))i++; while(i<n&&/[0-9]/.test(code[i]))i++;}
+        }else{
+          i++;
+          while(i<n && /[0-9]/.test(code[i])) i++;
+          if(code[i]==="."){i++; while(i<n&&/[0-9]/.test(code[i]))i++;}
+          if(/[eE]/.test(code[i]||"")){i++; if(/[+-]/.test(code[i]||""))i++; while(i<n&&/[0-9]/.test(code[i]))i++;}
+        }
+        t.push({type:"number",start,end:i,raw:code.slice(start,i),value:code.slice(start,i)});
+        continue;
+      }
+
+      const start=i;
+      if(code.slice(i,i+3)==="...") i+=3;
+      else if(code.slice(i,i+2)===".."
+           ||code.slice(i,i+2)==="=="
+           ||code.slice(i,i+2)==="~="
+           ||code.slice(i,i+2)==="<="
+           ||code.slice(i,i+2)===">="
+           ||code.slice(i,i+2)==="::"
+           ||code.slice(i,i+2)==="->"
+           ||code.slice(i,i+2)==="+="
+           ||code.slice(i,i+2)==="-="
+           ||code.slice(i,i+2)==="*="
+           ||code.slice(i,i+2)==="/="
+           ||code.slice(i,i+2)==="%="
+           ||code.slice(i,i+2)==="^=") i+=2;
+      else i++;
+      t.push({type:"sym",start,end:i,raw:code.slice(start,i),value:code.slice(start,i)});
+    }
+    return t;
   }
-  // count globals for stats
+
+  previousSig(tokens,idx){
+    for(let i=idx-1;i>=0;i--) if(tokens[i].type!=="comment") return tokens[i];
+    return null;
+  }
+
+  nextSig(tokens,idx){
+    for(let i=idx+1;i<tokens.length;i++) if(tokens[i].type!=="comment") return tokens[i];
+    return null;
+  }
+
+  rewriteTokens(code,tokens,fn){
+    let out=""; let pos=0;
+    for(let i=0;i<tokens.length;i++){
+      const tok=tokens[i];
+      out+=code.slice(pos,tok.start);
+      const rep=fn(tok,i,tokens);
+      out+=rep==null?tok.raw:rep;
+      pos=tok.end;
+    }
+    return out+code.slice(pos);
+  }
+
+  decodeLuaStringLiteral(raw){
+    if(raw[0]==="[" || raw[0]===""){
+      if(raw[0]==="["){
+        let i=1; while(raw[i]==="=")i++;
+        if(raw[i]==="["){
+          const level=i-1;
+          const close="]"+"=".repeat(level)+"]";
+          const body=raw.slice(i+1,raw.endsWith(close)?raw.length-close.length:raw.length);
+          return body;
+        }
+      }
+      return raw;
+    }
+    const q=raw[0];
+    if(q!=='"' && q!=="'") return raw;
+    let out="";
+    for(let i=1;i<raw.length-1;i++){
+      const c=raw[i];
+      if(c!=="\\"){out+=c;continue;}
+      i++;
+      if(i>=raw.length-1) break;
+      const e=raw[i];
+      const map={a:"\x07",b:"\b",f:"\f",n:"\n",r:"\r",t:"\t",v:"\v","\\":"\\","\"":"\"", "'":"'"};
+      if(map[e]!=null){out+=map[e];continue;}
+      if(e==="z"){
+        while(i+1<raw.length-1 && /\s/.test(raw[i+1])) i++;
+        continue;
+      }
+      if(e==="x" && /^[0-9A-Fa-f]{2}$/.test(raw.slice(i+1,i+3))){
+        out+=String.fromCharCode(parseInt(raw.slice(i+1,i+3),16)); i+=2; continue;
+      }
+      if(e==="u" && raw[i+1]==="{"){
+        const j=raw.indexOf("}",i+2);
+        if(j>0){
+          const cp=parseInt(raw.slice(i+2,j),16);
+          if(Number.isFinite(cp)) out+=String.fromCodePoint(cp);
+          i=j; continue;
+        }
+      }
+      if(/[0-9]/.test(e)){
+        let s=e;
+        while(s.length<3 && /[0-9]/.test(raw[i+1]||"")){s+=raw[++i];}
+        out+=String.fromCharCode(parseInt(s,10)); continue;
+      }
+      if(e==="\n") continue;
+      if(e==="\r"){if(raw[i+1]==="\n")i++;continue;}
+      out+=e;
+    }
+    return out;
+  }
+
+  encodeStringValue(value,key,alphabet){
+    const bytes=this.toBytes(value);
+    for(let i=0;i<bytes.length;i++) bytes[i]^=key;
+    return this.b64Encode(bytes,alphabet);
+  }
+
   countGlobals(code){
-    const {protectedCode}=this.protect(code);
+    const tokens=this.lex(code);
+    const set=new Set(this.globalsList);
     let c=0;
-    for(const g of this.globalsList){
-      const re=new RegExp(`\\b${g}\\b`,'g');
-      const m=protectedCode.match(re);
-      if(m) c+=m.length;
+    for(let i=0;i<tokens.length;i++){
+      if(tokens[i].type==="word" && set.has(tokens[i].value)){
+        const p=this.previousSig(tokens,i);
+        if(!p || (p.raw!=="." && p.raw!==":")) c++;
+      }
     }
     return c;
   }
-  // 9) Rename variables
-  renameVariables(code){
-    const {protectedCode, placeholders}=this.protect(code);
-    // find local declarations
-    const varMap=new Map();
-    const blacklist=new Set(["and","break","do","else","elseif","end","false","for","function","if","in","local","nil","not","or","repeat","return","then","true","until","while"]);
-    // local a, b, c  and  local function foo  and  for i, v in
-    const declRe=/\blocal\s+([a-zA-Z_]\w*(?:\s*,\s*[a-zA-Z_]\w*)*)/g;
-    const funcRe=/\blocal\s+function\s+([a-zA-Z_]\w*)/g;
-    const forRe=/\bfor\s+([a-zA-Z_]\w*(?:\s*,\s*[a-zA-Z_]\w*)*)\s+in/g;
-    let m;
-    const collect=(str)=>{
-      str.split(",").forEach(s=>{
-        const name=s.trim();
-        if(name && !blacklist.has(name) && !varMap.has(name) && name.length>1){
-          varMap.set(name, this.randName());
-        }
-      });
-    };
-    while((m=declRe.exec(protectedCode))){ collect(m[1]); }
-    while((m=funcRe.exec(protectedCode))){ if(!varMap.has(m[1])) varMap.set(m[1], this.randName()); }
-    while((m=forRe.exec(protectedCode))){ collect(m[1]); }
-    // also simple for i=1,10
-    const forNumRe=/\bfor\s+([a-zA-Z_]\w*)\s*=/g;
-    while((m=forNumRe.exec(protectedCode))){ if(!varMap.has(m[1]) && m[1].length>1) varMap.set(m[1], this.randName()); }
 
-    let out=protectedCode;
-    // replace longest names first to avoid partial
-    const entries=[...varMap.entries()].sort((a,b)=>b[0].length-a[0].length);
-    for(const [orig, repl] of entries){
-      const re=new RegExp(`\\b${orig}\\b`,'g');
-      out=out.replace(re, repl);
-    }
-    return this.restore(out, placeholders);
-  }
-  hideGlobals(code, decryptName){
-    const {protectedCode, placeholders}=this.protect(code);
-    let out=protectedCode;
-    for(const g of this.globalsList){
-      const re=new RegExp(`\\b${g}\\b`,'g');
-      // replace with _G[decrypt] or _G["g"] if decryptName not provided (fallback)
-      if(decryptName){
-        // we will encode g via simple b64+key outside, but here we can use decryptName("b64")
-        // For hideGlobals we need encoded form: we generate on the fly
-        // Instead of encoding now, we make it _G[decryptName("encoded")] where encoded is precomputed
-        // To avoid double-encode, just use decryptName with encoded g
-        // Generate encoded now:
-        const key= this._stringKey || 88;
-        const bytes=this.toBytes(g);
-        for(let i=0;i<bytes.length;i++) bytes[i]^=key;
-        const enc=this.b64Encode(bytes, this._alphabetForStrings || this.stdAlphabet);
-        out=out.replace(re, `_G[${decryptName}("${enc}")]`);
-      }else{
-        out=out.replace(re, `_G["${g}"]`);
+  renameVariables(code){
+    const tokens=this.lex(code);
+    const reserved=new Set(["and","break","do","else","elseif","end","false","for","function","if","in","local","nil","not","or","repeat","return","then","true","until","while"]);
+    const candidates=new Map();
+    const declaredAgain=new Set();
+    let depth=0;
+
+    for(let i=0;i<tokens.length;i++){
+      const tok=tokens[i];
+      if(tok.type==="comment" || tok.type==="string") continue;
+
+      if(tok.type==="word" && tok.value==="local"){
+        const n=this.nextSig(tokens,i);
+        if(n && n.type==="word" && n.value==="function"){
+          const name=this.nextSig(tokens,tokens.indexOf(n,i+1));
+          if(name && name.type==="word" && depth===0 && !reserved.has(name.value)){
+            if(candidates.has(name.value)) declaredAgain.add(name.value);
+            else candidates.set(name.value,{name:name.value,start:name.start});
+          }
+        }else if(depth===0){
+          let j=i+1;
+          let expectName=true;
+          while(j<tokens.length){
+            const x=tokens[j];
+            if(x.type==="comment"){j++;continue;}
+            if(x.raw==="=" || x.raw===";" || x.value==="in") break;
+            if(expectName && x.type==="word" && !reserved.has(x.value)){
+              if(candidates.has(x.value)) declaredAgain.add(x.value);
+              else candidates.set(x.value,{name:x.value,start:x.start});
+              expectName=false;
+            }else if(x.raw===","){expectName=true;}
+            else if(x.type==="word" || x.raw==="." || x.raw==="(" || x.raw==="[" || x.raw===")"){break;}
+            j++;
+          }
+        }
       }
+
+      if(tok.type==="word" && tok.value==="function") depth++;
+      else if(tok.type==="word" && tok.value==="do") depth++;
+      else if(tok.type==="word" && tok.value==="then") depth++;
+      else if(tok.type==="word" && tok.value==="repeat") depth++;
+      else if(tok.type==="word" && tok.value==="end") depth=Math.max(0,depth-1);
+      else if(tok.type==="word" && tok.value==="until") depth=Math.max(0,depth-1);
     }
-    return this.restore(out, placeholders);
-  }
-  mangleBooleans(code){
-    const {protectedCode, placeholders}=this.protect(code);
-    let out=protectedCode.replace(/\btrue\b/g, ()=> Math.random()<0.5 ? "(1==1)" : "(not false)");
-    out=out.replace(/\bfalse\b/g, ()=> Math.random()<0.5 ? "(1~=1)" : "(not true)");
-    return this.restore(out, placeholders);
-  }
-  mangleNumbers(code){
-    const {protectedCode, placeholders}=this.protect(code);
-    // protect placeholders already, now replace numbers not part of placeholders
-    // match numbers not preceded by __CIPH_PH_
-    let out=protectedCode.replace(/(?<![\w.])(-?\d+(?:\.\d+)?)/g, (m, numStr)=>{
-      // skip if inside placeholder token
-      if(m.includes("__CIPH_PH_")) return m;
-      const n=Number(numStr);
-      if(!isFinite(n)) return m;
-      if(Number.isInteger(n) && Math.abs(n)<10000){
-        const r=this.randInt(5,200);
-        const choice=this.randInt(0,2);
-        if(choice===0) return `(${n+r}-${r})`;
-        if(choice===1) return `(0x${n.toString(16)})`;
-        // a * b + c
-        const a=this.randInt(2,12);
-        const b=Math.floor(n / a);
-        const c=n - a*b;
-        if(c===0) return `( ${a} * ${b} )`;
-        return `( ${a} * ${b} + ${c} )`;
-      } else {
-        // float
-        return `(${n} + 0)`;
-      }
+
+    const map=new Map();
+    for(const [name,info] of candidates){
+      if(name.length<2 || declaredAgain.has(name)) continue;
+      map.set(name,{replacement:this.randName(),start:info.start});
+    }
+
+    return this.rewriteTokens(code,tokens,(tok,i,all)=>{
+      if(tok.type!=="word" || !map.has(tok.value)) return null;
+      if(tok.start<map.get(tok.value).start) return null;
+      const p=this.previousSig(all,i);
+      if(p && (p.raw==="." || p.raw===":")) return null;
+      return map.get(tok.value).replacement;
     });
-    return this.restore(out, placeholders);
   }
-  // Encrypt strings -> returns {code, decryptFn}
-  encryptStrings(code, decryptName, alphabet, key){
+
+  hideGlobals(code,decryptName){
+    if(!decryptName) return code;
+    const tokens=this.lex(code);
+    const globals=new Set(this.globalsList);
+    const key=this._stringKey;
+    const alphabet=this._alphabetForStrings||this.stdAlphabet;
+    return this.rewriteTokens(code,tokens,(tok,i,all)=>{
+      if(tok.type!=="word" || !globals.has(tok.value)) return null;
+      const p=this.previousSig(all,i);
+      if(p && (p.raw==="." || p.raw===":" || p.value==="local" || p.value==="function")) return null;
+      const enc=this.encodeStringValue(tok.value,key,alphabet);
+      return "_G["+decryptName+"(\""+enc+"\")]";
+    });
+  }
+
+  mangleBooleans(code){
+    const tokens=this.lex(code);
+    return this.rewriteTokens(code,tokens,tok=>{
+      if(tok.type==="word" && tok.value==="true") return Math.random()<0.5 ? "(1==1)" : "(not(1~=1))";
+      if(tok.type==="word" && tok.value==="false") return Math.random()<0.5 ? "(1~=1)" : "(not(1==1))";
+      return null;
+    });
+  }
+
+  mangleNumbers(code){
+    const tokens=this.lex(code);
+    return this.rewriteTokens(code,tokens,(tok,i,all)=>{
+      if(tok.type!=="number") return null;
+      const n=Number(tok.value);
+      if(!Number.isFinite(n)) return null;
+      if(Number.isInteger(n) && Math.abs(n)<100000){
+        const r=this.randInt(7,211);
+        const mode=this.randInt(0,2);
+        if(mode===0) return "("+(n+r)+"-"+r+")";
+        if(mode===1 && n>=0) return "(0x"+n.toString(16)+")";
+        const a=this.randInt(2,11);
+        const b=Math.trunc(n/a);
+        const c=n-a*b;
+        return c===0 ? "("+a+"*"+b+")" : "("+a+"*"+b+(c>=0?"+":"")+c+")";
+      }
+      return "("+tok.value+"+0)";
+    });
+  }
+
+  encryptStrings(code,decryptName,alphabet,key){
     this._stringKey=key;
     this._alphabetForStrings=alphabet;
-    let decryptFn=`local ${decryptName}=function(s) local b='${alphabet}' local m={} for i=1,64 do m[b:sub(i,i)]=i-1 end s=s:gsub("[^"..b.."=]","") local out="" for i=1,#s,4 do local a=m[s:sub(i,i)] or 0 local c=m[s:sub(i+1,i+1)] or 0 local d=s:sub(i+2,i+2)=="=" and 0 or (m[s:sub(i+2,i+2)] or 0) local e=s:sub(i+3,i+3)=="=" and 0 or (m[s:sub(i+3,i+3)] or 0) local n=(a*262144)+(c*4096)+(d*64)+e local b1=math.floor(n/65536)%256 local b2=math.floor(n/256)%256 local b3=n%256 out=out..string.char(b1) if s:sub(i+2,i+2)~="=" then out=out..string.char(b2) end if s:sub(i+3,i+3)~="=" then out=out..string.char(b3) end end local t="" for i=1,#out do t=t..string.char((string.byte(out,i) ~ ${key})%256) end return t end`;
-    // find strings outside comments
-    // we need to avoid double-processing our decryptor's strings, so we will process original code only
-    // Use regex that captures strings but not placeholders for decryptFn (decryptFn not yet in code)
-    const stringRe=/"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|\[\[[\s\S]*?\]\]/g;
-    // To avoid encrypting strings inside comments, protect comments first
-    const commentPlaceholders=[];
-    let codeWithoutComments=code.replace(/--\[\[[\s\S]*?\]\]|--[^\n]*/g, (m)=>{ commentPlaceholders.push(m); return `__CIPH_CM_${commentPlaceholders.length-1}__`; });
-    let out=codeWithoutComments.replace(stringRe, (orig)=>{
-      // orig includes quotes
-      let content;
-      let quote='"';
-      if(orig.startsWith('"')||orig.startsWith("'")){
-        quote=orig[0];
-        content=orig.slice(1,-1);
-        // unescape simple
-        content=content.replace(/\\"/g,'"').replace(/\\'/g,"'").replace(/\\\\/g,"\\").replace(/\\n/g,"\n").replace(/\\t/g,"\t");
-      } else if(orig.startsWith("[[")){
-        content=orig.slice(2,-2);
-      } else {
-        content=orig;
-      }
-      if(content.length===0) return orig;
-      // encode content
-      const bytes=this.toBytes(content);
-      for(let i=0;i<bytes.length;i++) bytes[i]^=key;
-      const enc=this.b64Encode(bytes, alphabet);
-      return `${decryptName}("${enc}")`;
+    const tokens=this.lex(code);
+    const decryptFn=[
+      "local "+decryptName+"=function(s)",
+      "local b='"+alphabet+"'",
+      "local m={}",
+      "for i=1,64 do m[b:sub(i,i)]=i-1 end",
+      "local out=''",
+      "for i=1,#s,4 do",
+      "local a=m[s:sub(i,i)] or 0",
+      "local c=m[s:sub(i+1,i+1)] or 0",
+      "local d=s:sub(i+2,i+2)=='=' and 0 or (m[s:sub(i+2,i+2)] or 0)",
+      "local e=s:sub(i+3,i+3)=='=' and 0 or (m[s:sub(i+3,i+3)] or 0)",
+      "local n=(a*262144)+(c*4096)+(d*64)+e",
+      "local b1=math.floor(n/65536)%256",
+      "local b2=math.floor(n/256)%256",
+      "local b3=n%256",
+      "out=out..string.char(b1)",
+      "if s:sub(i+2,i+2)~='=' then out=out..string.char(b2) end",
+      "if s:sub(i+3,i+3)~='=' then out=out..string.char(b3) end",
+      "end",
+      "local t=''",
+      "for i=1,#out do t=t..string.char((string.byte(out,i) ~ "+key+")%256) end",
+      "return t end"
+    ].join(" ");
+    const encoded=this.rewriteTokens(code,tokens,tok=>{
+      if(tok.type!=="string") return null;
+      const value=this.decodeLuaStringLiteral(tok.raw);
+      if(value.length===0) return tok.raw;
+      return decryptName+"(\""+this.encodeStringValue(value,key,alphabet)+"\")";
     });
-    // restore comments
-    out=out.replace(/__CIPH_CM_(\d+)__/g, (_,i)=>commentPlaceholders[Number(i)]);
-    return {code: out, decryptFn};
-  }
-  decomposeExpressions(code){
-    const {protectedCode, placeholders}=this.protect(code);
-    // For each line with assignment containing + - * / % ^, split into temps
-    const lines=protectedCode.split("\n");
-    const outLines=[];
-    for(let line of lines){
-      // check if line has = and operator
-      const assignMatch=line.match(/^(\s*(?:local\s+)?)([a-zA-Z0-9_\.\[\]]+\s*=\s*)(.+)$/);
-      if(!assignMatch || !/[\+\-\*\/\%\^]/.test(assignMatch[3]) || assignMatch[3].includes("__CIPH_PH_")){
-        outLines.push(line);
-        continue;
-      }
-      const prefix=assignMatch[1];
-      const lhs=assignMatch[2];
-      const rhs=assignMatch[3];
-      // quick operator count
-      const ops=(rhs.match(/[\+\-\*\/\%\^]/g)||[]).length;
-      if(ops <2){
-        // simple binary a + b -> decompose into temps for demo
-        // create 2 temps for operands
-        const parts=rhs.split(/([\+\-\*\/\%\^])/);
-        // if parts = [a, +, b, *, c] we will create temps for each operand
-        // Simplest: create temp for each operand that is identifier/number
-        const operands=rhs.match(/[\w\.\"]+/g) || [];
-        // Instead of complex, we will create decomposition:
-        // local _tmp1 = operand1
-        // local _tmp2 = operand2
-        // prefix+lhs + _tmp1 + op + _tmp2 ...
-        // For simplicity, just create two temps for first binary
-        // Extract first op
-        const firstOpMatch=rhs.match(/([a-zA-Z0-9_\.\)]+)\s*([\+\-\*\/\%\^])\s*([a-zA-Z0-9_\.\(\"]+)/);
-        if(firstOpMatch){
-          const left=firstOpMatch[1], op=firstOpMatch[2], right=firstOpMatch[3];
-          const t1=this.randName(), t2=this.randName();
-          // Need to reconstruct rhs with temps
-          const newRhs=rhs.replace(firstOpMatch[0], `${t1} ${op} ${t2}`);
-          outLines.push(`${prefix}${t1} = ${left}`);
-          outLines.push(`${prefix}${t2} = ${right}`);
-          outLines.push(`${prefix}${lhs}${newRhs}`);
-        } else {
-          outLines.push(line);
-        }
-      } else {
-        // multiple ops: create temps for each operand
-        // Use simple split and create temps for each identifier
-        const tokens=rhs.split(/([\+\-\*\/\%\^\(\)])/).map(s=>s.trim()).filter(Boolean);
-        // This is complex, fallback to simple wrapping in function
-        // Alternative decompose: wrap RHS in (function() local a,b = op1, op2 return a+b end)()
-        // For demo, just push line as is
-        outLines.push(line);
-      }
-    }
-    let out=outLines.join("\n");
-    return this.restore(out, placeholders);
-  }
-  controlFlowObfuscate(code){
-    // Safe dispatcher: opaque if + while wrapper — preserves semantics for all chunk-level code
-    // Avoids splitting multi-line blocks (if/for/function) which breaks semantics
-    const vState=this.randName();
-    const vCheck=this.randName();
-    const nState=this.randInt(100,999);
-    const nCheck=this.randInt(10,99);
-    const deadVar=this.randName();
-    const deadVal=this.randHex(8);
-    // Use opaque predicate: _state == nState is always true, else is dead code trap
-    return `local ${vState}=${nState} local ${vCheck}=${nCheck} if ${vState}==${nState} then\n${code}\nelse\nlocal ${deadVar}="${deadVal}" if ${deadVar}==nil then error("unreachable") end\nend\n-- dispatcher loop (opaque)\nlocal ${this.randName()}=0 while ${vCheck}==${nCheck} do ${vCheck}=${vCheck}+1 if ${vCheck}>${nCheck} then break end end`;
-  }
-  injectAntiTamper(code){
-    const chk=this.randName();
-    const t1=this.randName();
-    const snippet=`
--- anti tamper
-local ${chk}=function() 
-  if debug and debug.getinfo then
-    local info=debug.getinfo(1,"S")
-    if info and info.what=="C" then return end
-  end
-  if hookfunction or getrawmetatable or debug.getupvalue then
-    -- tamper detected, infinite loop trap
-    local ${t1}=0 while ${t1}<1 do ${t1}=${t1}+1 if ${t1}>999999 then break end end
-  end
-end
-pcall(${chk})
-`.trim();
-    return snippet+"\n"+code;
+    return {code:encoded,decryptFn};
   }
 
-  /* ---------- main obfuscate ---------- */
-  obfuscate(code, opts={}){
+  decomposeExpressions(code){
+    const lines=code.split("\n");
+    const out=[];
+    const re=/^(\s*(?:local\s+)?[A-Za-z_]\w*\s*=\s*)([A-Za-z_]\w*|-?\d+(?:\.\d+)?)\s*([+\-*\/%])\s*([A-Za-z_]\w*|-?\d+(?:\.\d+)?)\s*$/;
+    for(const line of lines){
+      const m=line.match(re);
+      if(!m){out.push(line);continue;}
+      const t1=this.randName(),t2=this.randName();
+      out.push(m[1].replace(/=\s*$/,"= ")+t1+" = "+m[2]);
+      out.push("local "+t2+" = "+m[4]);
+      out.push(m[1]+t1+" "+m[3]+" "+t2);
+    }
+    return out.join("\n");
+  }
+
+  controlFlowObfuscate(code){
+    const tokens=this.lex(code);
+    const unsafe=tokens.some(t=>t.type==="word" && (t.value==="goto")) || code.indexOf("::")>=0;
+    if(unsafe) return code;
+    const st=this.randInt(200,900);
+    const done=st+1;
+    return [
+      "local "+this.randName()+"_S="+st,
+      "while true do",
+      "if "+this.randName()+"_S=="+st+" then",
+      "do",
+      code,
+      "end",
+      st===done?"":"--",
+      "break",
+      "elseif "+this.randName()+"_S=="+done+" then",
+      "break",
+      "else",
+      "break",
+      "end",
+      "end"
+    ].join("\n").replace(/\n--\n/,"\n");
+  }
+
+  injectAntiTamper(code){
+    const g=this.randName();
+    return [
+      "local "+g+"=type(loadstring or load)==\"function\"",
+      "if not "+g+" then error(\"Cipher runtime unavailable\") end",
+      code
+    ].join("\n");
+  }
+
+  obfuscate(code,opts={}){
     if(!code || !code.trim()) throw new Error("Nothing to obfuscate — paste some Lua first.");
-    if(code.length>1_000_000) throw new Error("File too large (>1 MB). Split it.");
+    if(code.length>1000000) throw new Error("File too large (>1 MB). Split it.");
+
     const preset=opts.preset||"maximum";
     const cfgPreset={
       standard:{chunk:48,layers:1,junk:0},
       strong:{chunk:36,layers:2,junk:2},
       paranoid:{chunk:28,layers:2,junk:4},
-      maximum:{chunk:22,layers:3,junk:6},
+      maximum:{chunk:22,layers:3,junk:6}
     }[preset]||{chunk:22,layers:3,junk:6};
 
-    // resolve opts merging preset defaults
-    const defaultsForPreset = preset==="standard" ? {antiTamper:false, hideGlobals:false, encryptStrings:false, decompose:false, controlFlow:false, mangleNumbers:false, mangleBooleans:false, renameVariables:false, customAlphabet:false, junk:false, minify:false, beautify:false}
-      : preset==="strong" ? {antiTamper:true, hideGlobals:true, encryptStrings:true, decompose:false, controlFlow:true, mangleNumbers:true, mangleBooleans:true, renameVariables:true, customAlphabet:true, junk:true, minify:true, beautify:false}
-      : preset==="paranoid" ? {antiTamper:true, hideGlobals:true, encryptStrings:true, decompose:true, controlFlow:true, mangleNumbers:true, mangleBooleans:true, renameVariables:true, customAlphabet:true, junk:true, minify:true, beautify:false}
-      : {antiTamper:true, hideGlobals:true, encryptStrings:true, decompose:true, controlFlow:true, mangleNumbers:true, mangleBooleans:true, renameVariables:true, customAlphabet:true, junk:true, minify:true, beautify:false};
+    const defaults=preset==="standard" ? {
+      antiTamper:false,hideGlobals:false,encryptStrings:false,decompose:false,controlFlow:false,
+      mangleNumbers:false,mangleBooleans:false,renameVariables:false,customAlphabet:false,junk:false,minify:false,beautify:false
+    } : {
+      antiTamper:true,hideGlobals:true,encryptStrings:true,decompose:preset!=="strong",controlFlow:true,
+      mangleNumbers:true,mangleBooleans:true,renameVariables:true,customAlphabet:true,junk:true,minify:true,beautify:false
+    };
 
     const o={
-      antiTamper: opts.antiTamper ?? defaultsForPreset.antiTamper,
-      hideGlobals: opts.hideGlobals ?? defaultsForPreset.hideGlobals,
-      encryptStrings: opts.encryptStrings ?? defaultsForPreset.encryptStrings,
-      decompose: opts.decompose ?? defaultsForPreset.decompose,
-      controlFlow: opts.controlFlow ?? defaultsForPreset.controlFlow,
-      mangleNumbers: opts.mangleNumbers ?? defaultsForPreset.mangleNumbers,
-      mangleBooleans: opts.mangleBooleans ?? defaultsForPreset.mangleBooleans,
-      renameVariables: opts.renameVariables ?? defaultsForPreset.renameVariables,
-      customAlphabet: opts.customAlphabet ?? defaultsForPreset.customAlphabet,
-      junk: opts.junk ?? defaultsForPreset.junk,
-      minify: opts.minify ?? defaultsForPreset.minify,
-      beautify: opts.beautify ?? defaultsForPreset.beautify,
+      antiTamper:opts.antiTamper??defaults.antiTamper,
+      hideGlobals:opts.hideGlobals??defaults.hideGlobals,
+      encryptStrings:opts.encryptStrings??defaults.encryptStrings,
+      decompose:opts.decompose??defaults.decompose,
+      controlFlow:opts.controlFlow??defaults.controlFlow,
+      mangleNumbers:opts.mangleNumbers??defaults.mangleNumbers,
+      mangleBooleans:opts.mangleBooleans??defaults.mangleBooleans,
+      renameVariables:opts.renameVariables??defaults.renameVariables,
+      customAlphabet:opts.customAlphabet??defaults.customAlphabet,
+      junk:opts.junk??defaults.junk,
+      minify:opts.minify??defaults.minify,
+      beautify:opts.beautify??defaults.beautify
     };
-    // anti tamper vs beautify mutual exclusive
-    if(o.antiTamper && o.beautify){ o.beautify=false; o.minify=true; }
+    if(o.antiTamper&&o.beautify){o.beautify=false;o.minify=true;}
 
     const primary=this.randInt(17,239);
     const secondary=this.randInt(1024,60000);
@@ -909,186 +1157,129 @@ pcall(${chk})
     const alphabet=o.customAlphabet?this.shuffleAlphabet(this.stdAlphabet):this.stdAlphabet;
     const stringKey=this.randInt(11,239);
     const stringDecryptName=this.randName();
-
-    // watermark
     const watermark=(opts.watermark||"").trim();
-    const scriptId="CIPHER-" + this.randHex(8).toUpperCase() + "-" + this.randHex(4).toUpperCase();
+    const scriptId="CIPHER-"+this.randHex(8).toUpperCase()+"-"+this.randHex(4).toUpperCase();
     const dateStr=new Date().toISOString().slice(0,10);
 
-    // ---------- AST transforms pipeline ----------
     let transformed=code;
-    // Keep original for debug? we transform stepwise
-    let helpers=[];
+    const helpers=[];
 
-    // 1. Rename variables
-    if(o.renameVariables){
-      transformed=this.renameVariables(transformed);
-    }
-    // 2. Mangle booleans/numbers before other transforms (do numbers before encrypt strings so numbers inside strings not mangled)
-    if(o.mangleBooleans){
-      transformed=this.mangleBooleans(transformed);
-    }
-    if(o.mangleNumbers){
-      transformed=this.mangleNumbers(transformed);
-    }
-    // 3. Decompose
-    if(o.decompose){
-      transformed=this.decomposeExpressions(transformed);
-    }
-    // 4. Control flow
-    if(o.controlFlow){
-      transformed=this.controlFlowObfuscate(transformed);
-    }
-    // 5. Hide globals + Encrypt strings (need decryptor)
-    let stringDecryptFn="";
-    if(o.encryptStrings || o.hideGlobals){
-      // generate decryptor function
-      const {code: encCode, decryptFn}=this.encryptStrings(o.encryptStrings?transformed:transformed, stringDecryptName, alphabet, stringKey);
-      if(o.encryptStrings){
-        transformed=encCode;
-        stringDecryptFn=decryptFn;
-      } else {
-        // only hideGlobals without string encryption: create decryptor for globals only
-        // create simple decryptor for globals
-        stringDecryptFn=decryptFn;
-        // hideGlobals will use it
-      }
-      if(o.hideGlobals){
-        transformed=this.hideGlobals(transformed, stringDecryptName);
-      }
-      if(o.encryptStrings || o.hideGlobals){
-        // prepend decryptor
-        helpers.push(stringDecryptFn);
-      }
-    } else if(o.hideGlobals){
-      transformed=this.hideGlobals(transformed, null);
-    }
-    // 6. Anti tamper injection (Lua code)
-    if(o.antiTamper){
-      transformed=this.injectAntiTamper(transformed);
+    if(o.renameVariables) transformed=this.renameVariables(transformed);
+    if(o.mangleBooleans) transformed=this.mangleBooleans(transformed);
+    if(o.mangleNumbers) transformed=this.mangleNumbers(transformed);
+    if(o.decompose) transformed=this.decomposeExpressions(transformed);
+    if(o.controlFlow) transformed=this.controlFlowObfuscate(transformed);
+    if(o.antiTamper) transformed=this.injectAntiTamper(transformed);
+
+    if(o.encryptStrings||o.hideGlobals){
+      const enc=this.encryptStrings(transformed,stringDecryptName,alphabet,stringKey);
+      if(o.encryptStrings) transformed=enc.code;
+      if(o.hideGlobals) transformed=this.hideGlobals(transformed,stringDecryptName);
+      helpers.push(enc.decryptFn);
     }
 
-    // if helpers exist, prepend them to transformed before VM encryption
-    if(helpers.length){
-      transformed=helpers.join(o.minify?";":"\n") + (o.minify?";":"\n") + transformed;
-    }
+    if(helpers.length) transformed=helpers.join(o.minify?";":"\n")+(o.minify?";":"\n")+transformed;
 
-    // ---------- VM encryption (Cipher VM) ----------
     const bytes=this.toBytes(transformed);
     const chunks=[];
     for(let i=0;i<bytes.length;i+=cfgPreset.chunk){
-      let slice=bytes.slice(i,i+cfgPreset.chunk);
-      const k1=(primary + Math.floor(i/cfgPreset.chunk)*37) & 255;
-      let enc=new Uint8Array(slice.length);
-      for(let j=0;j<slice.length;j++) enc[j]=slice[j] ^ ((k1 + j*3) & 255);
+      const slice=bytes.slice(i,i+cfgPreset.chunk);
+      const idx=Math.floor(i/cfgPreset.chunk);
+      const k1=(primary+idx*37)&255;
+      const enc=new Uint8Array(slice.length);
+      for(let j=0;j<slice.length;j++) enc[j]=slice[j]^((k1+j*3)&255);
       if(cfgPreset.layers>=2){
-        const k2=(secondary + Math.floor(i/cfgPreset.chunk)*7) & 255;
-        for(let j=0;j<enc.length;j++) enc[j]=(enc[j] + k2 + j) & 255;
+        const k2=(secondary+idx*7)&255;
+        for(let j=0;j<enc.length;j++) enc[j]=(enc[j]+k2+j)&255;
       }
       if(cfgPreset.layers>=3){
-        for(let j=0;j<enc.length;j++) enc[j]=enc[j] ^ tertiary;
-        enc=enc.reverse();
+        for(let j=0;j<enc.length;j++) enc[j]=enc[j]^tertiary;
+        enc.reverse();
       }
-      chunks.push(this.b64Encode(enc, alphabet));
+      chunks.push(this.b64Encode(enc,alphabet));
     }
 
+    const recovered=this.fromBytes(this.vmDecode(chunks,primary,secondary,tertiary,alphabet,cfgPreset.layers));
+    if(recovered!==transformed) throw new Error("VM self-test failed — generated payload did not round-trip.");
+
+    const expectedHash=this.hashChunks(chunks);
+    const expectedBytes=bytes.length;
+
     const vData=this.randName();
-    const vAlpha=this.randName();
-    const vPrimary=this.randName();
-    const vSecondary=this.randName();
-    const vTertiary=this.randName();
     const vDecode=this.randName();
     const vExec=this.randName();
     const vOut=this.randName();
     const vTmp=this.randName();
-    const vJunkA=this.randName();
+    const vJunk=this.randName();
 
-    const dataLines=chunks.map(c=>`    "${c}"`).join(",\n");
+    const dataLines=chunks.map(c=>"  \""+c+"\"").join(",\n");
 
     const junkSnippets=[];
     if(o.junk && cfgPreset.junk>0){
       for(let i=0;i<cfgPreset.junk;i++){
-        const a=this.randHex(3), b=this.randHex(3);
+        const a=this.randName(), n=this.randInt(3,997);
         if(i%2===0){
-          const rn=this.randName();
-          junkSnippets.push(`local ${rn}=0x${a}; if ${rn}==nil then error("cipher trap") end`);
-          junkSnippets.push(`if 2+2==5 then local ${this.randName()}="${this.randHex(6)}" end`);
+          junkSnippets.push("local "+a+"="+this.obscureNumber(n)+"; if "+a+"~=0 then "+a+"="+a+"-"+a+" end");
         }else{
-          const fn=this.randName();
-          junkSnippets.push(`local ${fn}=function() return 0x${b} end; if ${fn}()==0xFFFF then return end`);
+          const b=this.randName();
+          junkSnippets.push("local "+b+"=function(x) return x end; "+b+"("+this.obscureNumber(n)+")");
         }
       }
     }
-    const junkBlock=junkSnippets.join(o.minify?";":"\n");
 
-    const luaB64DecodeFn = `
-local ${vDecode}=function(${vTmp})
-    local b='${alphabet}'
-    local m={}
-    for i=1,64 do m[b:sub(i,i)]=i-1 end
-    ${vTmp}=${vTmp}:gsub("[^"..b.."=]","")
-    local out=""
-    for i=1,#${vTmp},4 do
-        local a=m[${vTmp}:sub(i,i)] or 0
-        local c=m[${vTmp}:sub(i+1,i+1)] or 0
-        local d=${vTmp}:sub(i+2,i+2)=="=" and 0 or (m[${vTmp}:sub(i+2,i+2)] or 0)
-        local e=${vTmp}:sub(i+3,i+3)=="=" and 0 or (m[${vTmp}:sub(i+3,i+3)] or 0)
-        local n=(a*262144)+(c*4096)+(d*64)+e
-        local b1=math.floor(n/65536) %256
-        local b2=math.floor(n/256) %256
-        local b3=n %256
-        out=out..string.char(b1)
-        if ${vTmp}:sub(i+2,i+2)~="=" then out=out..string.char(b2) end
-        if ${vTmp}:sub(i+3,i+3)~="=" then out=out..string.char(b3) end
-    end
-    return out
-end`.trim();
+    const luaB64DecodeFn=[
+      "local "+vDecode+"=function("+vTmp+")",
+      "local b='"+alphabet+"'",
+      "local m={}; for i=1,64 do m[b:sub(i,i)]=i-1 end",
+      vTmp+"="+vTmp+":gsub(\"[^\"..b..\"=]\",\"\")",
+      "local out=''",
+      "for i=1,#"+vTmp+",4 do",
+      "local a=m["+vTmp+":sub(i,i)] or 0",
+      "local c=m["+vTmp+":sub(i+1,i+1)] or 0",
+      "local d="+vTmp+":sub(i+2,i+2)=='=' and 0 or (m["+vTmp+":sub(i+2,i+2)] or 0)",
+      "local e="+vTmp+":sub(i+3,i+3)=='=' and 0 or (m["+vTmp+":sub(i+3,i+3)] or 0)",
+      "local n=(a*262144)+(c*4096)+(d*64)+e",
+      "local b1=math.floor(n/65536)%256",
+      "local b2=math.floor(n/256)%256",
+      "local b3=n%256",
+      "out=out..string.char(b1)",
+      "if "+vTmp+":sub(i+2,i+2)~='=' then out=out..string.char(b2) end",
+      "if "+vTmp+":sub(i+3,i+3)~='=' then out=out..string.char(b3) end",
+      "end",
+      "return out end"
+    ].join(o.minify?";":" ");
 
     const expectedLen=chunks.length;
     const expectedFirstLen=chunks[0]?.length||0;
 
-    const execBody = `
-local function ${vExec}()
-    ${o.antiTamper ? `if #${vData}~=${expectedLen} then error("Cipher: integrity check failed") end` : ""}
-    ${o.antiTamper && expectedFirstLen ? `if #${vData}>0 and #${vData}[1]~=${expectedFirstLen} then error("Cipher: header broken") end` : ""}
-    local ${vOut}=""
-    for i=1,#${vData} do
-        local d=${vDecode}(${vData}[i])
-        ${cfgPreset.layers>=3 ? `
-        d=d:reverse()
-        local t=""
-        for j=1,#d do t=t..string.char((string.byte(d,j) ~ ${this.obscureNumber(tertiary)}) %256) end
-        d=t
-        `: ""}
-        ${cfgPreset.layers>=2 ? `
-        do
-            local k=(${this.obscureNumber(secondary)} + (i-1)*7) %256
-            local t=""
-            for j=1,#d do
-                local b=string.byte(d,j)
-                t=t..string.char((b - k - (j-1) + 512) %256)
-            end
-            d=t
-        end
-        `: ""}
-        do
-            local k=(${this.obscureNumber(primary)} + (i-1)*37) %256
-            local t=""
-            for j=1,#d do
-                t=t..string.char((string.byte(d,j) ~ ((k + (j-1)*3) %256)) %256)
-            end
-            d=t
-        end
-        ${vOut}=${vOut}..d
-    end
-    ${o.junk ? `local ${vJunkA}=math.floor(#${vOut}/3); if ${vJunkA}<0 then error("unreachable") end` : ""}
-    local f,e=(loadstring or load)(${vOut})
-    if not f then error("Cipher VM load failed: "..tostring(e)) end
-    return f()
-end
-return ${vExec}()`.trim();
+    const execLines=[
+      "local function "+vExec+"()",
+      "if #"+vData+"~="+this.obscureNumber(expectedLen)+" then error(\"Cipher integrity check failed\") end",
+      "if #"+vData+"[1]~="+this.obscureNumber(expectedFirstLen)+" then error(\"Cipher header broken\") end",
+      "local "+vJunk+"=0",
+      "for i=1,#"+vData+" do",
+      "local s="+vData+"[i]",
+      "for j=1,#s do "+vJunk+"=("+vJunk+"*131+string.byte(s,j))%"+this.vmModulo+" end",
+      vJunk+"=("+vJunk+"+i*17)%"+this.vmModulo,
+      "end",
+      "if "+vJunk+"~="+this.obscureNumber(expectedHash)+" then error(\"Cipher payload integrity failed\") end",
+      "local "+vOut+"=''",
+      "for i=1,#"+vData+" do",
+      "local d="+vDecode+"("+vData+"[i])",
+      cfgPreset.layers>=3 ? "d=d:reverse(); local t=''; for j=1,#d do t=t..string.char((string.byte(d,j) ~ "+this.obscureNumber(tertiary)+")%256) end; d=t" : "",
+      cfgPreset.layers>=2 ? "do local k=("+this.obscureNumber(secondary)+"+(i-1)*7)%256; local t=''; for j=1,#d do t=t..string.char((string.byte(d,j)-k-(j-1)+512)%256) end; d=t end" : "",
+      "do local k=("+this.obscureNumber(primary)+"+(i-1)*37)%256; local t=''; for j=1,#d do t=t..string.char(string.byte(d,j) ~ ((k+(j-1)*3)%256)) end; d=t end",
+      vOut+"="+vOut+"..d",
+      "end",
+      "if #"+vOut+"~="+this.obscureNumber(expectedBytes)+" then error(\"Cipher decode length mismatch\") end",
+      "local f,e=(loadstring or load)("+vOut+")",
+      "if not f then error(\"Cipher VM load failed: \"+tostring(e)) end",
+      "return f()",
+      "end",
+      "return "+vExec+"()"
+    ].filter(Boolean).join(o.minify?";":"\n");
 
-    const featuresList=[
+    const features=[
       o.antiTamper?"AT":null,
       o.hideGlobals?"HG":null,
       o.encryptStrings?"ES":null,
@@ -1099,37 +1290,42 @@ return ${vExec}()`.trim();
       o.renameVariables?"RN":null,
       o.minify?"MIN":null,
       o.customAlphabet?"CA":null,
+      "VMRT","VMINT"
     ].filter(Boolean).join("•");
 
-    let header = `--[[
-  ◈ CIPHER OBFUSCATOR V2 — 10/10 MAXIMUM
-  Script: ${scriptId}
-  Date: ${dateStr}
-  Preset: ${preset.toUpperCase()} • ${cfgPreset.layers} layers • ${cfgPreset.chunk}B shards
-  VM: Cipher-VM (XOR + ADD + ${cfgPreset.layers>=3?'REV+XOR':'—'})
-  Alphabet: ${o.customAlphabet?'custom-shuffled':'standard'}
-  Features: ${featuresList}
-  Score: ${this.calcScore(o)}/10
-  ${watermark?'Watermark: '+watermark.replace(/\n/g,' '):'No watermark'}
-  WARNING: VM PROTECTED — TAMPERING WILL BREAK EXECUTION
-]]`;
-    if(o.minify) header = header.replace(/\n/g,' ').replace(/\s{2,}/g,' ');
+    let header=[
+      "--[[",
+      "  ◈ CIPHER OBFUSCATOR V3 — 10/10 MAXIMUM",
+      "  Script: "+scriptId,
+      "  Date: "+dateStr,
+      "  Preset: "+preset.toUpperCase()+" • "+cfgPreset.layers+" layers • "+cfgPreset.chunk+"B shards",
+      "  VM: Cipher-VM (rolling XOR + ADD + REV+XOR)",
+      "  Alphabet: "+(o.customAlphabet?"custom-shuffled":"standard"),
+      "  Features: "+features,
+      "  Score: "+this.calcScore(o)+"/10",
+      watermark?"  Watermark: "+watermark.replace(/\n/g," "):"  No watermark",
+      "  WARNING: VM PROTECTED — PAYLOAD INTEGRITY CHECK ENABLED",
+      "]]"
+    ].join("\n");
 
-    let finalLua = `${header}\n\n`;
-    finalLua += `local ${vData}={\n${dataLines}\n}\n`;
-    if(o.customAlphabet) finalLua += `local ${vAlpha}="${alphabet}"\n`;
-    finalLua += `local ${vPrimary}=${this.obscureNumber(primary)}; local ${vSecondary}=${this.obscureNumber(secondary)}; local ${vTertiary}=${this.obscureNumber(tertiary)}\n`;
-    if(junkBlock) finalLua += junkBlock + (o.minify?";\n":"\n");
-    finalLua += luaB64DecodeFn + "\n";
-    finalLua += execBody + "\n";
+    let finalLua=header+"\n\n";
+    finalLua+="local "+vData+"={\n"+dataLines+"\n}\n";
+    if(junkSnippets.length) finalLua+=junkSnippets.join(o.minify?";":"\n")+(o.minify?";\n":"\n");
+    finalLua+=luaB64DecodeFn+"\n";
+    finalLua+=execLines+"\n";
 
-    if(o.minify){
-      finalLua = finalLua.split("\n").map(l=>l.trim()).filter(Boolean).join(" ");
-    } else if(o.beautify){
-      // keep as is with newlines
-    }
-
-    return { lua: finalLua, meta:{ chunks: chunks.length, primary, secondary, tertiary, alphabet: o.customAlphabet?alphabet:"standard", scriptId, score:this.calcScore(o), features:featuresList } };
+    if(o.minify) finalLua=finalLua.split("\n").map(s=>s.trim()).filter(Boolean).join(" ");
+    return {
+      lua:finalLua,
+      meta:{
+        chunks:chunks.length,
+        primary,secondary,tertiary,
+        alphabet:o.customAlphabet?alphabet:"standard",
+        scriptId,
+        score:this.calcScore(o),
+        features
+      }
+    };
   }
   calcScore(o){
     let s=0;

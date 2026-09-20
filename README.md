@@ -1,243 +1,633 @@
-# 不提供Luraph相关技术支持和脚本,无论是否付费
+# Bill's Lua Obfuscator
 
+A production-ready, web-based Lua code obfuscation tool that protects Lua source code by transforming it into functionally equivalent but harder-to-read code. Built with Next.js 15, React 19, and TypeScript, featuring real-time obfuscation, Monaco code editor, and comprehensive test coverage.
 
-# Luraph_Deobfuscator
-Automatically deobfuscate Luraph scripts. Tested on Luraph scripts between v11.5 and v11.8.1 (May 1, 2020 release)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5-black)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.2-blue)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
+[![Tests](https://img.shields.io/badge/Tests-1,640%20passing-success)](web/__tests__)
 
-Requires Java 8 to run.
+## Overview
 
-# Binary Release (Version 1.0.0)
-https://github.com/TheGreatSageEqualToHeaven/LuraphDeobfuscator/releases/download/v1.0.0/LuraphDevirtualizer.jar
+Bill's Lua Obfuscator is a **fully client-side** code protection tool designed for Lua developers working on game mods, addons, and scripts. All obfuscation happens in your browser—your code never leaves your machine, ensuring complete privacy and security.
 
-# Discord Group
-Come discuss this project in my Lua discord 
+**Live Demo**: [https://lua-obfuscator-sable.vercel.app/](https://lua-obfuscator-sable.vercel.app/)
 
-https://discord.gg/cdhcryv
+### Key Highlights
 
-Add me on discord
+- 🔒 **100% Client-Side Processing** - Your code stays on your machine
+- ⚡ **Real-Time Obfuscation** - Instant feedback with Monaco editor
+- 🎯 **10+ Obfuscation Techniques** - Basic to advanced protection methods
+- 🛡️ **Advanced Security** - Custom encryption, anti-debugging, dead code injection
+- 📊 **Detailed Metrics** - Track size, transformations, and processing time
+- 📱 **Fully Responsive** - Works on mobile, tablet, and desktop
+- ✅ **1,640 Passing Tests** - 446 unit tests + 1,194 E2E tests across 6 browsers
+- 🚀 **Production Ready** - Deployed on Vercel with analytics and monitoring
 
- ```The Great Sage Equal To Heaven#7780```
+## Features
 
-# Motivation
-This project was created for intellectual purposes as a way to explore code deobfuscation techniques on Lua scripts obfuscated by Luraph, which is a tool used to obfuscate Lua scripts. This Lua obfuscator has been used by cybercriminals as a way of protecting malicious exploits they sell for Robolox or bots for World of Warcraft. This project may be of interest to game security developers to prevent cheating in their games by discovering how hackers are breaking their code.
+### Core Obfuscation Capabilities
 
-Luraph scripts are extremely complicated to tackle, especially in an automated matter. The process is essentially.
+#### Basic Techniques (v1.0)
 
-- Lex and parse input Lua file to generate parse tree
-- Convert parse tree into abstract syntax treee
-- Optimize the abstract syntax tree
-- Rename variables, populate symbol table.
-- Detect and rename variables and function names into names such as ```get_float64```, etc
-- Detect VM handlers
-- Find all encryption information in Lua VM
-- Load and decrypt bytecode using above information.
-- Decrypt and populate chunks by symbolically executing Lua code (constants, instructions, prototypes).
-- Process VM handler redirection and decryption (bytecode redirection).
-- Remove antidecompiler tricks from optimized bytecode
-- Remove junk code and further optimize bytecode using various techniques and algorithms.
-- Generate luac file
+| Feature                      | Description                                                               | Strength Level |
+| ---------------------------- | ------------------------------------------------------------------------- | -------------- |
+| **Name Mangling**            | Replaces variable/function names with hexadecimal identifiers (`_0x0000`) | High           |
+| **String Encoding**          | Converts strings to byte arrays using `string.char()`                     | Medium         |
+| **Number Encoding**          | Transforms numeric literals into mathematical expressions                 | Medium         |
+| **Control Flow Obfuscation** | Adds opaque predicates to complicate analysis                             | High           |
+| **Code Minification**        | Removes comments, whitespace, and blank lines                             | Low            |
 
-LuraphDeobfuscator provides a Lua deobfuscation engine which can be ported to other Lua obfuscators trivially. This source code can be used, with minor modifications, for a vast array of things related to Lua. I emplore the community to reuse my code and engine to create other Lua deobfuscators, as long as they state they are using my code and provide a link back to this project.
+#### Advanced Techniques (v1.1)
 
-# Simple usage
-Generate a .luac file from an obfuscated Luraph VM script
+| Feature                      | Description                                                    | Strength Level |
+| ---------------------------- | -------------------------------------------------------------- | -------------- |
+| **Custom String Encryption** | Multiple encryption algorithms (XOR, Base64, Huffman, Chunked) | Very High      |
+| **Dead Code Injection**      | Injects unreachable code blocks to confuse analysis            | High           |
+| **Control Flow Flattening**  | Transforms code into state machine patterns (CPU intensive)    | Very High      |
+| **Anti-Debugging Measures**  | Runtime checks for debuggers and modified environments         | Very High      |
+| **Configurable Formatting**  | Output styles: Minified, Pretty, Obfuscated, Single-line       | Variable       |
+| **Obfuscation Metrics**      | Detailed statistics on transformations and performance         | N/A            |
 
+### User Experience
 
-```java -jar LuraphDeobfuscator.jar -i obfuscated.lua -o obfuscated.luac```
+- **Monaco Code Editor** - Industry-standard editor with Lua syntax highlighting
+- **Configurable Protection Levels** - Slider from 0-100% with progressive feature activation
+- **Individual Technique Toggles** - Fine-grained control over each obfuscation method
+- **Encryption Algorithm Selector** - Choose between XOR, Base64, Huffman, or Chunked encryption
+- **Output Format Options** - Minified, Pretty, Obfuscated, or Single-line formatting
+- **Real-Time Metrics Display** - See size, transformations, and processing time
+- **Copy to Clipboard** - One-click copy with visual feedback
+- **Download as .lua** - Export obfuscated code directly
+- **Error Handling** - Clear error messages with validation
+- **Smart Defaults** - Pre-configured with functional Lua example
 
-You may now use a Lua decompiler such as unluac to decompile the code back into Lua. I recommend unluac for decompilation and luadec for generating disassemblies with pseudocode.
+### Lua Compatibility
 
-# Advanced Use: Introduction
+| Version     | Status          | Target Use Cases                |
+| ----------- | --------------- | ------------------------------- |
+| **Lua 5.1** | ✅ Full Support | WoW, FiveM, Garry's Mod, Roblox |
+| **Lua 5.2** | ✅ Supported    | General scripting               |
+| **Lua 5.3** | ✅ Supported    | Modern applications             |
+| **LuaJIT**  | ✅ Compatible   | High-performance scenarios      |
 
-I have written the sample Lua code below:
-```lua
-local x = 0
+**Protected Elements**: All Lua keywords, standard library functions (`print`, `pairs`, `ipairs`, etc.), and global tables (`math`, `string`, `table`, etc.) are automatically preserved.
 
-local name = "name: "
+### Advanced Features Deep Dive
 
-for i = 0, 10 do
-	x = x + i
-end
+#### String Encryption Algorithms
 
-for i = 0, 10 do
-	name = name .. i .. ","
-end
+**XOR Cipher** - Rotating key XOR encryption where each character is XORed with a position-dependent key. Provides strong obfuscation with minimal performance impact.
 
-print(x)
-print(name)
+**Base64 Encoding** - Custom alphabet base64 encoding with character position scrambling. Makes strings completely unreadable in source.
+
+**Huffman Compression** - Frequency-based encoding using a custom dictionary. Especially effective for strings with repeated characters.
+
+**Chunked Strings** - Splits strings into multiple segments stored in separate variables, then concatenates at runtime. Defeats simple string search patterns.
+
+#### Protection Level Guide
+
+| Level   | Active Techniques                         | Use Case               |
+| ------- | ----------------------------------------- | ---------------------- |
+| **0%**  | None                                      | Development/testing    |
+| **20%** | Minify, Mangle Names                      | Light protection       |
+| **40%** | + Encode Strings                          | Standard protection    |
+| **60%** | + Encode Numbers, Control Flow            | Strong protection      |
+| **70%** | + XOR Encryption                          | Advanced protection    |
+| **80%** | + Dead Code Injection                     | Very strong protection |
+| **90%** | + Control Flow Flattening, Anti-Debugging | Maximum protection     |
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+ (20+ recommended)
+- npm, yarn, or pnpm package manager
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/LUA-Obfuscator.git
+cd LUA-Obfuscator/web
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
 ```
 
-Ive uploaded the obfuscated version of that Luraph script to pastebin here: https://pastebin.com/SubyTCBL
+Open [http://localhost:3000](http://localhost:3000) to see the application.
 
-Here is a screenshot of what the obfuscated code looks like:
+### Building for Production
 
-![Luraph VM](https://i.imgur.com/xZwYsOg.png)
+```bash
+# Create optimized production build
+npm run build
 
-We are now going to explore all of Luraph Deobfuscator's features:
-
-## Advanced Use: Deobfuscation ##
-
-Download the above script as file.lua and run the deobfuscator
-
-```java -jar LuraphDeobfuscator.java -i file.lua -o file.luac```
-
-Use unluac to decompile the generated bytecode and save it to file.lua
-
-```java -jar unluac.jar file.luac > file.lua```
-
-Deobfuscated code using luadec
-
-```lua
-local l_0_0 = 0
-local l_0_1 = "name: "
-for l_0_5 = 0, 10 do
-  l_0_0 = l_0_0 + l_0_5
-end
-for l_0_9 = 0, 10 do
-  l_0_1 = l_0_1 .. l_0_9 .. ","
-end
-print(l_0_0)
-print(l_0_1)
+# Start production server
+npm start
 ```
 
-Deobfuscated code using unluac
+## Usage Examples
+
+### Web Interface
+
+1. **Paste or type** your Lua code in the left editor
+2. **Configure settings** using the right sidebar:
+   - Toggle individual techniques (Name Mangling, String Encoding, etc.)
+   - Adjust Protection Level slider (0-100%)
+3. **Click Obfuscate** to generate protected code
+4. **Copy or download** the obfuscated result
+
+### Example Transformation
+
+**Original Code:**
 
 ```lua
-local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5
-L0_0 = 0
-L1_1 = "name: "
-for L5_5 = 0, 10 do
-  L0_0 = L0_0 + L5_5
+local function calculateScore(basePoints, multiplier)
+  local maxScore = 1000
+  local result = basePoints * multiplier
+
+  if result > maxScore then
+    result = maxScore
+  end
+
+  print("Score: " .. result)
+  return result
 end
-for L5_5 = 0, 10 do
-  L1_1 = L1_1 .. L5_5 .. ","
-end
-L2_2(L3_3)
-L2_2(L3_3)
 ```
 
-Of course, we know that using a decompiler we can't always expect to get back a complete version of the source code. In this case luadec generates the complete source code but unluac misses assigning ```print``` to ```L2_2```
-
-To get an accurate dissasembly listing, we can also use luadec's disassembler
-
-```luadec -dis file.lua > file.dis.txt```
+**Obfuscated Code (Name Mangling + String Encoding + Minification):**
 
 ```lua
--dis file.lua 
-
-; Function:        0
-; Defined at line: 0
-; #Upvalues:       0
-; #Parameters:     0
-; Is_vararg:       2
-; Max Stack Size:  13
-
-    0 [-]: LOADK     R0 K0        ; R0 := 0
-    1 [-]: LOADK     R1 K1        ; R1 := "name: "
-    2 [-]: LOADK     R6 K0        ; R6 := 0
-    3 [-]: LOADK     R7 K2        ; R7 := 10
-    4 [-]: LOADK     R8 K3        ; R8 := 1
-    5 [-]: FORPREP   R6 1         ; R6 -= R8; pc += 1 (goto 7)
-    6 [-]: ADD       R0 R0 R9     ; R0 := R0 + R9
-    7 [-]: FORLOOP   R6 -2        ; R6 += R8; if R6 <= R7 then R9 := R6; PC += -2 , goto 6 end
-    8 [-]: LOADK     R6 K0        ; R6 := 0
-    9 [-]: LOADK     R7 K2        ; R7 := 10
-   10 [-]: LOADK     R8 K3        ; R8 := 1
-   11 [-]: FORPREP   R6 4         ; R6 -= R8; pc += 4 (goto 16)
-   12 [-]: MOVE      R10 R1       ; R10 := R1
-   13 [-]: MOVE      R11 R9       ; R11 := R9
-   14 [-]: LOADK     R12 K4       ; R12 := ","
-   15 [-]: CONCAT    R1 R10 R12   ; R1 := concat(R10 to R12)
-   16 [-]: FORLOOP   R6 -5        ; R6 += R8; if R6 <= R7 then R9 := R6; PC += -5 , goto 12 end
-   17 [-]: MOVE      R6 R2        ; R6 := R2
-   18 [-]: MOVE      R7 R3        ; R7 := R3
-   19 [-]: CALL      R6 2 1       ;  := R6(R7)
-   20 [-]: MOVE      R6 R2        ; R6 := R2
-   21 [-]: MOVE      R7 R3        ; R7 := R3
-   22 [-]: CALL      R6 2 1       ;  := R6(R7)
-   23 [-]: RETURN    R0 1         ; return 
+local function _0x0001(_0x0002,_0x0003)local _0x0004=1000;local _0x0005=_0x0002*_0x0003;if _0x0005>_0x0004 then _0x0005=_0x0004 end;print(string.char(83,99,111,114,101,58,32).._0x0005)return _0x0005 end
 ```
 
-# Advanced Use: Inspecting Luraph VM
+## Architecture
 
-If we are curious about manually inspecting the VM ourselves, we can use LuraphDeobfuscator to generate a pseudocode source listing of the Luraph VM either in psuedocode or with its graphical display
+### Technology Stack
 
-To save the VM to a file
+#### Frontend Framework
 
-```java -jar LuraphDeobfuscator -i file.lua -s > file.vm.lua```
+- **Next.js 15.5.4** - React framework with App Router
+- **React 19.2.0** - UI library with concurrent features
+- **TypeScript 5.9.3** - Type-safe development
 
-To copy the VM to your clipboard (CTRL+C/CTRL+P)
+#### UI Components
 
-```java -jar LuraphDeobfuscator -i file.lua -c```
+- **Tailwind CSS 4.1.14** - Utility-first styling
+- **shadcn/ui** - Radix UI primitives
+- **Lucide React 0.545.0** - Icon library
+- **Monaco Editor 4.7.0** - VS Code's editor component
 
-The contents of running that command on the script we are interested can be found here:
+#### Obfuscation Engine
 
-https://pastebin.com/eK0Tu0QM
+- **luaparse 0.3.1** - Lua AST parser and validator
+- **Custom Transformation Engine** - AST-based obfuscation system
 
-And when we look at a screenshot we can now easily read the VM code. This process is used internally by LuraphDeobfuscator in order to fully deobfuscate Luraph code.
+#### Testing & Quality
 
-We can see it even assigns names to functions and variables. Pretty neat!
+- **Jest 29.7.0** - Unit testing framework
+- **Playwright 1.56.0** - E2E browser testing
+- **ESLint 9.37.0** - Code linting
+- **Prettier** - Code formatting
 
-![Optimized VM](https://i.imgur.com/LuingqO.png)
+#### Analytics & Monitoring
 
-# Advanced Use: Viewing Abstract Syntax Trees
+- **Vercel Analytics 1.5.0** - User analytics
+- **Vercel Speed Insights 1.2.0** - Performance monitoring
+- **Google Analytics** - Comprehensive tracking
 
-We can also view the optimized VM graphically:
+### Project Structure
 
-```java -jar LuraphDeobfuscator -i file.lua -s```
-
-The following window will be displayed:
-
-![Luraph AST](https://i.imgur.com/Hv3rTQ7.png)
-
-# Advanced Use: Dumping Bytecode
-
-It is normally better to use luadec to generate a disassembly of bytecode, but for whatever reason if that doesn't happen or you are curious about exploring LuraphDeobfuscator's features, you can also use it to dump optimized bytecode.
-
-```java -jar LuraphDeobfuscator -i file.lua -b > file.bytecode.txt```
-
-```lua
-DUMPING CHUNK
-#UPVALUES = 0.0
-#PARAMS = 0.0
-#MAXSTACKSIZE = 9.0
-#CONSTANTS = 7
-#INSTRUCTIONS = 24
-#PROTOTYPES = 0
-
-Constant 0 = 0.0
-Constant 1 = name: 
-Constant 2 = 10.0
-Constant 3 = 1.0
-Constant 4 = ,
-Constant 5 = print
-Constant 6 = 
-
-[0] LOADK 0.0 0.0
-[1] LOADK 1.0 1.0
-[2] LOADK 2.0 0.0
-[3] LOADK 3.0 2.0
-[4] LOADK 4.0 3.0
-[5] FORPREP 2.0 1.0
-[6] ADD 0.0 0.0 5.0
-[7] FORLOOP 2.0 -2.0
-[8] LOADK 2.0 0.0
-[9] LOADK 3.0 2.0
-[10] LOADK 4.0 3.0
-[11] FORPREP 2.0 4.0
-[12] MOVE 6.0 1.0
-[13] MOVE 7.0 5.0
-[14] LOADK 8.0 4.0
-[15] CONCAT 1.0 6.0 8.0
-[16] FORLOOP 2.0 -5.0
-[17] GETGLOBAL 2.0 5.0
-[18] MOVE 3.0 0.0
-[19] CALL 2.0 2.0 1.0
-[20] GETGLOBAL 2.0 5.0
-[21] MOVE 3.0 1.0
-[22] CALL 2.0 2.0 1.0
-[23] RETURN 0.0 1.0
-
-
-END CHUNK
 ```
+LUA-Obfuscator/
+├── web/                          # Next.js web application
+│   ├── app/                      # Next.js App Router
+│   │   ├── page.tsx             # Main obfuscator interface
+│   │   ├── layout.tsx           # Root layout with metadata
+│   │   └── api/analytics/       # Analytics tracking endpoints
+│   ├── components/              # React components
+│   │   ├── CodeEditor.tsx       # Monaco editor wrapper
+│   │   ├── BackgroundGradient.tsx  # Animated background
+│   │   └── ui/                  # shadcn components
+│   ├── lib/                     # Core obfuscation logic
+│   │   ├── parser.ts            # Lua AST parser wrapper
+│   │   ├── obfuscator.ts        # Main obfuscation engine
+│   │   ├── obfuscator-simple.ts # Simplified API
+│   │   ├── generator.ts         # AST to Lua code generator
+│   │   └── analytics-*.ts       # Analytics utilities
+│   ├── __tests__/               # Test suites
+│   │   ├── unit/               # Unit tests (446 tests across 14 suites)
+│   │   ├── integration/        # Integration tests
+│   │   ├── e2e/                # E2E tests (1,194 tests across 12 files × 6 browsers)
+│   │   └── fixtures/           # Test data and samples
+│   ├── playwright.config.ts     # Playwright configuration
+│   ├── jest.config.js          # Jest configuration
+│   └── .prettierrc.json        # Code formatting rules
+├── CLAUDE.md                     # AI assistant documentation
+├── LICENSE                       # MIT license
+└── README.md                     # This file
+```
+
+### Core Components
+
+#### Parser/Lexer Layer (`lib/parser.ts`)
+
+- Uses luaparse library for AST generation
+- Supports Lua 5.1, 5.2, 5.3 syntax
+- Validates code structure and provides error messages
+- Exports: `parseLua()`, `validateLua()`
+
+#### Transformation Engine (`lib/obfuscator.ts`)
+
+- Applies multiple obfuscation techniques:
+  - Variable/function name mangling (hexadecimal identifiers)
+  - String encoding (byte array transformation)
+  - Number encoding (mathematical expressions)
+  - Control flow obfuscation (opaque predicates)
+  - Code minification (whitespace removal)
+- Configurable protection levels (0-100%)
+- Preserves Lua standard library globals
+- Exports: `obfuscateLua()` with `ObfuscationOptions`
+
+#### Code Generator (`lib/generator.ts`)
+
+- Converts transformed AST back to valid Lua source
+- Handles 20+ Lua node types
+- Maintains functional equivalence
+- Supports minification mode
+- Exports: `generateCode()`
+
+## Testing
+
+### Test Coverage
+
+Bill's Lua Obfuscator includes comprehensive test coverage across multiple levels:
+
+| Test Suite            | Tests                      | Coverage                  | Framework  |
+| --------------------- | -------------------------- | ------------------------- | ---------- |
+| **Unit Tests**        | 446                        | 90%+ lines, 85%+ branches | Jest       |
+| **Integration Tests** | Included in unit suite     | Full pipeline             | Jest       |
+| **E2E Tests**         | 1,194 tests in 12 files × 6 browsers | Full UI workflows         | Playwright |
+
+**V1.1 Test Coverage:**
+
+- **157 new unit tests** for encryption, dead-code, formatter, metrics, and anti-debug modules
+- **12 E2E test files** including v1.1 additions: `advanced-features-v11.spec.ts`, `metrics-display.spec.ts`, `protection-level-v11.spec.ts`
+- **Total test count**: 446 unit tests + 1,194 E2E tests = 1,640 total tests
+- **Recent improvements**: Enhanced test reliability, optimized timeouts, improved page load state handling
+
+### Running Tests
+
+```bash
+# Run unit tests
+npm test
+
+# Run with coverage report
+npm run test:coverage
+
+# Run E2E tests
+npm run test:e2e
+
+# Run E2E tests with UI
+npm run test:e2e:ui
+
+# Run all tests (unit + E2E)
+npm run test:all
+```
+
+### Test Categories
+
+#### Unit Tests (`__tests__/unit/lib/`)
+
+- Parser validation and error handling
+- Obfuscation technique verification
+- Code generation accuracy
+- Edge case handling
+
+#### Integration Tests (`__tests__/integration/`)
+
+- End-to-end obfuscation pipeline
+- Round-trip validation (obfuscate → parse → verify)
+- Real-world Lua scripts (fibonacci, factorial, quicksort)
+- Option combination testing
+
+#### E2E Tests (`__tests__/e2e/`)
+
+**1,194 comprehensive tests across 12 test files:**
+
+- **obfuscation-workflow.spec.ts** - Complete user workflow testing
+- **responsive.spec.ts** - Mobile, tablet, and desktop layouts
+- **error-handling.spec.ts** - Error states and recovery scenarios
+- **advanced-features-v11.spec.ts** - v1.1 encryption and advanced features
+- **metrics-display.spec.ts** - Real-time metrics validation
+- **protection-level-v11.spec.ts** - Protection level slider functionality
+- **accessibility.spec.ts** - WCAG compliance and keyboard navigation
+- **analytics-tracking.spec.ts** - Analytics integration testing
+- **performance.spec.ts** - Performance benchmarking
+- **edge-cases.spec.ts** - Edge case handling
+- **advanced-workflow.spec.ts** - Complex workflow scenarios
+- **protection-level.spec.ts** - Core protection level features
+
+**Test Coverage Areas:**
+- Application loading and initialization
+- Code input and obfuscation with all techniques
+- Copy to clipboard and download functionality
+- Settings configuration and persistence
+- Mobile viewport (375px, 390px)
+- Tablet viewport (768px, 1024px)
+- Desktop viewport (1920px+)
+- Orientation changes and touch interactions
+- Invalid Lua code detection and error display
+- Recovery after errors and empty input handling
+- Performance benchmarks and optimization validation
+
+### Browser Testing Matrix
+
+Tests run automatically on:
+
+- ✅ Desktop Chrome
+- ✅ Desktop Firefox
+- ✅ Desktop Safari
+- ✅ Mobile Chrome (Pixel 5)
+- ✅ Mobile Safari (iPhone 12)
+- ✅ iPad Pro
+
+## Code Quality
+
+### Formatting
+
+The project uses Prettier for consistent code formatting:
+
+```bash
+# Format all files
+npm run format
+
+# Check formatting without changes
+npm run format:check
+```
+
+**Prettier Configuration:**
+
+- Tab width: 2 spaces (using tabs)
+- Print width: 120 characters
+- Single quotes: false (double quotes)
+- Semicolons: always
+- Trailing commas: ES5
+- Arrow parens: avoid
+
+### Linting
+
+```bash
+# Run ESLint
+npm run lint
+```
+
+## Deployment
+
+### Vercel (Recommended)
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone)
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy to production
+vercel --prod
+```
+
+### Environment Variables
+
+Create a `.env.local` file:
+
+```bash
+# Site Configuration
+NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+
+# Google Analytics (optional)
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+```
+
+### Docker Deployment
+
+```dockerfile
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV production
+COPY --from=builder /app/next.config.ts ./
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+EXPOSE 3000
+CMD ["node", "server.js"]
+```
+
+```bash
+# Build and run
+docker build -t lua-obfuscator .
+docker run -p 3000:3000 lua-obfuscator
+```
+
+### Static Export
+
+```bash
+# Build static site
+npm run build
+
+# Deploy the .next folder to any static hosting
+# (Vercel, Netlify, Cloudflare Pages, etc.)
+```
+
+## Use Cases
+
+### Game Development
+
+- **World of Warcraft Addons** - Protect addon code from theft and modification
+- **FiveM/RedM Scripts** - Secure server-side resources and client scripts
+- **Garry's Mod** - Protect Lua gamemodes and addons
+- **Roblox** - Obfuscate game scripts (Lua 5.1 compatible)
+
+### Development & Education
+
+- **Code Protection** - Secure proprietary Lua implementations
+- **Anti-Piracy** - Make code harder to copy and redistribute
+- **Learning Tool** - Study obfuscation techniques and AST manipulation
+- **Security Research** - Test deobfuscation resistance
+
+## Roadmap
+
+### ✅ v1.0 - Initial Release
+
+- [x] Real-time obfuscation with Monaco editor
+- [x] Name mangling with hexadecimal identifiers
+- [x] String encoding using byte arrays
+- [x] Number encoding with mathematical expressions
+- [x] Control flow obfuscation with opaque predicates
+- [x] Code minification
+- [x] Configurable protection levels (0-100%)
+- [x] Responsive design (mobile, tablet, desktop)
+- [x] Comprehensive test coverage (446 unit tests + extensive E2E testing)
+- [x] Production deployment with analytics
+
+### ✅ v1.1 - Advanced Obfuscation (Current Release)
+
+- [x] Custom encryption algorithms (XOR, Base64, Huffman, Chunked)
+- [x] Advanced control flow flattening with state machines
+- [x] Dead code injection with realistic patterns
+- [x] Anti-debugging measures (debug detection, timing checks)
+- [x] Configurable output formatting (4 styles)
+- [x] Real-time obfuscation metrics and statistics
+- [x] Progressive feature activation via protection slider
+- [x] 100% client-side processing (no server dependencies)
+
+### 🔮 v1.2 - Extended Features
+
+- [ ] Batch file processing
+- [ ] CLI version for automation
+- [ ] API endpoints for integration
+- [ ] Custom obfuscation profiles
+- [ ] Deobfuscation resistance testing
+- [ ] Lua 5.4 full support
+
+### 🎯 v2.0 - Enterprise
+
+- [ ] Team collaboration features
+- [ ] Version history and rollback
+- [ ] Advanced analytics dashboard
+- [ ] Premium obfuscation techniques
+- [ ] Self-hosted deployment options
+
+## Performance
+
+### Obfuscation Speed
+
+- **Small Files** (<100 lines): <100ms
+- **Medium Files** (100-1000 lines): 100-500ms
+- **Large Files** (1000+ lines): 500ms-2s
+
+### Bundle Size
+
+- **Initial Load**: ~500KB (gzipped)
+- **Monaco Editor**: Lazy loaded on demand
+- **Runtime**: 100% client-side, no server dependencies
+
+### Browser Support
+
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+- Mobile browsers (iOS Safari, Chrome Mobile)
+
+## Contributing
+
+Contributions are welcome! This project follows standard open-source practices.
+
+### How to Contribute
+
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Make your changes** (follow code style guidelines)
+4. **Write tests** for new functionality
+5. **Run all tests** (`npm run test:all`)
+6. **Format code** (`npm run format`)
+7. **Commit changes** (`git commit -m 'Add amazing feature'`)
+8. **Push to branch** (`git push origin feature/amazing-feature`)
+9. **Open a Pull Request**
+
+### Development Guidelines
+
+- Follow TypeScript strict mode conventions
+- Use Tailwind CSS for all styling (no custom CSS)
+- Maintain component modularity
+- Add JSDoc comments for complex functions
+- Include unit tests for new obfuscation techniques
+- Add E2E tests for UI changes
+- Run Prettier before committing
+- Ensure all tests pass locally
+
+### Testing Requirements
+
+- Unit test coverage: Maintain 85%+ branch coverage
+- Add E2E tests for new user-facing features
+- Test across multiple Lua code samples
+- Verify responsive behavior on mobile
+
+## Troubleshooting
+
+### Common Issues
+
+| Issue                         | Solution                                 |
+| ----------------------------- | ---------------------------------------- |
+| Monaco editor not loading     | Clear browser cache, check network tab   |
+| Obfuscation fails silently    | Check browser console for errors         |
+| Tests failing locally         | Run `npm install` to update dependencies |
+| Prettier formatting conflicts | Run `npm run format` to auto-fix         |
+
+### Browser Compatibility
+
+If experiencing issues:
+
+1. Update to the latest browser version
+2. Disable browser extensions that modify JavaScript
+3. Check browser console for error messages
+4. Try incognito/private mode to rule out extensions
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+### Core Technologies
+
+- **[luaparse](https://github.com/fstirlitz/luaparse)** - Lua AST parser by Oskar Schöldström
+- **[Monaco Editor](https://microsoft.github.io/monaco-editor/)** - Microsoft's VS Code editor component
+- **[Next.js](https://nextjs.org/)** - Vercel's React framework
+- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
+
+### Design & UI
+
+- **[shadcn/ui](https://ui.shadcn.com/)** - Beautiful component library
+- **[Radix UI](https://www.radix-ui.com/)** - Accessible component primitives
+- **[Lucide](https://lucide.dev/)** - Icon library
+
+### Inspiration
+
+- Prometheus Obfuscator
+- LuaSrcDiet
+- IronBrew2
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/yourusername/LUA-Obfuscator/issues)
+- **Documentation**: See [CLAUDE.md](CLAUDE.md) for development details
+- **Web Interface Docs**: See [web/README.md](web/README.md) for specific implementation details
+
+## Security
+
+This tool is designed for **legitimate code protection** purposes. Please use responsibly and in accordance with applicable laws and platform terms of service.
+
+### Privacy
+
+- **100% Client-Side**: All code processing happens in your browser
+- **No Server Storage**: Code is never uploaded or stored
+- **Optional Analytics**: Google Analytics can be disabled
+- **Open Source**: Full transparency - review the code yourself
+
+---
+
+**Built with ❤️ for the Lua community by Bill Chirico**
+
+_Star ⭐ this repository if you find it helpful!_

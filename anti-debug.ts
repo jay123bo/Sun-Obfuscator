@@ -8,122 +8,52 @@
  * Checks if the debug library is available and terminates if found
  */
 export function generateDebugDetection(): string {
-	return `if type(debug) == "table" then error("Debug library detected", 0) end`;
+  return 'do local _d=debug local _h=nil if _d and _d.gethook then local _a,_b,_c=_d.gethook() _h=_a end if _h~=nil then error("Debug hook detected",0) end end';
 }
 
-/**
- * Generate execution timing check
- * Measures execution time to detect debugger slowdown
- */
 export function generateTimingCheck(): string {
-	const iterations = Math.floor(Math.random() * 1000) + 500;
-	const threshold = "0.1";
-
-	return `do
-  local _t1 = os.clock and os.clock() or 0
-  for _i = 1, ${iterations} do end
-  local _t2 = os.clock and os.clock() or 0
-  if _t2 - _t1 > ${threshold} then error("Timing anomaly detected", 0) end
-end`;
+  const iterations = Math.floor(Math.random() * 500) + 250;
+  return 'do local _t1=os and os.clock and os.clock() or 0 for _i=1,' +
+    iterations +
+    ' do end local _t2=os and os.clock and os.clock() or _t1 if _t2-_t1>0.5 then error("Timing anomaly detected",0) end end';
 }
 
-/**
- * Generate stack depth validation
- * Detects unusual call stack depths that might indicate debugging
- */
 export function generateStackDepthCheck(): string {
-	return `do
-  local _d = 0
-  local function _c()
-    _d = _d + 1
-    if _d > 100 then return end
-    _c()
-  end
-  if debug and debug.traceback then
-    local _s = debug.traceback()
-    if _s and #_s > 10000 then error("Stack anomaly detected", 0) end
-  end
-end`;
+  return 'do if debug and debug.traceback then local _s=debug.traceback() if _s and #_s>50000 then error("Stack anomaly detected",0) end end end';
 }
 
-/**
- * Generate integrity check
- * Validates that code hasn't been modified (simplified checksum)
- */
 export function generateIntegrityCheck(seed: number = Math.floor(Math.random() * 10000)): string {
-	return `do
-  local _chk = ${seed}
-  local _val = 0
-  for i = 1, 10 do
-    _val = (_val + i * _chk) % 65536
-  end
-  if _val ~= ${(seed * 55) % 65536} then error("Integrity check failed", 0) end
-end`;
+  const expected = (seed * 55) % 65536;
+  return 'do local _chk=' + seed +
+    ' local _v=0 for i=1,10 do _v=(_v+i*_chk)%65536 end if _v~=' +
+    expected +
+    ' then error("Integrity check failed",0) end end';
 }
 
-/**
- * Generate environment validation
- * Checks for suspicious global variables or modified standard functions
- */
 export function generateEnvironmentCheck(): string {
-	return `do
-  if _G._DEBUG or _G._TRACE or _G._HOOK then error("Debug environment detected", 0) end
-  if type(print) ~= "function" then error("Modified environment detected", 0) end
-end`;
+  return 'do local _g=_G if _g and (_g._DEBUG or _g._TRACE or _g._HOOK) then error("Debug environment detected",0) end end';
 }
 
-/**
- * Generate getfenv/setfenv detection (Lua 5.1)
- * Detects if environment manipulation functions are being used
- */
 export function generateEnvFunctionCheck(): string {
-	return `do
-  if getfenv and getfenv(0) ~= _G then error("Environment manipulation detected", 0) end
-end`;
+  return 'do if getfenv and _G and getfenv(0)~=_G then error("Environment manipulation detected",0) end end';
 }
 
-/**
- * Generate comprehensive anti-debug function
- * Combines multiple checks into a single function
- *
- * @param checks - Array of check types to include
- * @returns Complete anti-debug function code
- */
 export function generateAntiDebugFunction(
-	checks: Array<"debug" | "timing" | "stack" | "integrity" | "environment" | "envfunc"> = [
-		"debug",
-		"timing",
-		"environment",
-	]
+  checks: Array<"debug" | "timing" | "stack" | "integrity" | "environment" | "envfunc"> = ["debug", "environment"]
 ): string {
-	const funcName = `_ad_${Math.floor(Math.random() * 10000)}`;
-	const checkCode: string[] = [];
+  const funcName = "_ad_" + Math.floor(Math.random() * 0xFFFFFF).toString(16);
+  const body: string[] = [];
 
-	// Add selected checks
-	if (checks.includes("debug")) {
-		checkCode.push(generateDebugDetection());
-	}
-	if (checks.includes("timing")) {
-		checkCode.push(generateTimingCheck());
-	}
-	if (checks.includes("stack")) {
-		checkCode.push(generateStackDepthCheck());
-	}
-	if (checks.includes("integrity")) {
-		checkCode.push(generateIntegrityCheck());
-	}
-	if (checks.includes("environment")) {
-		checkCode.push(generateEnvironmentCheck());
-	}
-	if (checks.includes("envfunc")) {
-		checkCode.push(generateEnvFunctionCheck());
-	}
+  if (checks.includes("debug")) body.push(generateDebugDetection());
+  if (checks.includes("timing")) body.push(generateTimingCheck());
+  if (checks.includes("stack")) body.push(generateStackDepthCheck());
+  if (checks.includes("integrity")) body.push(generateIntegrityCheck());
+  if (checks.includes("environment")) body.push(generateEnvironmentCheck());
+  if (checks.includes("envfunc")) body.push(generateEnvFunctionCheck());
 
-	// Wrap in a function
-	return `local function ${funcName}()
-  ${checkCode.join("\n  ")}
-end
-${funcName}()`;
+  return "local function " + funcName + "()\n" +
+    body.map(line => "  " + line).join("\n") +
+    "\nend\n" + funcName + "()";
 }
 
 /**

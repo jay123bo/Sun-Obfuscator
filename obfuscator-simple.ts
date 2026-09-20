@@ -1,5 +1,6 @@
 import { parseLua, type ParseError } from "./parser";
 import { encryptString, generateDecryptorCode, type EncryptionAlgorithm } from "./encryption";
+import { detectLua } from "./lua-detector";
 import { generateUnreachableBlock } from "./dead-code";
 import { generateAntiDebugFunction } from "./anti-debug";
 import { formatCode, type FormattingStyle, type IndentChar } from "./formatter";
@@ -764,6 +765,14 @@ export class LuaObfuscator {
       this.metricsTracker.reset();
 
       const initial = parseLua(code);
+      const detection = detectLua(code);
+      if (!detection.isLua) {
+        return {
+          success: false,
+          error: "Lua-only protection: source was not accepted as valid Lua.",
+          errorDetails: initial.errorDetails,
+        };
+      }
       if (!initial.success || !initial.ast) {
         return {
           success: false,

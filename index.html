@@ -1304,7 +1304,7 @@ class CipherObfuscator{
       "end",
       "if #"+vOut+"~="+this.obscureNumber(expectedBytes)+" then error(\"Cipher decode length mismatch\") end",
       "local f,e=(loadstring or load)("+vOut+")",
-      "if not f then error(\"Cipher VM load failed: \"+tostring(e)) end",
+      "if not f then error(\"Cipher VM load failed: \"..tostring(e)) end",
       "return f()",
       "end",
       "return "+vExec+"()"

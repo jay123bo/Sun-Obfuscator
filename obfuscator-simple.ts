@@ -424,9 +424,19 @@ function toUtf8Bytes(text: string): number[] {
   return bytes;
 }
 
-function hexName(counter: number): string {
-  const salt = Math.floor(Math.random() * 0x10000).toString(16).padStart(4, "0").toUpperCase();
-  return "_0x" + salt + counter.toString(16).padStart(2, "0").toUpperCase();
+function hexName(counter: number, salt: number): string {
+  return "_0x" +
+    (salt & 0xffff).toString(16).padStart(4, "0") +
+    (counter & 0xff).toString(16).padStart(2, "0");
+}
+
+function sourceSeed(source: string): number {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < source.length; i++) {
+    h ^= source.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
 }
 
 function safeMinify(code: string): string {
@@ -533,6 +543,65 @@ function injectDeadCodeSafely(code: string, protectionLevel: number, metrics: Me
   return snippets.join("\n") + "\n" + code;
 }
 
+
+function verifyVmRoundTrip(
+  original: string,
+  chunks: string[],
+  alphabet: string,
+  primary: number,
+  secondary: number,
+  tertiary: number
+): void {
+  const map = new Map<string, number>();
+  for (let i = 0; i < alphabet.length; i++) map.set(alphabet[i], i);
+
+  const decoded: number[] = [];
+
+  for (let index = 0; index < chunks.length; index++) {
+    const text = chunks[index];
+    const bytes: number[] = [];
+
+    for (let i = 0; i < text.length; i += 4) {
+      const a = map.get(text[i]) ?? 0;
+      const b = map.get(text[i + 1]) ?? 0;
+      const c = text[i + 2] === "=" ? 0 : (map.get(text[i + 2]) ?? 0);
+      const d = text[i + 3] === "=" ? 0 : (map.get(text[i + 3]) ?? 0);
+      const n = a * 262144 + b * 4096 + c * 64 + d;
+
+      bytes.push(Math.floor(n / 65536) % 256);
+      if (text[i + 2] !== "=") bytes.push(Math.floor(n / 256) % 256);
+      if (text[i + 3] !== "=") bytes.push(n % 256);
+    }
+
+    bytes.reverse();
+
+    for (let i = 0; i < bytes.length; i++) {
+      bytes[i] = bytes[i] ^ tertiary;
+    }
+
+    const k2 = (secondary + index * 7) & 255;
+    for (let i = 0; i < bytes.length; i++) {
+      bytes[i] = (bytes[i] - k2 - i + 512) & 255;
+    }
+
+    const k1 = (primary + index * 37) & 255;
+    for (let i = 0; i < bytes.length; i++) {
+      bytes[i] = bytes[i] ^ ((k1 + i * 3) & 255);
+      decoded.push(bytes[i]);
+    }
+  }
+
+  const bytes = new Uint8Array(decoded);
+  const recovered =
+    typeof TextDecoder !== "undefined"
+      ? new TextDecoder("utf-8").decode(bytes)
+      : decodeURIComponent(escape(String.fromCharCode(...decoded)));
+
+  if (recovered !== original) {
+    throw new Error("VM self-test failed: payload round-trip mismatch");
+  }
+}
+
 function applyVmSeal(code: string): string {
   const alphabetBase = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
   const alphabet = alphabetBase.split("").sort(() => Math.random() - 0.5).join("");
@@ -570,6 +639,8 @@ function applyVmSeal(code: string): string {
     encoded.reverse();
     chunks.push(b64(encoded));
   }
+
+  verifyVmRoundTrip(code, chunks, alphabet, primary, secondary, tertiary);
 
   let hash = 0;
   for (let i = 0; i < chunks.length; i++) {
@@ -612,8 +683,17 @@ function applyVmSeal(code: string): string {
   return lua;
 }
 
+function levelSafeNameSalt(code: string, level: number): number {
+  const deterministic = sourceSeed(code) & 0xffff;
+  if (level >= 80) {
+    return (deterministic ^ Math.floor(Math.random() * 0x10000)) & 0xffff;
+  }
+  return deterministic;
+}
+
 export class LuaObfuscator {
   private counter = 0;
+  private nameSalt = 0;
   private metricsTracker = new MetricsTracker();
 
   obfuscate(
@@ -631,6 +711,7 @@ export class LuaObfuscator {
 
     try {
       this.counter = 0;
+      this.nameSalt = levelSafeNameSalt(code, options.protectionLevel ?? 50);
       this.metricsTracker.reset();
 
       const initial = parseLua(code);
@@ -705,7 +786,19 @@ export class LuaObfuscator {
       }
 
       const vmSeal = options.vmSeal ?? level >= 100;
-      if (vmSeal) transformed = applyVmSeal(transformed);
+      if (vmSeal) {
+        transformed = applyVmSeal(transformed);
+        if (options.selfValidate !== false) {
+          const sealedValidation = parseLua(transformed);
+          if (!sealedValidation.success) {
+            return {
+              success: false,
+              error: "VM loader produced invalid Lua: " + (sealedValidation.error || "syntax error"),
+              errorDetails: sealedValidation.errorDetails,
+            };
+          }
+        }
+      }
 
       const duration = Date.now() - startTime;
       const metrics = calculateMetrics(
@@ -735,7 +828,7 @@ export class LuaObfuscator {
     const nextName = () => {
       let name = "";
       do {
-        name = hexName(this.counter++);
+        name = hexName(this.counter++, this.nameSalt);
       } while (used.has(name));
       used.add(name);
       return name;

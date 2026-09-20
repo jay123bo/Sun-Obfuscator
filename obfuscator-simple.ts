@@ -436,16 +436,7 @@ function toUtf8Bytes(text: string): number[] {
 function hexName(counter: number, salt: number): string {
   return "_0x" +
     (salt & 0xffff).toString(16).padStart(4, "0") +
-    (counter & 0xff).toString(16).padStart(2, "0");
-}
-
-function sourceSeed(source: string): number {
-  let h = 2166136261 >>> 0;
-  for (let i = 0; i < source.length; i++) {
-    h ^= source.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return h >>> 0;
+    (counter & 0xffff).toString(16).padStart(4, "0");
 }
 
 function safeMinify(code: string): string {
@@ -697,7 +688,7 @@ function applyVmSeal(code: string): string {
   const bx = "_x" + Math.floor(Math.random() * 0xFFFFFF).toString(16);
 
   const lua =
-    "local " + bx + "=function(a,b)local r=0 local p=1 while a>0 or b>0 do local aa=a%2 local bb=b%2 if aa~=bb then r=r+p end a=math.floor(a/2)b=math.floor(b/2)p=p*2 end return r end " +
+    "local " + bx + "=function(a,b)local r=0 local p=1 while a>0 or b>0 do local aa=a%2 local bb=b%2 if aa~=bb then r=r+p end a=math.floor(a/2)b=math.floor(b/2)p=p*2 end return r end local _vmguard=(true and true) if not _vmguard then error('VM integrity') end " +
     "local " + state + "={" + data + "}" +
     "local " + decoder + "=function(" + temp + ")local a='" + alphabet + "'local m={}for i=1,64 do m[a:sub(i,i)]=i-1 end " +
     temp + "=" + temp + ":gsub('[^'..a..'=]','')local o=''for i=1,#" + temp + ",4 do " +
@@ -720,12 +711,11 @@ function applyVmSeal(code: string): string {
   return lua;
 }
 
-function levelSafeNameSalt(code: string, level: number): number {
-  const deterministic = sourceSeed(code) & 0xffff;
+function levelSafeNameSalt(_code: string, level: number): number {
   if (level >= 80) {
-    return (deterministic ^ Math.floor(Math.random() * 0x10000)) & 0xffff;
+    return Math.floor(Math.random() * 0x10000) & 0xffff;
   }
-  return deterministic;
+  return 0;
 }
 
 export class LuaObfuscator {

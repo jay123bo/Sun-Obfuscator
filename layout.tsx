@@ -10,13 +10,13 @@ export const viewport: Viewport = {
 	width: "device-width",
 	initialScale: 1,
 	maximumScale: 5,
-	themeColor: "#007AFF",
+	themeColor: "#20262e",
 };
 
 export const metadata: Metadata = {
 	metadataBase: new URL(siteUrl),
 	title: {
-		default: "Bill's Lua Obfuscator - Lua Code Protection & Minification",
+		default: "Sun Lua Protector - Lua Code Protection & Minification",
 		template: "%s | Lua Obfuscator",
 	},
 	description:
@@ -59,9 +59,9 @@ export const metadata: Metadata = {
 		"hide lua source code",
 		"lua code beautifier reverse",
 	],
-	authors: [{ name: "Bill Chirico" }],
-	creator: "Bill Chirico",
-	publisher: "Bill Chirico",
+	authors: [{ name: "Sun Lua Protector" }],
+	creator: "Sun Lua Protector",
+	publisher: "Sun Lua Protector",
 	formatDetection: {
 		email: false,
 		address: false,
@@ -71,26 +71,26 @@ export const metadata: Metadata = {
 		type: "website",
 		locale: "en_US",
 		url: siteUrl,
-		title: "Bill's Lua Obfuscator - Professional Lua Code Protection & Security",
+		title: "Sun Lua Protector - Professional Lua Code Protection & Security",
 		description:
 			"Free online Lua obfuscator with variable name mangling, string encoding, number obfuscation, and control flow protection. Supports Lua 5.1-5.4. Protect your Lua scripts instantly in your browser - no registration required.",
-		siteName: "Bill's Lua Obfuscator",
+		siteName: "Sun Lua Protector",
 		images: [
 			{
 				url: "/og-image.png",
 				width: 1200,
 				height: 630,
-				alt: "Bill's Lua Obfuscator - Free Online Lua Code Protection Tool with Multiple Obfuscation Techniques",
+				alt: "Sun Lua Protector - Free Online Lua Code Protection Tool with Multiple Obfuscation Techniques",
 			},
 		],
 	},
 	twitter: {
 		card: "summary_large_image",
-		title: "Bill's Lua Obfuscator - Professional Lua Code Protection & Security",
+		title: "Sun Lua Protector - Professional Lua Code Protection & Security",
 		description:
 			"Free online Lua obfuscator with advanced protection techniques. Supports Lua 5.1-5.4. Protect your scripts instantly in your browser - no registration required.",
 		images: ["/og-image.png"],
-		creator: "@billchirico",
+		creator: "@sunluaprotector",
 	},
 	robots: {
 		index: true,
@@ -125,7 +125,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 						__html: JSON.stringify({
 							"@context": "https://schema.org",
 							"@type": "SoftwareApplication",
-							name: "Bill's Lua Obfuscator",
+							name: "Sun Lua Protector",
 							applicationCategory: "DeveloperApplication",
 							operatingSystem: "Any",
 							description:
@@ -160,17 +160,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 							},
 							author: {
 								"@type": "Person",
-								name: "Bill Chirico",
-								url: "https://github.com/BillChirico",
+								name: "Sun Lua Protector",
+								url: "https://github.com/jay123bo",
 							},
 							creator: {
 								"@type": "Person",
-								name: "Bill Chirico",
-								url: "https://github.com/BillChirico",
+								name: "Sun Lua Protector",
+								url: "https://github.com/jay123bo",
 							},
 							provider: {
 								"@type": "Organization",
-								name: "Bill's Lua Obfuscator",
+								name: "Sun Lua Protector",
 								url: siteUrl,
 								logo: {
 									"@type": "ImageObject",
@@ -196,7 +196,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 									name: "What is Lua code obfuscation?",
 									acceptedAnswer: {
 										"@type": "Answer",
-										text: "Lua code obfuscation is the process of transforming readable Lua source code into functionally equivalent but harder-to-read code. This protects your intellectual property by making it difficult for others to understand, reverse-engineer, or steal your code logic. Bill's Lua Obfuscator uses multiple techniques including variable name mangling, string encoding, number encoding, and control flow obfuscation.",
+										text: "Lua code obfuscation is the process of transforming readable Lua source code into functionally equivalent but harder-to-read code. This protects your intellectual property by making it difficult for others to understand, reverse-engineer, or steal your code logic. Sun Lua Protector uses multiple techniques including variable name mangling, string encoding, number encoding, and control flow obfuscation.",
 									},
 								},
 								{
@@ -204,7 +204,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 									name: "Which Lua versions are supported?",
 									acceptedAnswer: {
 										"@type": "Answer",
-										text: "Bill's Lua Obfuscator supports Lua 5.1, 5.2, 5.3, and 5.4. The tool automatically detects and handles syntax differences between versions, ensuring your obfuscated code remains compatible with your target Lua runtime environment.",
+										text: "Sun Lua Protector supports Lua 5.1, 5.2, 5.3, and 5.4. The tool automatically detects and handles syntax differences between versions, ensuring your obfuscated code remains compatible with your target Lua runtime environment.",
 									},
 								},
 								{
@@ -220,15 +220,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 									name: "Can obfuscated Lua code be reversed?",
 									acceptedAnswer: {
 										"@type": "Answer",
-										text: "While no obfuscation is completely irreversible, Bill's Lua Obfuscator makes reverse engineering significantly more difficult by combining multiple protection techniques. Variable name mangling removes meaningful identifiers, string encoding obscures text literals, number encoding hides numeric values, and control flow obfuscation adds complexity that makes manual analysis time-consuming. The higher the protection level, the more difficult it is to reverse.",
+										text: "While no obfuscation is completely irreversible, Sun Lua Protector makes reverse engineering significantly more difficult by combining multiple protection techniques. Variable name mangling removes meaningful identifiers, string encoding obscures text literals, number encoding hides numeric values, and control flow obfuscation adds complexity that makes manual analysis time-consuming. The higher the protection level, the more difficult it is to reverse.",
 									},
 								},
 								{
 									"@type": "Question",
-									name: "Is Bill's Lua Obfuscator free to use?",
+									name: "Is Sun Lua Protector free to use?",
 									acceptedAnswer: {
 										"@type": "Answer",
-										text: "Yes, Bill's Lua Obfuscator is completely free to use with no registration, account creation, or payment required. All obfuscation happens in your browser, so your code never leaves your device. You can obfuscate unlimited Lua scripts at any protection level.",
+										text: "Yes, Sun Lua Protector is completely free to use with no registration, account creation, or payment required. All obfuscation happens in your browser, so your code never leaves your device. You can obfuscate unlimited Lua scripts at any protection level.",
 									},
 								},
 								{
@@ -236,7 +236,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 									name: "What obfuscation techniques are available?",
 									acceptedAnswer: {
 										"@type": "Answer",
-										text: "Bill's Lua Obfuscator provides five main obfuscation techniques: (1) Variable Name Mangling - replaces identifiers with hexadecimal names, (2) String Encoding - converts strings to byte arrays using string.char(), (3) Number Encoding - transforms numbers into mathematical expressions, (4) Control Flow Obfuscation - adds opaque predicates to complicate analysis, and (5) Code Minification - removes comments and whitespace. You can enable techniques individually or use the Protection Level slider for automatic presets.",
+										text: "Sun Lua Protector provides five main obfuscation techniques: (1) Variable Name Mangling - replaces identifiers with hexadecimal names, (2) String Encoding - converts strings to byte arrays using string.char(), (3) Number Encoding - transforms numbers into mathematical expressions, (4) Control Flow Obfuscation - adds opaque predicates to complicate analysis, and (5) Code Minification - removes comments and whitespace. You can enable techniques individually or use the Protection Level slider for automatic presets.",
 									},
 								},
 							],
@@ -250,7 +250,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 							"@context": "https://schema.org",
 							"@type": "HowTo",
 							name: "How to Obfuscate Lua Code",
-							description: "Step-by-step guide to protecting your Lua scripts with Bill's Lua Obfuscator",
+							description: "Step-by-step guide to protecting your Lua scripts with Sun Lua Protector",
 							totalTime: "PT2M",
 							step: [
 								{
